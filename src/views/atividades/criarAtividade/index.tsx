@@ -1,10 +1,7 @@
 import React, { useState, useCallback } from "react";
 import Container from "@mui/material/Container";
 import InputLabel from "@mui/material/InputLabel";
-import {
-  MuiPickersUtilsProvider,
-  DateTimePicker,
-} from "@material-ui/pickers";
+import DatePicker from '@mui/lab/DatePicker'
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 import Button from "@mui/material/Button";
@@ -13,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import DateTimePicker from "@mui/lab/DateTimePicker";
 
 export default function CriarAtividade() {
   const { id } = useParams();
@@ -29,6 +27,7 @@ export default function CriarAtividade() {
   }, [inputValues]);
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [status, setStatus] = useState<string>("");
 
   const handleDateChange = (date: Date | null) => {
     if (date) {
@@ -70,7 +69,7 @@ export default function CriarAtividade() {
             Criar Atividade
           </Typography>
           <div className="text-center mt-5">
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <DatePicker utils={DateFnsUtils}>
               <DateTimePicker
                 className="mt-2"
                 autoOk
@@ -82,7 +81,7 @@ export default function CriarAtividade() {
                 value={selectedDate}
                 onChange={handleDateChange}
               />
-            </MuiPickersUtilsProvider>            
+            </DatePicker>            
             <TextField
               variant="outlined"
               margin="normal"
