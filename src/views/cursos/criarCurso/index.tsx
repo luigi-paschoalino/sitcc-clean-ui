@@ -1,34 +1,35 @@
-import React, { useState, useCallback, useEffect } from "react";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Select from "react-select";
-import Typography from "@mui/material/Typography";
-import { useNavigate } from "react-router-dom";
-import InputLabel from "@mui/material/InputLabel";
-import axios from "axios";
+import React, { useState, useCallback, useEffect } from "react"
+import Container from "@mui/material/Container"
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import { Select, MenuItem } from "@mui/material"
+import Alert from "@mui/material/Alert"
+import Typography from "@mui/material/Typography"
+import { useNavigate } from "react-router-dom"
+import InputLabel from "@mui/material/InputLabel"
+import axios from "axios"
 
 interface Universidade {
-  id: string;
-  nome: string;
+  id: string
+  nome: string
 }
 
 interface Instituto {
-  id: string;
-  nome: string;
+  id: string
+  nome: string
 }
 
 export default function CriarCurso() {
-  const [universidades, setUniversidades] = useState<Universidade[]>([]);
-  const [institutos, setInstitutos] = useState<Instituto[]>([]);
-  const navigate = useNavigate();
-  const [status, setStatus] = useState<boolean>(true);
-  const [requisition, setRequisition] = useState<boolean | null>(null);
-  const [institutoSelected, setInstitutoSelected] = useState<number[]>([]);
+  const [universidades, setUniversidades] = useState<Universidade[]>([])
+  const [institutos, setInstitutos] = useState<Instituto[]>([])
+  const navigate = useNavigate()
+  const [status, setStatus] = useState<boolean>(true)
+  const [requisition, setRequisition] = useState<boolean | null>(null)
+  const [institutoSelected, setInstitutoSelected] = useState<number[]>([])
   const [inputValues, setInputValues] = useState({
     nome: "",
-    codigo: ""
-  });
+    codigo: "",
+  })
 
   useEffect(() => {
     axios
@@ -38,50 +39,56 @@ export default function CriarCurso() {
         },
       })
       .then((unis) => {
-        let arrayUniversidades: Universidade[] = [];
+        let arrayUniversidades: Universidade[] = []
         unis.data.universidades.forEach((uni: Universidade) => {
           arrayUniversidades.push({
             id: uni.id,
             nome: uni.nome,
-          });
-        });
-        setUniversidades(arrayUniversidades);
-      });
-  }, []);
+          })
+        })
+        setUniversidades(arrayUniversidades)
+      })
+  }, [])
 
-  const handleOnChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setInputValues({ ...inputValues, [name]: value });
-  }, [inputValues]);
+  const handleOnChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target
+      setInputValues({ ...inputValues, [name]: value })
+    },
+    [inputValues],
+  )
 
   const handleChangeUniversidade = (event: any) => {
-    searchInstitutes(event.value);
-  };
+    searchInstitutes(event.value)
+  }
 
   const handleChangeInstituto = (event: any) => {
-    setInstitutoSelected(event.value);
-  };
+    setInstitutoSelected(event.value)
+  }
 
   function searchInstitutes(valueUniversidade: number) {
-    setRequisition(false);
-    const arrayInstitutos: Instituto[] = [];
-    setInstitutos(arrayInstitutos);
+    setRequisition(false)
+    const arrayInstitutos: Instituto[] = []
+    setInstitutos(arrayInstitutos)
     axios
-      .get(`${process.env.REACT_APP_API_URL}/universities/${valueUniversidade}/institutes`, {
-        headers: {
-          Authorization: localStorage.getItem("accesstoken"),
+      .get(
+        `${process.env.REACT_APP_API_URL}/universities/${valueUniversidade}/institutes`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("accesstoken"),
+          },
         },
-      })
+      )
       .then((res) => {
         res.data.institutos.forEach((data: Instituto) => {
           arrayInstitutos.push({
             id: data.id,
             nome: data.nome,
-          });
-        });
-        setInstitutos(arrayInstitutos);
-        setRequisition(true);
-      });
+          })
+        })
+        setInstitutos(arrayInstitutos)
+        setRequisition(true)
+      })
   }
 
   function onSubmit() {
@@ -97,26 +104,30 @@ export default function CriarCurso() {
           headers: {
             Authorization: localStorage.getItem("accesstoken"),
           },
-        }
+        },
       )
       .then((res) => {
         if (res.status === 200) {
-          return navigate("/cursos");
+          return navigate("/cursos")
         } else {
-          setStatus(res.data.error);
+          setStatus(res.data.error)
         }
-      });
+      })
   }
 
   return (
     <div>
       <Container component="main">
         <div className="mt-3 mt-md-5">
-          <Typography className="pb-5 pt-2 text-center" component="h1" variant="h4">
+          <Typography
+            className="pb-5 pt-2 text-center"
+            component="h1"
+            variant="h4"
+          >
             Criar Curso
           </Typography>
           {status !== true ? (
-            <Alert className="my-2" variant="filled" severity={classStatus}>
+            <Alert className="my-2" variant="filled" severity="error">
               {status}
             </Alert>
           ) : (
@@ -134,11 +145,16 @@ export default function CriarCurso() {
             labelId="label-universidade"
             variant="outlined"
             defaultValue=""
-            options={universidades}
             fullWidth
             placeholder="Universidade"
             onChange={handleChangeUniversidade}
-          />
+          >
+            {universidades.map((universidade) => (
+              <MenuItem key={universidade.id} value={universidade.id}>
+                {universidade.nome}
+              </MenuItem>
+            ))}
+          </Select>
           {requisition ? (
             <>
               <div>
@@ -154,11 +170,16 @@ export default function CriarCurso() {
                   labelId="label-instituto"
                   variant="outlined"
                   defaultValue=""
-                  options={institutos}
                   fullWidth
                   placeholder="Instituto"
                   onChange={handleChangeInstituto}
-                />
+                >
+                  {institutos.map((instituto) => (
+                    <MenuItem key={instituto.id} value={instituto.id}>
+                      {instituto.nome}
+                    </MenuItem>
+                  ))}
+                </Select>
               </div>
               <div className="text-center mt-5">
                 <TextField
@@ -208,5 +229,5 @@ export default function CriarCurso() {
         </div>
       </Container>
     </div>
-  );
+  )
 }

@@ -1,39 +1,43 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { MuiPickersUtilsProvider, DateTimePicker } from "@material-ui/pickers";
-import "date-fns";
-import DateFnsUtils from "@date-io/date-fns";
-import Alert from "@mui/material/Alert";
-import Button from "@mui/material/Button";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "react-select";
-import axios from "axios";
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import Typography from "@mui/material/Typography"
+import Container from "@mui/material/Container"
+import DatePicker from "@mui/lab/DatePicker"
+import "date-fns"
+import DateFnsUtils from "@date-io/date-fns"
+import Alert from "@mui/material/Alert"
+import Button from "@mui/material/Button"
+import InputLabel from "@mui/material/InputLabel"
+import { MenuItem, Select } from "@mui/material"
+import axios from "axios"
 
 interface Professor {
-  id: string;
-  nome: string;
+  id: string
+  nome: string
 }
 
 interface InputValues {
-  dia_horario: Date;
+  dia_horario: Date
 }
 
 export default function CriarBanca() {
-  const [professores, setProfessores] = useState<Professor[]>([]);
-  const [professores1, setProfessores1] = useState<Professor[]>([]);
-  const [professores2, setProfessores2] = useState<Professor[]>([]);
-  const [idOrientador, setIdOrientador] = useState<number | null>(null);
-  const idTcc = localStorage.getItem("userTccId");
-  const [orientadorSelected, setOrientadorSelected] = useState<number | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [coorientadorSelected, setCoorientadorSelected] = useState<number | null>(null);
-  const [status, setStatus] = useState<boolean | string>(true);
-  const navigate = useNavigate();
+  const [professores, setProfessores] = useState<Professor[]>([])
+  const [professores1, setProfessores1] = useState<Professor[]>([])
+  const [professores2, setProfessores2] = useState<Professor[]>([])
+  const [idOrientador, setIdOrientador] = useState<number | null>(null)
+  const idTcc = localStorage.getItem("userTccId")
+  const [orientadorSelected, setOrientadorSelected] = useState<number | null>(
+    null,
+  )
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+  const [coorientadorSelected, setCoorientadorSelected] = useState<
+    number | null
+  >(null)
+  const [status, setStatus] = useState<boolean | string>(true)
+  const navigate = useNavigate()
   const [inputValues, setInputValues] = useState<InputValues>({
     dia_horario: new Date(),
-  });
+  })
 
   useEffect(() => {
     axios
@@ -44,26 +48,26 @@ export default function CriarBanca() {
           headers: {
             Authorization: localStorage.getItem("accesstoken") || "",
           },
-        }
+        },
       )
       .then((profs) => {
-        let arrayProfessores: Professor[] = [];
-        let arrayProfessores2: Professor[] = [];
+        let arrayProfessores: Professor[] = []
+        let arrayProfessores2: Professor[] = []
         profs.data.forEach((prof: Professor) => {
           arrayProfessores.push({
             id: prof.id,
             nome: prof.nome,
-          });
+          })
           arrayProfessores2.push({
             id: prof.id,
             nome: prof.nome,
-          });
-        });
-        setProfessores(arrayProfessores);
-        setProfessores1(arrayProfessores);
-        setProfessores2(arrayProfessores2);
-      });
-  }, []);
+          })
+        })
+        setProfessores(arrayProfessores)
+        setProfessores1(arrayProfessores)
+        setProfessores2(arrayProfessores2)
+      })
+  }, [])
 
   useEffect(() => {
     axios
@@ -73,33 +77,33 @@ export default function CriarBanca() {
           headers: {
             Authorization: localStorage.getItem("accesstoken") || "",
           },
-        }
+        },
       )
       .then((res) => {
-        setIdOrientador(res.data.resultsTfg[0].id);
-      });
-  }, []);
+        setIdOrientador(res.data.resultsTfg[0].id)
+      })
+  }, [])
 
   const handleDateChange = (date: Date) => {
-    setSelectedDate(date);
-    setInputValues({ ...inputValues, dia_horario: date });
-  };
+    setSelectedDate(date)
+    setInputValues({ ...inputValues, dia_horario: date })
+  }
 
   const handleChangeOrientador = (event: any) => {
     const filtered = professores.filter((prof) => {
-      return prof.id !== event.value;
-    });
-    setProfessores2(filtered);
-    setOrientadorSelected(event.value);
-  };
+      return prof.id !== event.value
+    })
+    setProfessores2(filtered)
+    setOrientadorSelected(event.value)
+  }
 
   const handleChangeCoorientador = (event: any) => {
     const filtered = professores.filter((prof) => {
-      return prof.id !== event.value;
-    });
-    setProfessores1(filtered);
-    setCoorientadorSelected(event.value);
-  };
+      return prof.id !== event.value
+    })
+    setProfessores1(filtered)
+    setCoorientadorSelected(event.value)
+  }
 
   function onSubmit() {
     axios
@@ -109,7 +113,7 @@ export default function CriarBanca() {
           headers: {
             Authorization: localStorage.getItem("accesstoken") || "",
           },
-        }
+        },
       )
       .then((res) => {
         if (res.data.status === 200) {
@@ -129,11 +133,11 @@ export default function CriarBanca() {
                   headers: {
                     Authorization: localStorage.getItem("accesstoken") || "",
                   },
-                }
+                },
               )
               .then((response) => {
                 if (response.data.status === 200) {
-                  let idProfessor1 = orientadorSelected;
+                  let idProfessor1 = orientadorSelected
                   axios
                     .post(
                       `${process.env.REACT_APP_API_URL}/board`,
@@ -147,12 +151,13 @@ export default function CriarBanca() {
                       },
                       {
                         headers: {
-                          Authorization: localStorage.getItem("accesstoken") || "",
+                          Authorization:
+                            localStorage.getItem("accesstoken") || "",
                         },
-                      }
+                      },
                     )
-                    .then((response) => {});
-                  let idProfessor2 = coorientadorSelected;
+                    .then((response) => {})
+                  let idProfessor2 = coorientadorSelected
                   axios
                     .post(
                       `${process.env.REACT_APP_API_URL}/board`,
@@ -166,9 +171,10 @@ export default function CriarBanca() {
                       },
                       {
                         headers: {
-                          Authorization: localStorage.getItem("accesstoken") || "",
+                          Authorization:
+                            localStorage.getItem("accesstoken") || "",
                         },
-                      }
+                      },
                     )
                     .then((response) => {
                       axios
@@ -182,27 +188,24 @@ export default function CriarBanca() {
                               Authorization:
                                 localStorage.getItem("accesstoken") || "",
                             },
-                          }
+                          },
                         )
                         .then((response) => {
-                          localStorage.setItem(
-                            "userTccStatus",
-                            "banca_marcada"
-                          );
-                          return navigate("/");
-                        });
-                    });
+                          localStorage.setItem("userTccStatus", "banca_marcada")
+                          return navigate("/")
+                        })
+                    })
                 } else {
-                  setStatus(response.data.error);
+                  setStatus(response.data.error)
                 }
-              });
+              })
           } else {
-            setStatus("Professores precisam ser selecionados");
+            setStatus("Professores precisam ser selecionados")
           }
         } else {
-          return;
+          return
         }
-      });
+      })
   }
 
   return (
@@ -226,19 +229,25 @@ export default function CriarBanca() {
             <Select
               className={"mt-3"}
               labelId="label-tipo-usuario"
-              options={professores1}
               placeholder="Professor Orientador"
               onChange={handleChangeOrientador}
-            />
+            >
+              {professores1.map((professor) => (
+                <MenuItem value={professor.id} />
+              ))}
+            </Select>
           </div>
           <div className="imc_div">
             <Select
               className={"mt-3"}
               labelId="label-tipo-usuario"
-              options={professores2}
               placeholder="Professor Coorientador"
               onChange={handleChangeCoorientador}
-            />
+            >
+              {professores2.map((professor) => (
+                <MenuItem value={professor.id} />
+              ))}
+            </Select>
           </div>
           <div
             className={"mt-3"}
@@ -248,19 +257,17 @@ export default function CriarBanca() {
               alignItems: "center",
             }}
           >
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <DateTimePicker
-                className="mt-2"
-                autoOk
-                required
-                fullWidth
-                variant="inline"
-                inputVariant="outlined"
-                label="Data"
-                value={selectedDate}
-                onChange={handleDateChange}
-              />
-            </MuiPickersUtilsProvider>
+            <DatePicker
+              className="mt-2"
+              autoOk
+              required
+              fullWidth
+              variant="inline"
+              inputVariant="outlined"
+              label="Data"
+              value={selectedDate}
+              onChange={handleDateChange}
+            />
           </div>
         </div>
         <Button
@@ -276,5 +283,5 @@ export default function CriarBanca() {
         </Button>
       </div>
     </Container>
-  );
+  )
 }

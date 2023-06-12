@@ -1,34 +1,35 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import axios from "axios";
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import Typography from "@mui/material/Typography"
+import Container from "@mui/material/Container"
+import axios from "axios"
 
 interface TccStatusResponse {
-  code: number;
-  status_tfg_nome: string;
+  code: number
+  status_tfg_nome: string
 }
 
 export default function StatusTcc() {
-  const idUsuario = localStorage.getItem("userId");
-  var [statusTcc, setStatusTcc] = useState<boolean>(true);
+  const idUsuario = localStorage.getItem("userId")
+  // TODO: conferir o tipo do status TCC
+  var [statusTcc, setStatusTcc] = useState<string>("")
 
   useEffect(() => {
     axios
       .get<TccStatusResponse>(
-        `${process.env.REACT_APP_API_URL}/users/check/${idUsuario}`
+        `${process.env.REACT_APP_API_URL}/users/check/${idUsuario}`,
       )
       .then((response) => {
         if (response.data.code === 200) {
-          setStatusTcc(response.data.status_tfg_nome);
+          setStatusTcc(response.data.status_tfg_nome)
         } else {
-          setStatusTcc("Sem TCC");
+          setStatusTcc("Sem TCC")
         }
-      });
-  }, []);
+      })
+  }, [])
 
-  const idTcc = localStorage.getItem("userTccId");
-  const navigate = useNavigate();
+  const idTcc = localStorage.getItem("userTccId")
+  const navigate = useNavigate()
 
   return (
     <Container component="main" maxWidth="sm">
@@ -41,5 +42,5 @@ export default function StatusTcc() {
         </div>
       </div>
     </Container>
-  );
+  )
 }

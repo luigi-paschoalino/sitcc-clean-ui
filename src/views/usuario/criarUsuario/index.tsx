@@ -1,29 +1,34 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Container from "@mui/material/Container";
-import "date-fns";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Select from "react-select";
-import InputLabel from "@mui/material/InputLabel";
-import Alert from "@mui/material/Alert";
-import Link from "@mui/material/Link";
-import axios from "axios";
+import React, { useState, useCallback, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import Container from "@mui/material/Container"
+import "date-fns"
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
+import { Select, MenuItem } from "@mui/material"
+import InputLabel from "@mui/material/InputLabel"
+import Alert from "@mui/material/Alert"
+import Link from "@mui/material/Link"
+import axios from "axios"
 
 interface Universidade {
-  id: number;
-  nome: string;
+  id: number
+  nome: string
 }
 
 interface Instituto {
-  id: number;
-  nome: string;
+  id: number
+  nome: string
 }
 
 interface Curso {
-  id: number;
-  nome: string;
+  id: number
+  nome: string
+}
+
+enum TIPO_USUARIO {
+  ALUNO = "ALUNO",
+  PROFESSOR = "PROFESSOR",
 }
 
 export default function CriarUsuario() {
@@ -34,19 +39,23 @@ export default function CriarUsuario() {
     senha: "",
     codigo: "",
     numero: "",
-  });
+  })
 
-  const [userTypeSelect, setUserTypeSelect] = useState<number | null>(null);
-  const [universidades, setUniversidades] = useState<Universidade[]>([]);
-  const [universidadeSelected, setUniversidadeSelected] = useState<number | null>(null);
-  const [institutos, setInstitutos] = useState<Instituto[]>([]);
-  const [institutoSelected, setInstitutoSelected] = useState<number | null>(null);
-  const [cursos, setCursos] = useState<Curso[]>([]);
-  const [cursoSelected, setCursoSelected] = useState<number | null>(null);
-  const [status, setStatus] = useState<boolean | string>(true);
-  const [exibirInstituto, setExibirInstituto] = useState(false);
-  const [exibirCurso, setExibirCurso] = useState(false);
-  const navigate = useNavigate();
+  const [userTypeSelect, setUserTypeSelect] = useState<number | null>(null)
+  const [universidades, setUniversidades] = useState<Universidade[]>([])
+  const [universidadeSelected, setUniversidadeSelected] = useState<
+    number | null
+  >(null)
+  const [institutos, setInstitutos] = useState<Instituto[]>([])
+  const [institutoSelected, setInstitutoSelected] = useState<number | null>(
+    null,
+  )
+  const [cursos, setCursos] = useState<Curso[]>([])
+  const [cursoSelected, setCursoSelected] = useState<number | null>(null)
+  const [status, setStatus] = useState<boolean | string>(true)
+  const [exibirInstituto, setExibirInstituto] = useState(false)
+  const [exibirCurso, setExibirCurso] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     axios
@@ -56,47 +65,49 @@ export default function CriarUsuario() {
         },
       })
       .then((response) => {
-        const { data } = response;
+        const { data } = response
         if (data.status === 200) {
-          const universidadesData: Universidade[] = data.universidades.map((universidade: any) => ({
-            id: universidade.id,
-            nome: universidade.nome,
-          }));
-          setUniversidades(universidadesData);
+          const universidadesData: Universidade[] = data.universidades.map(
+            (universidade: any) => ({
+              id: universidade.id,
+              nome: universidade.nome,
+            }),
+          )
+          setUniversidades(universidadesData)
         }
-      });
-  }, []);
+      })
+  }, [])
 
   const handleOnChange = useCallback((event) => {
-    const { name, value } = event.target;
+    const { name, value } = event.target
     setInputValues((prevInputValues) => ({
       ...prevInputValues,
       [name]: value,
-    }));
-  }, []);
+    }))
+  }, [])
 
   const handleSelectUserType = (event: any) => {
     switch (event.value) {
       case 1:
-        document.getElementById("aluno_div")!.style.display = "";
-        document.getElementById("professor_div")!.style.display = "none";
-        break;
+        document.getElementById("aluno_div")!.style.display = ""
+        document.getElementById("professor_div")!.style.display = "none"
+        break
       case 2:
-        document.getElementById("professor_div")!.style.display = "";
-        document.getElementById("aluno_div")!.style.display = "none";
-        break;
+        document.getElementById("professor_div")!.style.display = ""
+        document.getElementById("aluno_div")!.style.display = "none"
+        break
       default:
-        break;
+        break
     }
-    setUserTypeSelect(event.value);
-  };
+    setUserTypeSelect(event.value)
+  }
 
   const handleSelectUniversity = (event: any) => {
-    setUniversidadeSelected(event.value);
-    setExibirInstituto(false);
-    setExibirCurso(false);
-    setInstitutoSelected(null);
-    setCursoSelected(null);
+    setUniversidadeSelected(event.value)
+    setExibirInstituto(false)
+    setExibirCurso(false)
+    setInstitutoSelected(null)
+    setCursoSelected(null)
     axios
       .get(
         `${process.env.REACT_APP_API_URL}/universities/${event.value}/institutes`,
@@ -104,25 +115,27 @@ export default function CriarUsuario() {
           headers: {
             Authorization: localStorage.getItem("accesstoken"),
           },
-        }
+        },
       )
       .then((response) => {
-        const { data } = response;
+        const { data } = response
         if (data.status === 200) {
-          const institutosData: Instituto[] = data.institutos.map((instituto: any) => ({
-            id: instituto.id,
-            nome: instituto.nome,
-          }));
-          setInstitutos(institutosData);
-          setExibirInstituto(true);
+          const institutosData: Instituto[] = data.institutos.map(
+            (instituto: any) => ({
+              id: instituto.id,
+              nome: instituto.nome,
+            }),
+          )
+          setInstitutos(institutosData)
+          setExibirInstituto(true)
         }
-      });
-  };
+      })
+  }
 
   const handleSelectInstitute = (event: any) => {
-    setExibirCurso(false);
-    setCursoSelected(null);
-    setInstitutoSelected(event.value);
+    setExibirCurso(false)
+    setCursoSelected(null)
+    setInstitutoSelected(event.value)
     axios
       .get(
         `${process.env.REACT_APP_API_URL}/institute/${event.value}/courses`,
@@ -130,24 +143,24 @@ export default function CriarUsuario() {
           headers: {
             Authorization: localStorage.getItem("accesstoken"),
           },
-        }
+        },
       )
       .then((response) => {
-        const { data } = response;
+        const { data } = response
         if (data.status === 200) {
           const cursosData: Curso[] = data.cursos.map((curso: any) => ({
             id: curso.id,
             nome: curso.nome,
-          }));
-          setCursos(cursosData);
-          setExibirCurso(true);
+          }))
+          setCursos(cursosData)
+          setExibirCurso(true)
         }
-      });
-  };
+      })
+  }
 
   const handleSelectCurso = (event: any) => {
-    setCursoSelected(event.value);
-  };
+    setCursoSelected(event.value)
+  }
 
   function onSubmit() {
     if (cursoSelected !== null) {
@@ -163,21 +176,18 @@ export default function CriarUsuario() {
           codigo: inputValues.codigo,
         })
         .then((response) => {
-          const { data } = response;
+          const { data } = response
           if (data.status === 200) {
-            localStorage.setItem("userTccStatus", "sem_tcc");
-            localStorage.setItem("accesstoken", data.accesstoken);
-            localStorage.setItem("userId", data.usuario.id);
-            localStorage.setItem("username", data.usuario.nome);
-            localStorage.setItem(
-              "usertype",
-              parseInt(data.usuario.id_perfil_usuario)
-            );
-            navigate("/");
+            localStorage.setItem("userTccStatus", "sem_tcc")
+            localStorage.setItem("accesstoken", data.accesstoken)
+            localStorage.setItem("userId", data.usuario.id)
+            localStorage.setItem("username", data.usuario.nome)
+            localStorage.setItem("usertype", data.usuario.id_perfil_usuario)
+            navigate("/")
           } else {
-            setStatus(data.error);
+            setStatus(data.error)
           }
-        });
+        })
     }
   }
 
@@ -205,13 +215,15 @@ export default function CriarUsuario() {
             </InputLabel>
             <Select
               labelId="label-tipo-usuario"
-              options={[
-                { value: 1, label: "Estudante" },
-                { value: 2, label: "Professor" },
-              ]}
               placeholder="Selecione"
               onChange={handleSelectUserType}
-            />
+            >
+              {Object.values(TIPO_USUARIO).map((tipoUsuario) => (
+                <option key={tipoUsuario} value={tipoUsuario}>
+                  {tipoUsuario}
+                </option>
+              ))}
+            </Select>
             <TextField
               variant="outlined"
               margin="normal"
@@ -267,13 +279,15 @@ export default function CriarUsuario() {
             </InputLabel>
             <Select
               labelId="label-universidade"
-              options={universidades.map((universidade) => ({
-                value: universidade.id,
-                label: universidade.nome,
-              }))}
               placeholder="Selecione"
               onChange={handleSelectUniversity}
-            />
+            >
+              {universidades.map((universidade) => (
+                <MenuItem key={universidade.id} value={universidade.id}>
+                  {universidade.nome}
+                </MenuItem>
+              ))}
+            </Select>
             {exibirInstituto && (
               <>
                 <InputLabel
@@ -285,13 +299,15 @@ export default function CriarUsuario() {
                 </InputLabel>
                 <Select
                   labelId="label-instituto"
-                  options={institutos.map((instituto) => ({
-                    value: instituto.id,
-                    label: instituto.nome,
-                  }))}
                   placeholder="Selecione"
                   onChange={handleSelectInstitute}
-                />
+                >
+                  {institutos.map((instituto) => (
+                    <MenuItem key={instituto.id} value={instituto.id}>
+                      {instituto.nome}
+                    </MenuItem>
+                  ))}
+                </Select>
               </>
             )}
             {exibirCurso && (
@@ -305,13 +321,15 @@ export default function CriarUsuario() {
                 </InputLabel>
                 <Select
                   labelId="label-curso"
-                  options={cursos.map((curso) => ({
-                    value: curso.id,
-                    label: curso.nome,
-                  }))}
                   placeholder="Selecione"
                   onChange={handleSelectCurso}
-                />
+                >
+                  {cursos.map((curso) => (
+                    <MenuItem key={curso.id} value={curso.id}>
+                      {curso.nome}
+                    </MenuItem>
+                  ))}
+                </Select>
               </>
             )}
             <TextField
@@ -352,5 +370,5 @@ export default function CriarUsuario() {
         </div>
       </Container>
     </div>
-  );
+  )
 }

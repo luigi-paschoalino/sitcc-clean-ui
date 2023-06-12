@@ -1,32 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Alert from "@mui/material/Alert";
-import Link from "@mui/material/Link";
-import Accordion from "react-bootstrap/Accordion";
-import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import Container from "@mui/material/Container"
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
+import Alert from "@mui/material/Alert"
+import Link from "@mui/material/Link"
+import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material"
+import axios from "axios"
+import "bootstrap/dist/css/bootstrap.min.css"
 
 interface Project {
-  id: string;
-  titulo: string;
-  descricao: string;
-  pre_requisito: string;
+  id: string
+  titulo: string
+  descricao: string
+  pre_requisito: string
   perfil_professor: {
-    id: string;
+    id: string
     usuario: {
-      nome: string;
-    };
-  };
+      nome: string
+    }
+  }
 }
 
 function Projetos() {
-  const navigate = useNavigate();
-  const [projetosDisponiveis, setProjetosDisponiveis] = useState<Project[]>([]);
-  const [projetosNaoDisponiveis, setProjetosNaoDisponiveis] = useState<Project[]>([]);
+  const navigate = useNavigate()
+  const [projetosDisponiveis, setProjetosDisponiveis] = useState<Project[]>([])
+  const [projetosNaoDisponiveis, setProjetosNaoDisponiveis] = useState<
+    Project[]
+  >([])
 
   useEffect(() => {
     axios
@@ -37,11 +39,11 @@ function Projetos() {
       })
       .then((res) => {
         if (res.data.status === 200) {
-          setProjetosDisponiveis(res.data.projetosDisponiveis);
-          setProjetosNaoDisponiveis(res.data.projetosNaoDisponiveis);
+          setProjetosDisponiveis(res.data.projetosDisponiveis)
+          setProjetosNaoDisponiveis(res.data.projetosNaoDisponiveis)
         }
-      });
-  }, []);
+      })
+  }, [])
 
   return (
     <div>
@@ -52,28 +54,28 @@ function Projetos() {
               <Typography className="pb-5 pt-2" component="h1" variant="h4">
                 Projetos disponíveis
               </Typography>
-              <Accordion defaultActiveKey="">
-                {projetosDisponiveis.map((projeto) => (
-                  <Accordion.Item eventKey={projeto.id} key={projeto.id}>
-                    <Accordion.Header>{projeto.titulo}</Accordion.Header>
-                    <Accordion.Body>
-                      <p>
-                        <strong>Descrição:</strong> {projeto.descricao} <br />
-                      </p>
-                      <p>
-                        <strong>Pré Requisitos:</strong> {projeto.pre_requisito}
-                        <br />
-                      </p>
-                      <p>
-                        <strong>Professor:</strong>{" "}
-                        <Link href={`/perfil-professor/${projeto.perfil_professor.id}`}>
-                          {projeto.perfil_professor.usuario.nome}
-                        </Link>
-                      </p>
-                    </Accordion.Body>
-                  </Accordion.Item>
-                ))}
-              </Accordion>
+              {projetosDisponiveis.map((projeto) => (
+                <Accordion>
+                  <AccordionSummary>{projeto.titulo}</AccordionSummary>
+                  <AccordionDetails>
+                    <p>
+                      <strong>Descrição:</strong> {projeto.descricao} <br />
+                    </p>
+                    <p>
+                      <strong>Pré Requisitos:</strong> {projeto.pre_requisito}
+                      <br />
+                    </p>
+                    <p>
+                      <strong>Professor:</strong>{" "}
+                      <Link
+                        href={`/perfil-professor/${projeto.perfil_professor.id}`}
+                      >
+                        {projeto.perfil_professor.usuario.nome}
+                      </Link>
+                    </p>
+                  </AccordionDetails>
+                </Accordion>
+              ))}
             </div>
           ) : (
             ""
@@ -86,28 +88,28 @@ function Projetos() {
               <Typography className="pb-5 pt-2" component="h1" variant="h4">
                 Projetos não disponíveis
               </Typography>
-              <Accordion defaultActiveKey="">
-                {projetosNaoDisponiveis.map((projeto) => (
-                  <Accordion.Item eventKey={projeto.id} key={projeto.id}>
-                    <Accordion.Header>{projeto.titulo}</Accordion.Header>
-                    <Accordion.Body>
-                      <p>
-                        <strong>Descrição:</strong> {projeto.descricao} <br />
-                      </p>
-                      <p>
-                        <strong>Pré Requisitos:</strong> {projeto.pre_requisito}
-                        <br />
-                      </p>
-                      <p>
-                        <strong>Professor:</strong>{" "}
-                        <Link href={`/perfil-professor/${projeto.perfil_professor.id}`}>
-                          {projeto.perfil_professor.usuario.nome}
-                        </Link>
-                      </p>
-                    </Accordion.Body>
-                  </Accordion.Item>
-                ))}
-              </Accordion>
+              {projetosNaoDisponiveis.map((projeto) => (
+                <Accordion>
+                  <AccordionSummary>{projeto.titulo}</AccordionSummary>
+                  <AccordionDetails>
+                    <p>
+                      <strong>Descrição:</strong> {projeto.descricao} <br />
+                    </p>
+                    <p>
+                      <strong>Pré Requisitos:</strong> {projeto.pre_requisito}
+                      <br />
+                    </p>
+                    <p>
+                      <strong>Professor:</strong>{" "}
+                      <Link
+                        href={`/perfil-professor/${projeto.perfil_professor.id}`}
+                      >
+                        {projeto.perfil_professor.usuario.nome}
+                      </Link>
+                    </p>
+                  </AccordionDetails>
+                </Accordion>
+              ))}
             </div>
           ) : (
             ""
@@ -115,7 +117,7 @@ function Projetos() {
         </div>
       </Container>
     </div>
-  );
+  )
 }
 
-export default Projetos;
+export default Projetos

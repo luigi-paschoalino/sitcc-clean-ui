@@ -1,29 +1,33 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Switch from "@mui/material/Switch";
-import Alert from "@mui/material/Alert";
-import Button from "@mui/material/Button";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "react-select";
-import axios from "axios";
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import Typography from "@mui/material/Typography"
+import Container from "@mui/material/Container"
+import Switch from "@mui/material/Switch"
+import Alert from "@mui/material/Alert"
+import Button from "@mui/material/Button"
+import InputLabel from "@mui/material/InputLabel"
+import { Select, MenuItem } from "@mui/material"
+import axios from "axios"
 
 interface Professor {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 export default function MatriculaTfg() {
-  const [professores, setProfessores] = useState<Professor[]>([]);
-  const [professores1, setProfessores1] = useState<Professor[]>([]);
-  const [professores2, setProfessores2] = useState<Professor[]>([]);
-  const idUsuario = localStorage.getItem("userId");
-  const [checked, setChecked] = useState(true);
-  const [orientadorSelected, setOrientadorSelected] = useState<string | null>(null);
-  const [coorientadorSelected, setCoorientadorSelected] = useState<string | null>(null);
-  const [status, setStatus] = useState<string | boolean>(true);
-  const navigate = useNavigate();
+  const [professores, setProfessores] = useState<Professor[]>([])
+  const [professores1, setProfessores1] = useState<Professor[]>([])
+  const [professores2, setProfessores2] = useState<Professor[]>([])
+  const idUsuario = localStorage.getItem("userId")
+  const [checked, setChecked] = useState(true)
+  const [orientadorSelected, setOrientadorSelected] = useState<string | null>(
+    null,
+  )
+  const [coorientadorSelected, setCoorientadorSelected] = useState<
+    string | null
+  >(null)
+  const [status, setStatus] = useState<string | boolean>(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     axios
@@ -34,52 +38,52 @@ export default function MatriculaTfg() {
           headers: {
             Authorization: localStorage.getItem("accesstoken"),
           },
-        }
+        },
       )
       .then((profs) => {
-        let arrayProfessores: Professor[] = [];
-        let arrayProfessores2: Professor[] = [];
+        let arrayProfessores: Professor[] = []
+        let arrayProfessores2: Professor[] = []
         profs.data.forEach((prof: any) => {
           arrayProfessores.push({
             value: prof.id,
             label: prof.nome,
-          });
+          })
           arrayProfessores2.push({
             value: prof.id,
             label: prof.nome,
-          });
-        });
-        setProfessores(arrayProfessores);
-        setProfessores1(arrayProfessores);
-        setProfessores2(arrayProfessores2);
-      });
-  }, []);
+          })
+        })
+        setProfessores(arrayProfessores)
+        setProfessores1(arrayProfessores)
+        setProfessores2(arrayProfessores2)
+      })
+  }, [])
 
   const switchHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setChecked(event.target.checked);
-  };
+    setChecked(event.target.checked)
+  }
 
   const handleChangeOrientador = (event: any) => {
     const filtered = professores.filter((prof) => {
-      return prof.value !== event.value;
-    });
-    setProfessores2(filtered);
-    setOrientadorSelected(event.value);
-  };
+      return prof.value !== event.value
+    })
+    setProfessores2(filtered)
+    setOrientadorSelected(event.value)
+  }
 
   const handleChangeCoorientador = (event: any) => {
     const filtered = professores.filter((prof) => {
-      return prof.value !== event.value;
-    });
-    setProfessores1(filtered);
-    setCoorientadorSelected(event.value);
-  };
+      return prof.value !== event.value
+    })
+    setProfessores1(filtered)
+    setCoorientadorSelected(event.value)
+  }
 
   function onSubmit() {
     if (orientadorSelected !== null) {
       if (coorientadorSelected === null && checked) {
-        setStatus("Coorientador está marcado e precisa ser selecionado");
-        return;
+        setStatus("Coorientador está marcado e precisa ser selecionado")
+        return
       }
 
       axios
@@ -99,13 +103,13 @@ export default function MatriculaTfg() {
             headers: {
               Authorization: localStorage.getItem("accesstoken"),
             },
-          }
+          },
         )
         .then((response) => {
           if (response.data.status === 200) {
-            let idTfg = response.data.tfg.id;
-            let idOrientador = orientadorSelected;
-            let idCoorientador = coorientadorSelected;
+            let idTfg = response.data.tfg.id
+            let idOrientador = orientadorSelected
+            let idCoorientador = coorientadorSelected
             axios
               .post(
                 `${process.env.REACT_APP_API_URL}/user_tfg`,
@@ -118,9 +122,9 @@ export default function MatriculaTfg() {
                   headers: {
                     Authorization: localStorage.getItem("accesstoken"),
                   },
-                }
+                },
               )
-              .then((response) => {});
+              .then((response) => {})
             axios
               .post(
                 `${process.env.REACT_APP_API_URL}/user_tfg`,
@@ -133,9 +137,9 @@ export default function MatriculaTfg() {
                   headers: {
                     Authorization: localStorage.getItem("accesstoken"),
                   },
-                }
+                },
               )
-              .then((response) => {});
+              .then((response) => {})
             if (checked) {
               axios
                 .post(
@@ -149,18 +153,18 @@ export default function MatriculaTfg() {
                     headers: {
                       Authorization: localStorage.getItem("accesstoken"),
                     },
-                  }
+                  },
                 )
-                .then((response) => {});
+                .then((response) => {})
             }
-            localStorage.setItem("userTccStatus", "matricula_realizada");
-            return navigate("/");
+            localStorage.setItem("userTccStatus", "matricula_realizada")
+            return navigate("/")
           } else {
-            setStatus(response.data.error);
+            setStatus(response.data.error)
           }
-        });
+        })
     } else {
-      setStatus("Orientador precisa ser selecionado");
+      setStatus("Orientador precisa ser selecionado")
     }
   }
 
@@ -183,10 +187,13 @@ export default function MatriculaTfg() {
             <Select
               className={"mt-3"}
               labelId="label-tipo-usuario"
-              options={professores1}
               placeholder="Professor Orientador"
               onChange={handleChangeOrientador}
-            />
+            >
+              {professores1.map((professor) => (
+                <MenuItem value={professor.value}>{professor.label}</MenuItem>
+              ))}
+            </Select>
           </div>
           <div
             className={"mt-3"}
@@ -203,11 +210,7 @@ export default function MatriculaTfg() {
             >
               Possui coorientador?
             </InputLabel>
-            <Switch
-              labelId="label-professor-imc"
-              checked={checked}
-              onChange={switchHandler}
-            />
+            <Switch checked={checked} onChange={switchHandler} />
           </div>
 
           {checked === true ? (
@@ -215,10 +218,13 @@ export default function MatriculaTfg() {
               <Select
                 className={"mt-3"}
                 labelId="label-tipo-usuario"
-                options={professores2}
                 placeholder="Professor Coorientador"
                 onChange={handleChangeCoorientador}
-              />
+              >
+                {professores2.map((professor) => (
+                  <MenuItem value={professor.value}>{professor.label}</MenuItem>
+                ))}
+              </Select>
             </div>
           ) : (
             ""
@@ -237,5 +243,5 @@ export default function MatriculaTfg() {
         </Button>
       </div>
     </Container>
-  );
+  )
 }

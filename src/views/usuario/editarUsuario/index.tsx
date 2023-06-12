@@ -1,32 +1,34 @@
-import React, { useState, useCallback, useEffect } from "react";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Alert from "@mui/material/Alert";
-import axios from "axios";
+import React, { useState, useCallback, useEffect } from "react"
+import Container from "@mui/material/Container"
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
+import Alert from "@mui/material/Alert"
+import axios from "axios"
 
 interface Usuario {
-  nome: string;
-  numero: string;
-  telefone: string;
-  email: string;
-  id_curso: string;
+  nome: string
+  numero: string
+  telefone: string
+  email: string
+  id_curso: string
+  aniversario: Date
 }
 
 export default function EditarUsuario() {
-  const userId = localStorage.getItem("userId");
-  const userType = localStorage.getItem("usertype");
-  const [usuario, setUsuario] = useState<Usuario | false>(false);
+  const userId = localStorage.getItem("userId")
+  const userType = localStorage.getItem("usertype")
+  const [usuario, setUsuario] = useState<Usuario | false>(false)
   const [valoresInput, setValoresInput] = useState<Usuario>({
     nome: "",
     telefone: "",
     numero: "",
     email: "",
     id_curso: "",
-  });
-  const [classStatus, setClassStatus] = useState<string>("");
-  const [status, setStatus] = useState<string | boolean>(true);
+    aniversario: new Date(),
+  })
+  const [classStatus, setClassStatus] = useState<string>("")
+  const [status, setStatus] = useState<string | boolean>(true)
 
   useEffect(() => {
     axios
@@ -36,22 +38,26 @@ export default function EditarUsuario() {
         },
       })
       .then((resUsuario) => {
-        resUsuario.data.aniversario = new Date(resUsuario.data.aniversario);
+        resUsuario.data.aniversario = new Date(resUsuario.data.aniversario)
         setValoresInput({
           nome: resUsuario.data.nome,
           numero: resUsuario.data.numero,
           telefone: resUsuario.data.telefone,
           email: resUsuario.data.email,
           id_curso: resUsuario.data.id_curso,
-        });
-        setUsuario(true);
-      });
-  }, []);
+          aniversario: resUsuario.data.aniversario,
+        })
+        setUsuario(resUsuario.data)
+      })
+  }, [])
 
-  const handleOnChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setValoresInput({ ...valoresInput, [name]: value });
-  }, [valoresInput]);
+  const handleOnChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target
+      setValoresInput({ ...valoresInput, [name]: value })
+    },
+    [valoresInput],
+  )
 
   function onSubmit() {
     axios
@@ -62,31 +68,31 @@ export default function EditarUsuario() {
           telefone: valoresInput.telefone,
           numero: valoresInput.numero,
           email: valoresInput.email,
-          perfil_usuario: userType
+          perfil_usuario: userType,
         },
         {
           headers: {
             Authorization: localStorage.getItem("accesstoken"),
           },
-        }
+        },
       )
       .then((res) => {
         if (res.data.status === 200) {
-          setStatus(res.data.message);
-          setClassStatus("success");
+          setStatus(res.data.message)
+          setClassStatus("success")
           setTimeout(() => {
-            setStatus(true);
-          }, 5000);
+            setStatus(true)
+          }, 5000)
         } else {
-          setStatus(res.data.error);
-          setClassStatus("error");
+          setStatus(res.data.error)
+          setClassStatus("error")
           setTimeout(() => {
-            setStatus(true);
-          }, 5000);
+            setStatus(true)
+          }, 5000)
         }
-      });
+      })
   }
-  
+
   return (
     <div>
       <Container component="main" maxWidth="xs">
@@ -96,7 +102,7 @@ export default function EditarUsuario() {
               Editar usuário
             </Typography>
             {status !== true ? (
-              <Alert className="my-2" variant="filled" severity={classStatus}>
+              <Alert className="my-2" variant="filled" severity="error">
                 {status}
               </Alert>
             ) : (
@@ -164,5 +170,5 @@ export default function EditarUsuario() {
         </div>
       </Container>
     </div>
-  );
+  )
 }

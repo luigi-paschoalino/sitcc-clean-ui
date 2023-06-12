@@ -1,30 +1,30 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Alert from "@mui/material/Alert";
-import Switch from "@mui/material/Switch";
-import InputLabel from "@mui/material/InputLabel";
-import axios from "axios";
+import React, { useState, useCallback, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import Container from "@mui/material/Container"
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
+import Alert from "@mui/material/Alert"
+import Switch from "@mui/material/Switch"
+import InputLabel from "@mui/material/InputLabel"
+import axios from "axios"
 
 interface ProfileProfessor {
-  id: string;
+  id: string
 }
 
 function CriarProjeto() {
-  const navigate = useNavigate();
-  const userId = localStorage.getItem("userId");
-  const [status, setStatus] = useState(true);
-  const [checked, setChecked] = useState(true);
+  const navigate = useNavigate()
+  const userId = localStorage.getItem("userId")
+  const [status, setStatus] = useState(true)
+  const [checked, setChecked] = useState(true)
   const [inputValues, setInputValues] = useState({
     titulo: "",
     descricao: "",
     disponivel: "",
     pre_requisito: "",
-  });
-  const [professorId, setProfessorId] = useState<ProfileProfessor | null>(null);
+  })
+  const [professorId, setProfessorId] = useState<ProfileProfessor | null>(null)
 
   useEffect(() => {
     axios
@@ -35,21 +35,24 @@ function CriarProjeto() {
       })
       .then((res) => {
         if (res.data.status === 201) {
-          return navigate("/");
+          return navigate("/")
         } else {
-          setProfessorId(res.data.perfilProfessor);
+          setProfessorId(res.data.perfilProfessor)
         }
-      });
-  }, []);
+      })
+  }, [])
 
-  const handleOnChange = useCallback((event) => {
-    const { name, value } = event.target;
-    setInputValues({ ...inputValues, [name]: value });
-  }, [inputValues]);
+  const handleOnChange = useCallback(
+    (event) => {
+      const { name, value } = event.target
+      setInputValues({ ...inputValues, [name]: value })
+    },
+    [inputValues],
+  )
 
   const switchHandler = (event) => {
-    setChecked(event.target.checked);
-  };
+    setChecked(event.target.checked)
+  }
 
   function onSubmit() {
     axios
@@ -66,16 +69,16 @@ function CriarProjeto() {
           headers: {
             Authorization: localStorage.getItem("accesstoken"),
           },
-        }
+        },
       )
       .then((res) => {
         if (res.data.status === 200) {
-          return navigate("/projetos");
+          return navigate("/projetos")
         } else {
-          console.log(res.data);
-          setStatus(res.data.error);
+          console.log(res.data)
+          setStatus(res.data.error)
         }
-      });
+      })
   }
 
   return (
@@ -139,7 +142,7 @@ function CriarProjeto() {
                 Disponível
               </InputLabel>
               <Switch
-                labelId="disponivel"
+                about="disponivel"
                 checked={checked}
                 onChange={switchHandler}
               />
@@ -159,7 +162,7 @@ function CriarProjeto() {
         </div>
       </Container>
     </div>
-  );
+  )
 }
 
-export default CriarProjeto;
+export default CriarProjeto

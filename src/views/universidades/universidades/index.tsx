@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from "react";
-import Container from "@mui/material/Container";
-import Link from "@mui/material/Link";
-import Alert from "@mui/material/Alert";
-import { useNavigate } from "react-router-dom";
-import Typography from "@mui/material/Typography";
-import UpdateIcon from "@mui/icons-material/Update";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import Accordion from "react-bootstrap/Accordion";
-import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState, useEffect } from "react"
+import Container from "@mui/material/Container"
+import Link from "@mui/material/Link"
+import Alert from "@mui/material/Alert"
+import { useNavigate } from "react-router-dom"
+import Typography from "@mui/material/Typography"
+import UpdateIcon from "@mui/icons-material/Update"
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline"
+import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material"
+import axios from "axios"
+import "bootstrap/dist/css/bootstrap.min.css"
 
 interface Universidade {
-  id: number;
-  nome: string;
+  id: number
+  nome: string
 }
 
 export default function Universidades() {
-  const [universidades, setUniversidades] = useState<Universidade[]>([]);
-  const navigate = useNavigate();
-  const [status, setStatus] = useState<boolean>(true);
+  const [universidades, setUniversidades] = useState<Universidade[]>([])
+  const navigate = useNavigate()
+  const [status, setStatus] = useState<boolean>(true)
 
   useEffect(() => {
     axios
@@ -29,10 +29,10 @@ export default function Universidades() {
       })
       .then((res) => {
         if (res.data.status === 200) {
-          setUniversidades(res.data.universidades);
+          setUniversidades(res.data.universidades)
         }
-      });
-  }, []);
+      })
+  }, [])
 
   function handleDelete(id: number) {
     axios
@@ -43,11 +43,11 @@ export default function Universidades() {
       })
       .then((res) => {
         if (res.data.status === 200) {
-          return navigate(0);
+          return navigate(0)
         } else {
-          setStatus(res.data.error);
+          setStatus(res.data.error)
         }
-      });
+      })
   }
 
   return (
@@ -60,46 +60,36 @@ export default function Universidades() {
                 Universidades
               </Typography>
               {status !== true ? (
-                <Alert
-                  className="my-2"
-                  variant="filled"
-                  severity={classStatus}
-                >
+                <Alert className="my-2" variant="filled" severity="error">
                   {status}
                 </Alert>
               ) : (
                 ""
               )}
-              <Accordion defaultActiveKey="">
-                {universidades.map((universidade) => (
-                  <Accordion.Item eventKey={universidade.id} key={universidade.id}>
-                    <Accordion.Header>{universidade.nome}</Accordion.Header>
-                    <Accordion.Body>
-                      <div className="accordion-div">
-                        <p>
-                          <strong>Nome:</strong> {universidade.nome} <br />
-                        </p>
-                        <div>
-                          <button
-                            onClick={() =>
-                              navigate(
-                                `/editar-universidade/${universidade.id}`
-                              )
-                            }
-                          >
-                            <UpdateIcon />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(universidade.id)}
-                          >
-                            <DeleteOutlineIcon />
-                          </button>
-                        </div>
+              {universidades.map((universidade) => (
+                <Accordion>
+                  <AccordionSummary>{universidade.nome}</AccordionSummary>
+                  <AccordionDetails>
+                    <div className="accordion-div">
+                      <p>
+                        <strong>Nome:</strong> {universidade.nome} <br />
+                      </p>
+                      <div>
+                        <button
+                          onClick={() =>
+                            navigate(`/editar-universidade/${universidade.id}`)
+                          }
+                        >
+                          <UpdateIcon />
+                        </button>
+                        <button onClick={() => handleDelete(universidade.id)}>
+                          <DeleteOutlineIcon />
+                        </button>
                       </div>
-                    </Accordion.Body>
-                  </Accordion.Item>
-                ))}
-              </Accordion>
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+              ))}
             </div>
           ) : (
             "oi"
@@ -107,5 +97,5 @@ export default function Universidades() {
         </div>
       </Container>
     </div>
-  );
+  )
 }

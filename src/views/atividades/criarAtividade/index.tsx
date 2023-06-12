@@ -1,40 +1,42 @@
-import React, { useState, useCallback } from "react";
-import Container from "@mui/material/Container";
-import InputLabel from "@mui/material/InputLabel";
-import DatePicker from '@mui/lab/DatePicker'
-import "date-fns";
-import DateFnsUtils from "@date-io/date-fns";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
-import DateTimePicker from "@mui/lab/DateTimePicker";
+import React, { useState, useCallback } from "react"
+import Container from "@mui/material/Container"
+import InputLabel from "@mui/material/InputLabel"
+import DatePicker from "@mui/lab/DatePicker"
+import "date-fns"
+import DateFnsUtils from "@date-io/date-fns"
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
+import { useNavigate, useParams } from "react-router-dom"
+import axios from "axios"
+import DateTimePicker from "@mui/lab/DateTimePicker"
 
 export default function CriarAtividade() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { id } = useParams()
+  const navigate = useNavigate()
   const [inputValues, setInputValues] = useState({
     data: new Date(),
     titulo: "",
-    descricao: ""
-  });
+    descricao: "",
+  })
 
-  const handleOnChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setInputValues({ ...inputValues, [name]: value });
-  }, [inputValues]);
+  const handleOnChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target
+      setInputValues({ ...inputValues, [name]: value })
+    },
+    [inputValues],
+  )
 
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [status, setStatus] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+  const [status, setStatus] = useState<string>("")
 
   const handleDateChange = (date: Date | null) => {
     if (date) {
-      setSelectedDate(date);
-      setInputValues({ ...inputValues, data: date });
+      setSelectedDate(date)
+      setInputValues({ ...inputValues, data: date })
     }
-  };
+  }
 
   function onSubmit() {
     axios
@@ -44,28 +46,32 @@ export default function CriarAtividade() {
           data: selectedDate,
           titulo: inputValues.titulo,
           descricao: inputValues.descricao,
-          id_cronograma: id
+          id_cronograma: id,
         },
         {
           headers: {
             Authorization: localStorage.getItem("accesstoken"),
           },
-        }
+        },
       )
       .then((res) => {
         if (res.status === 200) {
-          return navigate("/cronogramas");
+          return navigate("/cronogramas")
         } else {
-          setStatus(res.data.error);
+          setStatus(res.data.error)
         }
-      });
+      })
   }
 
   return (
     <div>
       <Container component="main">
         <div className="mt-3 mt-md-5">
-          <Typography className="pb-5 pt-2 text-center" component="h1" variant="h4">
+          <Typography
+            className="pb-5 pt-2 text-center"
+            component="h1"
+            variant="h4"
+          >
             Criar Atividade
           </Typography>
           <div className="text-center mt-5">
@@ -81,7 +87,7 @@ export default function CriarAtividade() {
                 value={selectedDate}
                 onChange={handleDateChange}
               />
-            </DatePicker>            
+            </DatePicker>
             <TextField
               variant="outlined"
               margin="normal"
@@ -109,8 +115,7 @@ export default function CriarAtividade() {
                 justifyItems: "center",
                 alignItems: "center",
               }}
-            >          
-            </div>
+            ></div>
             <Button
               type="button"
               variant="contained"
@@ -126,5 +131,5 @@ export default function CriarAtividade() {
         </div>
       </Container>
     </div>
-  );
+  )
 }

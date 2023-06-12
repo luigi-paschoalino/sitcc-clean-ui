@@ -1,40 +1,38 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Alert from "@mui/material/Alert";
-import Link from "@mui/material/Link";
-import axios from "axios";
+import React, { useState, useEffect, useCallback } from "react"
+import { useNavigate } from "react-router-dom"
+import Container from "@mui/material/Container"
+import axios from "axios"
 
 interface Registro {
-  id: string;
-  nome: string;
+  id: string
+  nome: string
 }
 
 function ConfirmarProjeto() {
-  const [requisicao, setRequisicao] = useState<boolean>(false);
-  const [registros, setRegistros] = useState<Registro[]>([]);
-  const idUsuario = localStorage.getItem("userId");
-  const navigate = useNavigate();
+  const [requisicao, setRequisicao] = useState<boolean>(false)
+  const [registros, setRegistros] = useState<Registro[]>([])
+  const idUsuario = localStorage.getItem("userId")
+  const navigate = useNavigate()
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_URL}/tfg/search-users-record/${idUsuario}`, {
-        headers: {
-          Authorization: localStorage.getItem("accesstoken"),
+      .get(
+        `${process.env.REACT_APP_API_URL}/tfg/search-users-record/${idUsuario}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("accesstoken"),
+          },
         },
-      })
+      )
       .then((res) => {
         if (res.data.status !== 200) {
-          setRegistros([]);
+          setRegistros([])
         } else {
-          setRegistros(res.data.resultsTfg);
+          setRegistros(res.data.resultsTfg)
         }
-        setRequisicao(true);
-      });
-  }, []);
+        setRequisicao(true)
+      })
+  }, [])
 
   const rejeitar = useCallback((idTcc: string) => {
     axios
@@ -47,12 +45,12 @@ function ConfirmarProjeto() {
           headers: {
             Authorization: localStorage.getItem("accesstoken"),
           },
-        }
+        },
       )
       .then((response) => {
-        window.location.reload();
-      });
-  }, []);
+        window.location.reload()
+      })
+  }, [])
 
   const aceitar = useCallback((idTcc: string) => {
     axios
@@ -65,12 +63,12 @@ function ConfirmarProjeto() {
           headers: {
             Authorization: localStorage.getItem("accesstoken"),
           },
-        }
+        },
       )
       .then((response) => {
-        window.location.reload();
-      });
-  }, []);
+        window.location.reload()
+      })
+  }, [])
 
   return (
     <div>
@@ -128,7 +126,7 @@ function ConfirmarProjeto() {
         </div>
       </Container>
     </div>
-  );
+  )
 }
 
-export default ConfirmarProjeto;
+export default ConfirmarProjeto

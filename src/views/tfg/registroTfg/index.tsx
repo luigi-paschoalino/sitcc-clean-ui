@@ -1,21 +1,21 @@
-import React, { useState, useCallback, ChangeEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import InputLabel from "@mui/material/InputLabel";
-import Alert from "@mui/material/Alert";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import axios from 'axios';
+import React, { useState, useCallback, ChangeEvent } from "react"
+import { useNavigate } from "react-router-dom"
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import InputLabel from "@mui/material/InputLabel"
+import Alert from "@mui/material/Alert"
+import Typography from "@mui/material/Typography"
+import Container from "@mui/material/Container"
+import axios from "axios"
 
 interface InputValues {
-  titulo: string;
-  palavrasChave: string;
-  introducao: string;
-  objetivos: string;
-  bibliografia: string;
-  metodologia: string;
-  resultados: string;
+  titulo: string
+  palavrasChave: string
+  introducao: string
+  objetivos: string
+  bibliografia: string
+  metodologia: string
+  resultados: string
 }
 
 export default function RegistroTfg() {
@@ -27,16 +27,16 @@ export default function RegistroTfg() {
     bibliografia: "",
     metodologia: "",
     resultados: "",
-  });
+  })
 
-  const idTcc = localStorage.getItem("userTccId");
-  const navigate = useNavigate();
-  var [status, setStatus] = useState<boolean>(true);
+  const idTcc = localStorage.getItem("userTccId")
+  const navigate = useNavigate()
+  var [status, setStatus] = useState<boolean>(true)
 
   const handleOnChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setInputValues((prevInputValues) => ({ ...prevInputValues, [name]: value }));
-  }, []);
+    const { name, value } = event.target
+    setInputValues((prevInputValues) => ({ ...prevInputValues, [name]: value }))
+  }, [])
 
   function onSubmit() {
     axios
@@ -49,31 +49,36 @@ export default function RegistroTfg() {
           objetivos: inputValues.objetivos,
           bibliografia: inputValues.bibliografia,
           metodologia: inputValues.metodologia,
-          resultados: inputValues.resultados
-        }, 
+          resultados: inputValues.resultados,
+        },
         {
           headers: {
             Authorization: localStorage.getItem("accesstoken"),
           },
-        }
-      ).then((response) => {
-        if(response.data.status === 200){
+        },
+      )
+      .then((response) => {
+        if (response.data.status === 200) {
           axios
             .put(
               `${process.env.REACT_APP_API_URL}/tfg/${idTcc}/status`,
               {
-                status_tfg: "registro_de_projeto_realizado"
-              }, 
+                status_tfg: "registro_de_projeto_realizado",
+              },
               {
                 headers: {
                   Authorization: localStorage.getItem("accesstoken"),
                 },
-              }
-            ).then((response) => {
-              localStorage.setItem("userTccStatus","registro_de_projeto_realizado")
-              return navigate("/");
+              },
+            )
+            .then((response) => {
+              localStorage.setItem(
+                "userTccStatus",
+                "registro_de_projeto_realizado",
+              )
+              return navigate("/")
             })
-        }else{
+        } else {
           setStatus(response.data.error)
         }
       })
@@ -84,16 +89,16 @@ export default function RegistroTfg() {
       <div className="mt-3 mt-md-5">
         <div className="text-center">
           <Typography className="pb-5 pt-2" component="h1" variant="h4">
-              Registrar Projeto
+            Registrar Projeto
           </Typography>
         </div>
-          {status !== true ? (
-              <Alert className="mt-2 mb-4" variant="filled" severity="error">
-                {status}
-              </Alert>
-            ) : (
-              ""
-            )}
+        {status !== true ? (
+          <Alert className="mt-2 mb-4" variant="filled" severity="error">
+            {status}
+          </Alert>
+        ) : (
+          ""
+        )}
         <InputLabel
           style={{ textAlign: "left" }}
           className={"mt-2 mb-0"}
@@ -107,12 +112,11 @@ export default function RegistroTfg() {
           required
           fullWidth
           id="titulo"
-          labelId="label-titulo"
           name="titulo"
-          onChange={handleOnChange}>
-          </TextField>
+          onChange={handleOnChange}
+        ></TextField>
 
-          <InputLabel
+        <InputLabel
           style={{ textAlign: "left" }}
           className={"mt-2 mb-0"}
           id="label-palavras"
@@ -125,12 +129,11 @@ export default function RegistroTfg() {
           required
           fullWidth
           id="palavras_chave"
-          labelId="label-palavras"
           name="palavrasChave"
-          onChange={handleOnChange}>
-          </TextField>
+          onChange={handleOnChange}
+        ></TextField>
 
-          <InputLabel
+        <InputLabel
           style={{ textAlign: "left" }}
           className={"mt-2 mb-0"}
           id="label-introducao"
@@ -143,10 +146,9 @@ export default function RegistroTfg() {
           required
           fullWidth
           id="introducao"
-          labelId="label-introducao"
           name="introducao"
-          onChange={handleOnChange}>
-        </TextField>
+          onChange={handleOnChange}
+        ></TextField>
 
         <InputLabel
           style={{ textAlign: "left" }}
@@ -161,10 +163,9 @@ export default function RegistroTfg() {
           required
           fullWidth
           id="objetivos"
-          labelId="label-objetivos"
           name="objetivos"
-          onChange={handleOnChange}>
-        </TextField>
+          onChange={handleOnChange}
+        ></TextField>
 
         <InputLabel
           style={{ textAlign: "left" }}
@@ -179,10 +180,9 @@ export default function RegistroTfg() {
           required
           fullWidth
           id="bibliografia"
-          labelId="label-bibliografia"
           name="bibliografia"
-          onChange={handleOnChange}>
-        </TextField>
+          onChange={handleOnChange}
+        ></TextField>
 
         <InputLabel
           style={{ textAlign: "left" }}
@@ -197,10 +197,9 @@ export default function RegistroTfg() {
           required
           fullWidth
           id="metodologia"
-          labelId="label-metodologia"
           name="metodologia"
-          onChange={handleOnChange}>
-        </TextField>
+          onChange={handleOnChange}
+        ></TextField>
 
         <InputLabel
           style={{ textAlign: "left" }}
@@ -215,10 +214,9 @@ export default function RegistroTfg() {
           required
           fullWidth
           id="resultados"
-          labelId="label-resultados"
           name="resultados"
-          onChange={handleOnChange}>
-        </TextField>
+          onChange={handleOnChange}
+        ></TextField>
 
         <Button
           type="button"
@@ -233,5 +231,5 @@ export default function RegistroTfg() {
         </Button>
       </div>
     </Container>
-  );
+  )
 }
