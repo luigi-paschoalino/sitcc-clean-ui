@@ -4,11 +4,15 @@ import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import { BrowserRouter, Route, Routes, Router } from "react-router-dom"
 import CriarAtividade from "./views/atividades/criarAtividade"
+import CriarUsuario from "./views/usuario/criarUsuario"
+import Inicio from "./views/inicio/inicio"
 
 const AppRouter: React.FC = () => (
   <BrowserRouter>
     <Routes>
+      <Route path="/" element={<Inicio />} />
       <Route path="/criarAtividade" element={<CriarAtividade />} />
+      <Route path="/cadastro" element={<CriarUsuario />} />
     </Routes>
   </BrowserRouter>
 )

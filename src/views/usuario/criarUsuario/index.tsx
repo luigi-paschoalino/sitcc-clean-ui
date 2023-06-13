@@ -9,21 +9,27 @@ import { Select, MenuItem } from "@mui/material"
 import InputLabel from "@mui/material/InputLabel"
 import Alert from "@mui/material/Alert"
 import Link from "@mui/material/Link"
-import axios from "axios"
+import { HttpServiceImpl } from "../../../infra/httpService"
+import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
+import { CadastrarUsuarioUsecase } from "../../../@usuario/application/CadastrarUsuario.usecase"
+import { UniversidadeHttpGatewayImpl } from "../../../@universidade/infra/gateways/Universidade.gateway"
+import { ListarUniversidadesQuery } from "../../../@universidade/application/ListarUniversidades.query"
 
-interface Universidade {
-  id: number
+export interface UniversidadeProps {
+  id: string
   nome: string
+  institutos: InstitutoProps[]
+}
+export interface InstitutoProps {
+  id: string
+  nome: string
+  cursos: CursoProps[]
 }
 
-interface Instituto {
-  id: number
+export interface CursoProps {
+  id: string
   nome: string
-}
-
-interface Curso {
-  id: number
-  nome: string
+  codigo: string
 }
 
 enum TIPO_USUARIO {
@@ -41,42 +47,54 @@ export default function CriarUsuario() {
     numero: "",
   })
 
-  const [userTypeSelect, setUserTypeSelect] = useState<number | null>(null)
-  const [universidades, setUniversidades] = useState<Universidade[]>([])
-  const [universidadeSelected, setUniversidadeSelected] = useState<
-    number | null
-  >(null)
-  const [institutos, setInstitutos] = useState<Instituto[]>([])
-  const [institutoSelected, setInstitutoSelected] = useState<number | null>(
+  /* HTTP Service */
+  const httpService = new HttpServiceImpl()
+
+  const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
+  const cadastrarUsuarioUsecase = new CadastrarUsuarioUsecase(usuarioGateway)
+
+  const universidadeGateway = new UniversidadeHttpGatewayImpl(httpService)
+  const listarUniversidadesQuery = new ListarUniversidadesQuery(
+    universidadeGateway,
+  )
+
+  /* States */
+
+  const [tipoUsuario, setTipoUsuario] = useState<TIPO_USUARIO>()
+  const [universidades, setUniversidades] = useState<UniversidadeProps[]>([])
+  const [universidadeAtiva, setUniversidadeAtiva] = useState<number | null>(
     null,
   )
-  const [cursos, setCursos] = useState<Curso[]>([])
-  const [cursoSelected, setCursoSelected] = useState<number | null>(null)
+  const [institutos, setInstitutos] = useState<InstitutoProps[]>([])
+  const [institutoAtivo, setInstitutoAtivo] = useState<string | null>(null)
+  const [cursos, setCursos] = useState<CursoProps[]>([])
+  const [cursoAtivo, setCursoAtivo] = useState<string>("")
   const [status, setStatus] = useState<boolean | string>(true)
   const [exibirInstituto, setExibirInstituto] = useState(false)
   const [exibirCurso, setExibirCurso] = useState(false)
   const navigate = useNavigate()
 
+  /* Functions */
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/universities`, {
-        headers: {
-          Authorization: localStorage.getItem("accesstoken"),
-        },
-      })
-      .then((response) => {
-        const { data } = response
-        if (data.status === 200) {
-          const universidadesData: Universidade[] = data.universidades.map(
-            (universidade: any) => ({
-              id: universidade.id,
-              nome: universidade.nome,
-            }),
-          )
-          setUniversidades(universidadesData)
-        }
-      })
+    async function getUniversidades(): Promise<void> {
+      const universidadesData = await listarUniversidadesQuery.execute()
+      setUniversidades(universidadesData)
+    }
+    getUniversidades()
   }, [])
+
+  async function handleCadastro(): Promise<void> {
+    if (tipoUsuario) {
+      await cadastrarUsuarioUsecase.execute({
+        nome: inputValues.nome,
+        curso: cursoAtivo,
+        email: inputValues.email,
+        senha: inputValues.senha,
+        numero: inputValues.numero,
+        tipo: tipoUsuario,
+      })
+    }
+  }
 
   const handleOnChange = useCallback((event) => {
     const { name, value } = event.target
@@ -88,107 +106,33 @@ export default function CriarUsuario() {
 
   const handleSelectUserType = (event: any) => {
     switch (event.value) {
-      case 1:
+      case TIPO_USUARIO.ALUNO:
         document.getElementById("aluno_div")!.style.display = ""
         document.getElementById("professor_div")!.style.display = "none"
         break
-      case 2:
+      case TIPO_USUARIO.PROFESSOR:
         document.getElementById("professor_div")!.style.display = ""
         document.getElementById("aluno_div")!.style.display = "none"
         break
       default:
         break
     }
-    setUserTypeSelect(event.value)
+    setTipoUsuario(event.value)
   }
 
   const handleSelectUniversity = (event: any) => {
-    setUniversidadeSelected(event.value)
-    setExibirInstituto(false)
+    setUniversidadeAtiva(event.target.value)
+    setExibirInstituto(true)
     setExibirCurso(false)
-    setInstitutoSelected(null)
-    setCursoSelected(null)
-    axios
-      .get(
-        `${process.env.REACT_APP_API_URL}/universities/${event.value}/institutes`,
-        {
-          headers: {
-            Authorization: localStorage.getItem("accesstoken"),
-          },
-        },
-      )
-      .then((response) => {
-        const { data } = response
-        if (data.status === 200) {
-          const institutosData: Instituto[] = data.institutos.map(
-            (instituto: any) => ({
-              id: instituto.id,
-              nome: instituto.nome,
-            }),
-          )
-          setInstitutos(institutosData)
-          setExibirInstituto(true)
-        }
-      })
   }
 
   const handleSelectInstitute = (event: any) => {
-    setExibirCurso(false)
-    setCursoSelected(null)
-    setInstitutoSelected(event.value)
-    axios
-      .get(
-        `${process.env.REACT_APP_API_URL}/institute/${event.value}/courses`,
-        {
-          headers: {
-            Authorization: localStorage.getItem("accesstoken"),
-          },
-        },
-      )
-      .then((response) => {
-        const { data } = response
-        if (data.status === 200) {
-          const cursosData: Curso[] = data.cursos.map((curso: any) => ({
-            id: curso.id,
-            nome: curso.nome,
-          }))
-          setCursos(cursosData)
-          setExibirCurso(true)
-        }
-      })
+    setInstitutoAtivo(event.target.value)
+    setExibirCurso(true)
   }
 
   const handleSelectCurso = (event: any) => {
-    setCursoSelected(event.value)
-  }
-
-  function onSubmit() {
-    if (cursoSelected !== null) {
-      axios
-        .post(`${process.env.REACT_APP_API_URL}/users`, {
-          nome: inputValues.nome,
-          telefone: inputValues.telefone,
-          email: inputValues.email,
-          senha: inputValues.senha,
-          perfil_usuario: userTypeSelect,
-          curso: cursoSelected,
-          numero: inputValues.numero,
-          codigo: inputValues.codigo,
-        })
-        .then((response) => {
-          const { data } = response
-          if (data.status === 200) {
-            localStorage.setItem("userTccStatus", "sem_tcc")
-            localStorage.setItem("accesstoken", data.accesstoken)
-            localStorage.setItem("userId", data.usuario.id)
-            localStorage.setItem("username", data.usuario.nome)
-            localStorage.setItem("usertype", data.usuario.id_perfil_usuario)
-            navigate("/")
-          } else {
-            setStatus(data.error)
-          }
-        })
-    }
+    setCursoAtivo(event.target.value)
   }
 
   return (
@@ -219,9 +163,7 @@ export default function CriarUsuario() {
               onChange={handleSelectUserType}
             >
               {Object.values(TIPO_USUARIO).map((tipoUsuario) => (
-                <option key={tipoUsuario} value={tipoUsuario}>
-                  {tipoUsuario}
-                </option>
+                <MenuItem value={tipoUsuario}>{tipoUsuario}</MenuItem>
               ))}
             </Select>
             <TextField
@@ -357,7 +299,7 @@ export default function CriarUsuario() {
               fullWidth
               variant="contained"
               color="primary"
-              onClick={onSubmit}
+              onClick={handleCadastro}
             >
               Criar usuário
             </Button>
