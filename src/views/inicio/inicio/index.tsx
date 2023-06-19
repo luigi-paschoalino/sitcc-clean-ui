@@ -1,6 +1,6 @@
 // Neste arquivo é definido a página inicial do sistema
-import React from "react";
-import Container from "@mui/material/Container";
+import React from "react"
+import Container from "@mui/material/Container"
 
 export default function Inicio() {
   return (
@@ -14,17 +14,21 @@ export default function Inicio() {
             <img
               className="mb-5"
               style={{ width: "20vh" }}
-              src={require("../../images/logo.png")}
+              src={require("./../../../images/logo.png")}
               alt="logo"
             />
           </div>
-          <div style={{ fontSize: "1.2rem"}}>
-            <div style={{textAlign: "center",fontSize: "1.4rem"}} className="pt-1 pb-4">Seja bem vindo ao sistema de TFG!</div>
-            <div className="py-1">
+          <div style={{ fontSize: "1.2rem" }}>
+            <div
+              style={{ textAlign: "center", fontSize: "1.4rem" }}
+              className="pt-1 pb-4"
+            >
+              Seja bem vindo ao sistema de TFG!
             </div>
+            <div className="py-1"></div>
           </div>
         </Container>
       </Container>
     </div>
-  );
+  )
 }

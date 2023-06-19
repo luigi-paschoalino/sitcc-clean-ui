@@ -9,21 +9,27 @@ import { Select, MenuItem } from "@mui/material"
 import InputLabel from "@mui/material/InputLabel"
 import Alert from "@mui/material/Alert"
 import Link from "@mui/material/Link"
-import axios from "axios"
+import { HttpServiceImpl } from "../../../infra/httpService"
+import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
+import { CadastrarUsuarioUsecase } from "../../../@usuario/application/CadastrarUsuario.usecase"
+import { UniversidadeHttpGatewayImpl } from "../../../@universidade/infra/gateways/Universidade.gateway"
+import { ListarUniversidadesQuery } from "../../../@universidade/application/ListarUniversidades.query"
 
-interface Universidade {
-  id: number
+export interface UniversidadeProps {
+  id: string
   nome: string
+  institutos: InstitutoProps[]
+}
+export interface InstitutoProps {
+  id: string
+  nome: string
+  cursos: CursoProps[]
 }
 
-interface Instituto {
-  id: number
+export interface CursoProps {
+  id: string
   nome: string
-}
-
-interface Curso {
-  id: number
-  nome: string
+  codigo: string
 }
 
 enum TIPO_USUARIO {
@@ -41,42 +47,88 @@ export default function CriarUsuario() {
     numero: "",
   })
 
-  const [userTypeSelect, setUserTypeSelect] = useState<number | null>(null)
-  const [universidades, setUniversidades] = useState<Universidade[]>([])
-  const [universidadeSelected, setUniversidadeSelected] = useState<
-    number | null
-  >(null)
-  const [institutos, setInstitutos] = useState<Instituto[]>([])
-  const [institutoSelected, setInstitutoSelected] = useState<number | null>(
-    null,
+  /* HTTP Service */
+  const httpService = new HttpServiceImpl()
+
+  const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
+  const cadastrarUsuarioUsecase = new CadastrarUsuarioUsecase(usuarioGateway)
+
+  const universidadeGateway = new UniversidadeHttpGatewayImpl(httpService)
+  const listarUniversidadesQuery = new ListarUniversidadesQuery(
+    universidadeGateway,
   )
-  const [cursos, setCursos] = useState<Curso[]>([])
-  const [cursoSelected, setCursoSelected] = useState<number | null>(null)
+
+  /* States */
+
+  const [tipoUsuario, setTipoUsuario] = useState<string>("")
+  const [universidades, setUniversidades] = useState<UniversidadeProps[]>([])
+  const [universidadeAtiva, setUniversidadeAtiva] = useState<UniversidadeProps>(
+    {
+      id: "",
+      nome: "",
+      institutos: [],
+    },
+  )
+  const [institutos, setInstitutos] = useState<InstitutoProps[]>([])
+  const [institutoAtivo, setInstitutoAtivo] = useState<InstitutoProps>({
+    id: "",
+    nome: "",
+    cursos: [],
+  })
+  const [cursos, setCursos] = useState<CursoProps[]>([])
+  const [cursoAtivo, setCursoAtivo] = useState<string>("")
   const [status, setStatus] = useState<boolean | string>(true)
   const [exibirInstituto, setExibirInstituto] = useState(false)
   const [exibirCurso, setExibirCurso] = useState(false)
   const navigate = useNavigate()
 
+  /* Functions */
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/universities`, {
-        headers: {
-          Authorization: localStorage.getItem("accesstoken"),
-        },
-      })
-      .then((response) => {
-        const { data } = response
-        if (data.status === 200) {
-          const universidadesData: Universidade[] = data.universidades.map(
-            (universidade: any) => ({
-              id: universidade.id,
-              nome: universidade.nome,
-            }),
-          )
-          setUniversidades(universidadesData)
-        }
-      })
+    async function getUniversidades(): Promise<void> {
+      const universidadesData = await listarUniversidadesQuery.execute()
+      setUniversidades(universidadesData)
+    }
+    getUniversidades()
+    console.log(universidades)
   }, [])
+
+  useEffect(() => {
+    if (universidadeAtiva.id !== "") {
+      setInstitutos(universidadeAtiva.institutos)
+      setExibirInstituto(true)
+    }
+  }, [universidadeAtiva])
+
+  useEffect(() => {
+    if (institutoAtivo.id !== "") {
+      setCursos(institutoAtivo.cursos)
+      setExibirCurso(true)
+    }
+  }, [institutoAtivo])
+
+  useEffect(() => {
+    if (cursoAtivo !== "") {
+      console.log(cursoAtivo)
+    }
+  }, [cursoAtivo])
+
+  async function handleCadastro(): Promise<void> {
+    try {
+      console.log(tipoUsuario, cursoAtivo, inputValues)
+      if (tipoUsuario) {
+        await cadastrarUsuarioUsecase.execute({
+          nome: inputValues.nome,
+          curso: cursoAtivo,
+          email: inputValues.email,
+          senha: inputValues.senha,
+          numero: inputValues.numero,
+          tipo: tipoUsuario,
+        })
+      }
+    } catch (error) {
+      alert(error)
+    }
+  }
 
   const handleOnChange = useCallback((event) => {
     const { name, value } = event.target
@@ -86,109 +138,35 @@ export default function CriarUsuario() {
     }))
   }, [])
 
-  const handleSelectUserType = (event: any) => {
-    switch (event.value) {
-      case 1:
+  const handleSelectUserType = (userType: string) => {
+    switch (userType) {
+      case "ALUNO":
         document.getElementById("aluno_div")!.style.display = ""
         document.getElementById("professor_div")!.style.display = "none"
         break
-      case 2:
+      case "PROFESSOR":
         document.getElementById("professor_div")!.style.display = ""
         document.getElementById("aluno_div")!.style.display = "none"
         break
       default:
         break
     }
-    setUserTypeSelect(event.value)
+    setTipoUsuario(userType)
   }
 
-  const handleSelectUniversity = (event: any) => {
-    setUniversidadeSelected(event.value)
-    setExibirInstituto(false)
+  const handleSelectUniversity = (universidade: UniversidadeProps) => {
+    setUniversidadeAtiva(universidade)
+    setExibirInstituto(true)
     setExibirCurso(false)
-    setInstitutoSelected(null)
-    setCursoSelected(null)
-    axios
-      .get(
-        `${process.env.REACT_APP_API_URL}/universities/${event.value}/institutes`,
-        {
-          headers: {
-            Authorization: localStorage.getItem("accesstoken"),
-          },
-        },
-      )
-      .then((response) => {
-        const { data } = response
-        if (data.status === 200) {
-          const institutosData: Instituto[] = data.institutos.map(
-            (instituto: any) => ({
-              id: instituto.id,
-              nome: instituto.nome,
-            }),
-          )
-          setInstitutos(institutosData)
-          setExibirInstituto(true)
-        }
-      })
   }
 
-  const handleSelectInstitute = (event: any) => {
-    setExibirCurso(false)
-    setCursoSelected(null)
-    setInstitutoSelected(event.value)
-    axios
-      .get(
-        `${process.env.REACT_APP_API_URL}/institute/${event.value}/courses`,
-        {
-          headers: {
-            Authorization: localStorage.getItem("accesstoken"),
-          },
-        },
-      )
-      .then((response) => {
-        const { data } = response
-        if (data.status === 200) {
-          const cursosData: Curso[] = data.cursos.map((curso: any) => ({
-            id: curso.id,
-            nome: curso.nome,
-          }))
-          setCursos(cursosData)
-          setExibirCurso(true)
-        }
-      })
+  const handleSelectInstitute = (instituto: InstitutoProps) => {
+    setInstitutoAtivo(instituto)
+    setExibirCurso(true)
   }
 
-  const handleSelectCurso = (event: any) => {
-    setCursoSelected(event.value)
-  }
-
-  function onSubmit() {
-    if (cursoSelected !== null) {
-      axios
-        .post(`${process.env.REACT_APP_API_URL}/users`, {
-          nome: inputValues.nome,
-          telefone: inputValues.telefone,
-          email: inputValues.email,
-          senha: inputValues.senha,
-          perfil_usuario: userTypeSelect,
-          curso: cursoSelected,
-          numero: inputValues.numero,
-          codigo: inputValues.codigo,
-        })
-        .then((response) => {
-          const { data } = response
-          if (data.status === 200) {
-            localStorage.setItem("userTccStatus", "sem_tcc")
-            localStorage.setItem("accesstoken", data.accesstoken)
-            localStorage.setItem("userId", data.usuario.id)
-            localStorage.setItem("username", data.usuario.nome)
-            localStorage.setItem("usertype", data.usuario.id_perfil_usuario)
-            navigate("/")
-          } else {
-            setStatus(data.error)
-          }
-        })
-    }
+  const handleSelectCurso = (curso: string) => {
+    setCursoAtivo(curso)
   }
 
   return (
@@ -213,15 +191,15 @@ export default function CriarUsuario() {
             >
               Tipo de usuário
             </InputLabel>
-            <Select
-              labelId="label-tipo-usuario"
-              placeholder="Selecione"
-              onChange={handleSelectUserType}
-            >
-              {Object.values(TIPO_USUARIO).map((tipoUsuario) => (
-                <option key={tipoUsuario} value={tipoUsuario}>
+            <Select labelId="label-tipo-usuario" placeholder="Selecione">
+              {Object.values(TIPO_USUARIO).map((tipoUsuario, key) => (
+                <MenuItem
+                  value={tipoUsuario}
+                  key={key}
+                  onClick={() => handleSelectUserType(tipoUsuario)}
+                >
                   {tipoUsuario}
-                </option>
+                </MenuItem>
               ))}
             </Select>
             <TextField
@@ -247,6 +225,40 @@ export default function CriarUsuario() {
               autoComplete="telefone"
               onChange={handleOnChange}
             />
+            <div style={{ display: "none" }} id="professor_div">
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="numeroprofessor"
+                label="Número"
+                name="numero"
+                onChange={handleOnChange}
+              ></TextField>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="codigo"
+                label="Código"
+                name="codigo"
+                onChange={handleOnChange}
+              ></TextField>
+            </div>
+            <div style={{ display: "none" }} id="aluno_div">
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="numeromatricula"
+                label="Número de matrícula"
+                name="numero"
+                onChange={handleOnChange}
+              ></TextField>
+            </div>
             <TextField
               variant="outlined"
               margin="normal"
@@ -277,13 +289,13 @@ export default function CriarUsuario() {
             >
               Universidade
             </InputLabel>
-            <Select
-              labelId="label-universidade"
-              placeholder="Selecione"
-              onChange={handleSelectUniversity}
-            >
-              {universidades.map((universidade) => (
-                <MenuItem key={universidade.id} value={universidade.id}>
+            <Select labelId="label-universidade" placeholder="Selecione">
+              {universidades.map((universidade, key) => (
+                <MenuItem
+                  key={key}
+                  value={universidade.id}
+                  onClick={() => handleSelectUniversity(universidade)}
+                >
                   {universidade.nome}
                 </MenuItem>
               ))}
@@ -297,13 +309,13 @@ export default function CriarUsuario() {
                 >
                   Instituto
                 </InputLabel>
-                <Select
-                  labelId="label-instituto"
-                  placeholder="Selecione"
-                  onChange={handleSelectInstitute}
-                >
-                  {institutos.map((instituto) => (
-                    <MenuItem key={instituto.id} value={instituto.id}>
+                <Select labelId="label-instituto" placeholder="Selecione">
+                  {institutos.map((instituto, key) => (
+                    <MenuItem
+                      key={key}
+                      value={instituto.id}
+                      onClick={() => handleSelectInstitute(instituto)}
+                    >
                       {instituto.nome}
                     </MenuItem>
                   ))}
@@ -319,45 +331,25 @@ export default function CriarUsuario() {
                 >
                   Curso
                 </InputLabel>
-                <Select
-                  labelId="label-curso"
-                  placeholder="Selecione"
-                  onChange={handleSelectCurso}
-                >
+                <Select labelId="label-curso" placeholder="Selecione">
                   {cursos.map((curso) => (
-                    <MenuItem key={curso.id} value={curso.id}>
+                    <MenuItem
+                      key={curso.id}
+                      value={curso.id}
+                      onClick={() => handleSelectCurso(curso.id)}
+                    >
                       {curso.nome}
                     </MenuItem>
                   ))}
                 </Select>
               </>
             )}
-            <TextField
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              id="codigo"
-              label="Código do curso"
-              name="codigo"
-              autoComplete="codigo"
-              onChange={handleOnChange}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              id="numero"
-              label="Número"
-              name="numero"
-              autoComplete="numero"
-              onChange={handleOnChange}
-            />
             <Button
               type="button"
               fullWidth
               variant="contained"
               color="primary"
-              onClick={onSubmit}
+              onClick={handleCadastro}
             >
               Criar usuário
             </Button>
