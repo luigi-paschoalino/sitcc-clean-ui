@@ -6,7 +6,7 @@ export interface CadastrarUsuarioProps {
   curso: string
   email: string
   senha: string
-  tipo: TIPO_USUARIO
+  tipo: string
   numero: string
 }
 

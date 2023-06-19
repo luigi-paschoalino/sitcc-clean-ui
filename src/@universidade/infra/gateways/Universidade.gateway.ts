@@ -29,7 +29,7 @@ export class UniversidadeHttpGatewayImpl implements UniversidadeHttpGateway {
       `http://localhost:3001/universidades`,
     )
     const universidades: Universidade[] = result.data.map((universidade) => {
-      const institutos: Instituto[] = result.data.institutos.map(
+      const institutos: Instituto[] = universidade.institutos.map(
         (instituto) =>
           new Instituto(
             instituto.id,
