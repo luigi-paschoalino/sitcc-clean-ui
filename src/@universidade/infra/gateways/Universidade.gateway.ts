@@ -2,7 +2,10 @@ import { HttpServiceImpl } from "../../../infra/httpService"
 import { Curso } from "../../domain/entities/Curso"
 import { Instituto } from "../../domain/entities/Instituto"
 import { Universidade } from "../../domain/entities/Universidade"
-import { UniversidadeHttpGateway } from "../../domain/gateways/Universidade.gateway"
+import {
+  CadastrarUniversidadeProps,
+  UniversidadeHttpGateway,
+} from "../../domain/gateways/Universidade.gateway"
 
 export class UniversidadeHttpGatewayImpl implements UniversidadeHttpGateway {
   constructor(private readonly httpService: HttpServiceImpl) {}
@@ -43,5 +46,9 @@ export class UniversidadeHttpGatewayImpl implements UniversidadeHttpGateway {
       return u
     })
     return universidades
+  }
+
+  async cadastrar(props: CadastrarUniversidadeProps): Promise<void> {
+    await this.httpService.post("http://localhost:3001/universidades", props)
   }
 }
