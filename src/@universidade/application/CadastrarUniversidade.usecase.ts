@@ -1,14 +1,13 @@
-import { isReturnStatement } from "typescript"
 import { UniversidadeHttpGateway } from "../domain/gateways/Universidade.gateway"
 
-export interface CadastrarUniversidadeProps {
+export interface CadastrarUniversidadeUsecaseProps {
   nome: string
 }
 
-export class CadastrarUniversidade {
+export class CadastrarUniversidadeUsecase {
   constructor(private universidadeGatway: UniversidadeHttpGateway) {}
 
-  async execute(props: CadastrarUniversidadeProps): Promise<void> {
+  async execute(props: CadastrarUniversidadeUsecaseProps): Promise<void> {
     return await this.universidadeGatway.cadastrar(props)
   }
 }

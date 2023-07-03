@@ -9,6 +9,8 @@ import InputLabel from "@mui/material/InputLabel";
 import axios from "axios";
 import { HttpServiceImpl } from "../../../infra/httpService";
 import { UniversidadeHttpGatewayImpl } from "../../../@universidade/infra/gateways/Universidade.gateway";
+import { CadastrarUniversidadeUsecase } from "../../../@universidade/application/CadastrarUniversidade.usecase";
+
 
 interface InputValues {
   nome: string;
@@ -26,7 +28,13 @@ export default function CriarUniversidade() {
   const httpService = new HttpServiceImpl()
 
   const universidadeGateway = new UniversidadeHttpGatewayImpl(httpService)
-  //const cadastrarUniversidadeUsecase =
+  const cadastrarUniversidadeUsecase = new CadastrarUniversidadeUsecase(universidadeGateway)
+
+  /* States */ 
+
+  const [nome, setNome] = useState<string>("")	
+
+  /* Functions */
 
   const handleOnChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -34,6 +42,8 @@ export default function CriarUniversidade() {
   }, [inputValues]);
 
   function onSubmit() {
+   
+   
     
     /*axios
       .post(
