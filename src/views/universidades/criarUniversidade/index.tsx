@@ -7,6 +7,10 @@ import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
 import InputLabel from "@mui/material/InputLabel";
 import axios from "axios";
+import { HttpServiceImpl } from "../../../infra/httpService";
+import { UniversidadeHttpGatewayImpl } from "../../../@universidade/infra/gateways/Universidade.gateway";
+import { CadastrarUniversidadeUsecase } from "../../../@universidade/application/CadastrarUniversidade.usecase";
+
 
 interface InputValues {
   nome: string;
@@ -19,6 +23,18 @@ export default function CriarUniversidade() {
   const [inputValues, setInputValues] = useState<InputValues>({
     nome: ""
   });
+  
+  //HTTP Service
+  const httpService = new HttpServiceImpl()
+
+  const universidadeGateway = new UniversidadeHttpGatewayImpl(httpService)
+  const cadastrarUniversidadeUsecase = new CadastrarUniversidadeUsecase(universidadeGateway)
+
+  /* States */ 
+
+  const [nome, setNome] = useState<string>("")	
+
+  /* Functions */
 
   const handleOnChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -26,25 +42,10 @@ export default function CriarUniversidade() {
   }, [inputValues]);
 
   function onSubmit() {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/university`,
-        {
-          nome: inputValues.nome
-        },
-        {
-          headers: {
-            Authorization: localStorage.getItem("accesstoken"),
-          },
-        }
-      )
-      .then((res) => {
-        if (res.data.status === 200) {
-          return navigate("/universidades");
-        } else {
-          setStatus(res.data.error);
-        }
-      });
+   
+    cadastrarUniversidadeUsecase.execute({
+      nome: inputValues.nome
+    })
   }
 
   return (

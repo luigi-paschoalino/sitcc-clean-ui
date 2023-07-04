@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes, Router } from "react-router-dom"
 import CriarAtividade from "./views/atividades/criarAtividade"
 import CriarUsuario from "./views/usuario/criarUsuario"
 import Inicio from "./views/inicio/inicio"
+import CriarUniversidade from "./views/universidades/criarUniversidade"
 
 const AppRouter: React.FC = () => (
   <BrowserRouter>
@@ -13,6 +14,7 @@ const AppRouter: React.FC = () => (
       <Route path="/" element={<Inicio />} />
       <Route path="/criarAtividade" element={<CriarAtividade />} />
       <Route path="/cadastro" element={<CriarUsuario />} />
+      <Route path='/criarUniversidade' element={<CriarUniversidade/>}/>
     </Routes>
   </BrowserRouter>
 )
