@@ -8,18 +8,24 @@ import Alert from "@mui/material/Alert"
 import { useNavigate } from "react-router-dom"
 import InputLabel from "@mui/material/InputLabel"
 import axios from "axios"
-
-interface Universidade {
-  id: string
-  nome: string
-}
+import { HttpServiceImpl } from "../../../infra/httpService"
+import { UniversidadeHttpGatewayImpl } from "../../../@universidade/infra/gateways/Universidade.gateway"
+import { CadastrarInstitutoUsecase } from "../../../@universidade/application/CadastrarInstituto.usecase"
+import { UniversidadeProps } from "../../usuario/criarUsuario"
 
 interface ValoresInput {
   nome: string
 }
 
+//HTTP Service
+
+const httpService = new HttpServiceImpl()
+
+const universidadeGateway = new UniversidadeHttpGatewayImpl(httpService)
+const cadastrarInstitutoGateway = new CadastrarInstitutoUsecase(universidadeGateway)
+
 export default function CriarInstituto() {
-  const [universidades, setUniversidades] = useState<Universidade[]>([])
+  const [universidades, setUniversidades] = useState<UniversidadeProps[]>([])
   const [requisicao, setRequisicao] = useState(false)
   const navigate = useNavigate()
   const userId = localStorage.getItem("userId")
@@ -32,7 +38,11 @@ export default function CriarInstituto() {
   })
 
   useEffect(() => {
-    axios
+    
+    const uni = await universidadeGateway.listar()//TODO: a interface devolvida pela listagem da universidade está sendo puxada do index do criar usuario
+     
+
+    /*axios
       .get(`${process.env.REACT_APP_API_URL}/universities`, {
         headers: {
           Authorization: localStorage.getItem("accesstoken"),
@@ -49,7 +59,7 @@ export default function CriarInstituto() {
         setUniversidades(arrayUniversidades)
         setRequisicao(true)
         console.log(arrayUniversidades)
-      })
+      })*/
   }, [])
 
   const handleOnChange = useCallback(
@@ -64,8 +74,8 @@ export default function CriarInstituto() {
     setUniversidadeSelecionada(event.value)
   }
 
-  function onSubmit() {
-    axios
+  function onSubmit() {  
+    /*axios
       .post(
         `${process.env.REACT_APP_API_URL}/institute`,
         {
@@ -84,7 +94,7 @@ export default function CriarInstituto() {
         } else {
           setStatus(res.data.error)
         }
-      })
+      })*/
   }
 
   return (

@@ -3,6 +3,7 @@ import { Curso } from "../../domain/entities/Curso"
 import { Instituto } from "../../domain/entities/Instituto"
 import { Universidade } from "../../domain/entities/Universidade"
 import {
+  CadastrarInstitutoProps,
   CadastrarUniversidadeProps,
   UniversidadeHttpGateway,
 } from "../../domain/gateways/Universidade.gateway"
@@ -42,7 +43,6 @@ export class UniversidadeHttpGatewayImpl implements UniversidadeHttpGateway {
       )
 
       const u = new Universidade(universidade.id, universidade.nome, institutos)
-
       return u
     })
     return universidades
@@ -50,5 +50,12 @@ export class UniversidadeHttpGatewayImpl implements UniversidadeHttpGateway {
 
   async cadastrar(props: CadastrarUniversidadeProps): Promise<void> {
     await this.httpService.post("http://localhost:3001/universidades", props)
+  }
+
+  async cadastrarInstituto(props: CadastrarInstitutoProps): Promise<void> {
+    await this.httpService.post(
+      "http://localhost:3001/universidades/institutos",
+      props,
+    )
   }
 }
