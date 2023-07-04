@@ -43,27 +43,9 @@ export default function CriarUniversidade() {
 
   function onSubmit() {
    
-   
-    
-    /*axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/university`,
-        {
-          nome: inputValues.nome
-        },
-        {
-          headers: {
-            Authorization: localStorage.getItem("accesstoken"),
-          },
-        }
-      )
-      .then((res) => {
-        if (res.data.status === 200) {
-          return navigate("/universidades");
-        } else {
-          setStatus(res.data.error);
-        }
-      });*/
+    cadastrarUniversidadeUsecase.execute({
+      nome: inputValues.nome
+    })
   }
 
   return (
