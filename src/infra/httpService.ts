@@ -7,7 +7,11 @@ export class HttpServiceImpl {
     return axios.get(url)
   }
 
-  async post(url: string, body: any): Promise<any> {
-    return axios.post(url, body)
+  async post(url: string, body: any, header?: any): Promise<any> {
+    return axios.post(url, body, {
+      headers: {
+        Authorization: localStorage.getItem("authToken"),
+      },
+    })
   }
 }
