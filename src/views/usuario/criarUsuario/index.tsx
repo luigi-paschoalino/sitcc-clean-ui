@@ -20,6 +20,7 @@ export interface UniversidadeProps {
   nome: string
   institutos: InstitutoProps[]
 }
+
 export interface InstitutoProps {
   id: string
   nome: string
