@@ -7,6 +7,8 @@ import CriarAtividade from "./views/atividades/criarAtividade"
 import CriarUsuario from "./views/usuario/criarUsuario"
 import Inicio from "./views/inicio/inicio"
 import CriarUniversidade from "./views/universidades/criarUniversidade"
+import MatriculaTfg from "./views/tfg/matriculaTfg"
+import CriarBanca from "./views/bancas/criarBancas"
 
 const AppRouter: React.FC = () => (
   <BrowserRouter>
@@ -15,6 +17,8 @@ const AppRouter: React.FC = () => (
       <Route path="/criarAtividade" element={<CriarAtividade />} />
       <Route path="/cadastro" element={<CriarUsuario />} />
       <Route path='/criarUniversidade' element={<CriarUniversidade/>}/>
+      <Route path='/tcc' element={<MatriculaTfg/>}/>
+      <Route path='/banca' element={<CriarBanca/>}/>
     </Routes>
   </BrowserRouter>
 )
