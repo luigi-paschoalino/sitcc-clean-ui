@@ -7,49 +7,49 @@ import Typography from "@mui/material/Typography"
 import Alert from "@mui/material/Alert"
 import { useNavigate } from "react-router-dom"
 import InputLabel from "@mui/material/InputLabel"
-import axios from "axios"
-
-interface Universidade {
-  id: string
-  nome: string
-}
+import { HttpServiceImpl } from "../../../infra/httpService"
+import { UniversidadeHttpGatewayImpl } from "../../../@universidade/infra/gateways/Universidade.gateway"
+import { CadastrarInstitutoUsecase } from "../../../@universidade/application/CadastrarInstituto.usecase"
+import { UniversidadeProps } from "../../usuario/criarUsuario"
+import { ListarUniversidadesQuery } from "../../../@universidade/application/ListarUniversidades.query"
 
 interface ValoresInput {
   nome: string
 }
 
+//HTTP Service
+
+const httpService = new HttpServiceImpl()
+
+const universidadeGateway = new UniversidadeHttpGatewayImpl(httpService)
+const cadastrarInstitutoUsecase = new CadastrarInstitutoUsecase(universidadeGateway)
+
+const listarUniversidadesQuery = new ListarUniversidadesQuery(universidadeGateway)
+
 export default function CriarInstituto() {
-  const [universidades, setUniversidades] = useState<Universidade[]>([])
+  const [universidades, setUniversidades] = useState<UniversidadeProps[]>([])
   const [requisicao, setRequisicao] = useState(false)
   const navigate = useNavigate()
   const userId = localStorage.getItem("userId")
-  const [universidadeSelecionada, setUniversidadeSelecionada] = useState<
-    string | null
-  >(null)
+  const [universidadeSelecionada, setUniversidadeSelecionada] = useState<UniversidadeProps>(
+    {
+      id: "",
+      nome: "",
+      institutos: [],
+    },
+  )
   const [status, setStatus] = useState<boolean>(true)
   const [valoresInput, setValoresInput] = useState<ValoresInput>({
     nome: "",
   })
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/universities`, {
-        headers: {
-          Authorization: localStorage.getItem("accesstoken"),
-        },
-      })
-      .then((unis) => {
-        let arrayUniversidades: Universidade[] = []
-        unis.data.universidades.forEach((uni: any) => {
-          arrayUniversidades.push({
-            id: uni.id,
-            nome: uni.nome,
-          })
-        })
-        setUniversidades(arrayUniversidades)
-        setRequisicao(true)
-        console.log(arrayUniversidades)
-      })
+    async function getUniversidades(): Promise<void> {
+      const universidadesData = await listarUniversidadesQuery.execute()
+      setUniversidades(universidadesData)
+    }
+    getUniversidades()
+    console.log(universidades)
   }, [])
 
   const handleOnChange = useCallback(
@@ -60,31 +60,16 @@ export default function CriarInstituto() {
     [valoresInput],
   )
 
-  const handleChangeUniversidades = (event: any) => {
-    setUniversidadeSelecionada(event.value)
+  const handleChangeUniversidades = (universidade : UniversidadeProps) => {
+    setUniversidadeSelecionada(universidade)
   }
 
-  function onSubmit() {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/institute`,
-        {
-          nome: valoresInput.nome,
-          id_universidade: universidadeSelecionada,
-        },
-        {
-          headers: {
-            Authorization: localStorage.getItem("accesstoken"),
-          },
-        },
-      )
-      .then((res) => {
-        if (res.status === 200) {
-          return navigate("/institutos")
-        } else {
-          setStatus(res.data.error)
-        }
-      })
+  function onSubmit() {  
+    console.log(universidadeSelecionada)
+    cadastrarInstitutoUsecase.execute({
+      nome: valoresInput.nome,
+      universidadeId: universidadeSelecionada.id
+    })
   }
 
   return (
@@ -134,10 +119,9 @@ export default function CriarInstituto() {
               defaultValue=""
               fullWidth
               placeholder="Universidade"
-              onChange={handleChangeUniversidades}
             >
-              {universidades.map((universidade) => (
-                <MenuItem key={universidade.id} value={universidade.id}>
+              {universidades.map((universidade,key) => (
+                <MenuItem key={key} value={universidade.id} onClick={() => handleChangeUniversidades(universidade)}>
                   {universidade.nome}
                 </MenuItem>
               ))}
