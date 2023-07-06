@@ -11,6 +11,7 @@ import MatriculaTfg from "./views/tfg/matriculaTfg"
 import CriarBanca from "./views/bancas/criarBancas"
 import CriarInstituto from "./views/institutos/criarInstituto"
 import Login from "./views/login/login"
+import CriarCurso from "./views/cursos/criarCurso"
 
 const AppRouter: React.FC = () => (
   <BrowserRouter>
@@ -23,6 +24,8 @@ const AppRouter: React.FC = () => (
       <Route path="/tcc" element={<MatriculaTfg />} />
       <Route path="/banca" element={<CriarBanca />} />
       <Route path="/criarInstituto" element={<CriarInstituto />} />
+      <Route path="/criarUniversidade" element={<CriarUniversidade />} />
+      <Route path="/criarCurso" element={<CriarCurso />} />
     </Routes>
   </BrowserRouter>
 )

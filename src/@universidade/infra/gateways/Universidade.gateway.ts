@@ -3,6 +3,7 @@ import { Curso } from "../../domain/entities/Curso"
 import { Instituto } from "../../domain/entities/Instituto"
 import { Universidade } from "../../domain/entities/Universidade"
 import {
+  CadastrarCursoProps,
   CadastrarInstitutoProps,
   CadastrarUniversidadeProps,
   UniversidadeHttpGateway,
@@ -55,6 +56,13 @@ export class UniversidadeHttpGatewayImpl implements UniversidadeHttpGateway {
   async cadastrarInstituto(props: CadastrarInstitutoProps): Promise<void> {
     await this.httpService.post(
       "http://localhost:3001/universidades/institutos",
+      props,
+    )
+  }
+
+  async cadastrarCurso(props: CadastrarCursoProps): Promise<void> {
+    await this.httpService.post(
+      "http://localhost:3001/universidades/cursos",
       props,
     )
   }
