@@ -355,7 +355,6 @@ export default function CriarUsuario() {
             >
               Criar usuário
             </Button>
-            <Link href="/login">
               <Button
                 type="button"
                 variant="contained"
@@ -366,12 +365,6 @@ export default function CriarUsuario() {
               >
                 Voltar
               </Button>
-            </Link>
-            <div className="d-flex justify-content-between mt-2">
-              <Link href="/login" variant="body2">
-                Já tem uma conta? Faça login
-              </Link>
-            </div>
           </div>
         </div>
       </Container>
