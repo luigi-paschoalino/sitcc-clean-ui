@@ -36,3 +36,19 @@
     transform: rotate(360deg);
   }
 }
+
+.MuiSelect-select{
+  transform: none !important;
+  width: 10.5cm !important;
+  background-color: hsl(0, 0%, 100%) !important;
+  border-color: hsl(0, 0%, 80%) !important;
+  border-radius: 4px !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  transition: all 100ms;
+  box-sizing: border-box !important;
+  justify-content: space-between !important;
+  outline: 0 !important;
+  position: relative !important;
+  height: 41px !important;  
+}
