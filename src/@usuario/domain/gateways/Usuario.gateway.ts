@@ -9,7 +9,13 @@ export interface CadastrarUsuarioProps {
   numero: string
 }
 
+export interface AutenticarProps {
+  email: string
+  senha: string
+}
+
 export interface UsuarioHttpGateway {
   cadastrar(props: CadastrarUsuarioProps): Promise<void>
   buscar(id: string): Promise<Usuario>
+  logar(props: AutenticarProps): Promise<void>
 }

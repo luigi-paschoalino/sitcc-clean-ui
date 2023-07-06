@@ -8,91 +8,87 @@ import Typography from "@mui/material/Typography"
 import { useNavigate } from "react-router-dom"
 import InputLabel from "@mui/material/InputLabel"
 import axios from "axios"
+import { HttpServiceImpl } from "../../../infra/httpService"
+import { UniversidadeHttpGatewayImpl } from "../../../@universidade/infra/gateways/Universidade.gateway"
+import { CadastrarCursoUsecase } from "../../../@universidade/application/CadastrarCurso.usecase"
+import { ListarUniversidadesQuery } from "../../../@universidade/application/ListarUniversidades.query"
 
-interface Universidade {
+interface UniversidadeProps {
+  id: string
+  nome: string
+  institutos: InstitutoProps[]
+}
+
+interface InstitutoProps {
   id: string
   nome: string
 }
 
-interface Instituto {
-  id: string
+export interface CursoProps {
   nome: string
+  codigo: string
 }
+
 
 export default function CriarCurso() {
-  const [universidades, setUniversidades] = useState<Universidade[]>([])
-  const [institutos, setInstitutos] = useState<Instituto[]>([])
-  const navigate = useNavigate()
-  const [status, setStatus] = useState<boolean>(true)
-  const [requisition, setRequisition] = useState<boolean | null>(null)
-  const [institutoSelected, setInstitutoSelected] = useState<number[]>([])
   const [inputValues, setInputValues] = useState({
     nome: "",
-    codigo: "",
+    codigo:"",
   })
+//HTTP Service
 
+const httpService = new HttpServiceImpl()
+
+const universidadeGateway = new UniversidadeHttpGatewayImpl(httpService)
+const cadastrarCursoUsecase = new CadastrarCursoUsecase(universidadeGateway)
+
+const listarUniversidadesQuery = new ListarUniversidadesQuery(universidadeGateway)
+
+//States
+const [universidades, setUniversidades] = useState<UniversidadeProps[]>([])
+const [universidadeAtiva, setUniversidadeAtiva] = useState<UniversidadeProps>(
+  {
+    id: "",
+    nome: "",
+    institutos: [],
+  },
+)
+const [institutos, setInstitutos] = useState<InstitutoProps[]>([])
+const [institutoAtivo, setInstitutoAtivo] = useState<InstitutoProps>({
+  id: "",
+  nome: "",
+})
+const [status, setStatus] = useState<boolean | string>(true)
+const [exibirInstituto, setExibirInstituto] = useState(false)
+const navigate = useNavigate()
+
+
+//Funcions
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/universities`, {
-        headers: {
-          Authorization: localStorage.getItem("accesstoken"),
-        },
-      })
-      .then((unis) => {
-        let arrayUniversidades: Universidade[] = []
-        unis.data.universidades.forEach((uni: Universidade) => {
-          arrayUniversidades.push({
-            id: uni.id,
-            nome: uni.nome,
-          })
-        })
-        setUniversidades(arrayUniversidades)
-      })
+    async function getUniversidades(): Promise<void> {
+      const universidadesData = await listarUniversidadesQuery.execute()
+      setUniversidades(universidadesData)
+    }
+    getUniversidades()
+    console.log(universidades)
   }, [])
 
-  const handleOnChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = event.target
-      setInputValues({ ...inputValues, [name]: value })
-    },
-    [inputValues],
-  )
+  useEffect(() => {
+    if (universidadeAtiva.id !== "") {
+      setInstitutos(universidadeAtiva.institutos)
+      setExibirInstituto(true)
+    }
+  }, [universidadeAtiva])
 
-  const handleChangeUniversidade = (event: any) => {
-    searchInstitutes(event.value)
-  }
-
-  const handleChangeInstituto = (event: any) => {
-    setInstitutoSelected(event.value)
-  }
-
-  function searchInstitutes(valueUniversidade: number) {
-    setRequisition(false)
-    const arrayInstitutos: Instituto[] = []
-    setInstitutos(arrayInstitutos)
-    axios
-      .get(
-        `${process.env.REACT_APP_API_URL}/universities/${valueUniversidade}/institutes`,
-        {
-          headers: {
-            Authorization: localStorage.getItem("accesstoken"),
-          },
-        },
-      )
-      .then((res) => {
-        res.data.institutos.forEach((data: Instituto) => {
-          arrayInstitutos.push({
-            id: data.id,
-            nome: data.nome,
-          })
-        })
-        setInstitutos(arrayInstitutos)
-        setRequisition(true)
-      })
-  }
 
   function onSubmit() {
-    axios
+    cadastrarCursoUsecase.execute({
+      nome: inputValues.nome,
+      codigo: inputValues.codigo,
+      institutoId: institutoAtivo.id,
+    })
+
+    /*axios
       .post(
         `${process.env.REACT_APP_API_URL}/course`,
         {
@@ -112,7 +108,24 @@ export default function CriarCurso() {
         } else {
           setStatus(res.data.error)
         }
-      })
+      })*/
+  }
+
+  const handleOnChange = useCallback((event) => {
+    const { name, value } = event.target
+    setInputValues((prevInputValues) => ({
+      ...prevInputValues,
+      [name]: value,
+    }))
+  }, [])
+
+  const handleSelectUniversity = (universidade: UniversidadeProps) => {
+    setUniversidadeAtiva(universidade)
+    setExibirInstituto(true)
+  }  
+
+  const handleSelectInstitute = (instituto: InstitutoProps) => {
+    setInstitutoAtivo(instituto)
   }
 
   return (
@@ -135,52 +148,43 @@ export default function CriarCurso() {
           )}
           <InputLabel
             style={{ textAlign: "center" }}
-            className={"mt-2"}
+            className={"mt-3"}
             id="label-universidade"
           >
             Selecione a universidade
           </InputLabel>
-          <Select
-            className={"mt-3"}
-            labelId="label-universidade"
-            variant="outlined"
-            defaultValue=""
-            fullWidth
-            placeholder="Universidade"
-            onChange={handleChangeUniversidade}
-          >
-            {universidades.map((universidade) => (
-              <MenuItem key={universidade.id} value={universidade.id}>
-                {universidade.nome}
-              </MenuItem>
-            ))}
+          <Select labelId="label-universiade" placeholder="Selecione">
+            {universidades.map((universidade, key) => (
+                <MenuItem
+                  key={key}
+                  value={universidade.id}
+                  onClick={() => handleSelectUniversity(universidade)}
+                >
+                  {universidade.nome}
+                </MenuItem>
+              ))}
           </Select>
-          {requisition ? (
-            <>
-              <div>
+          {exibirInstituto && (
+              <>
                 <InputLabel
                   style={{ textAlign: "center" }}
-                  className={"mt-2"}
+                  className={"mt-3"}
                   id="label-instituto"
                 >
-                  Selecione o instituto
+                  Instituto
                 </InputLabel>
-                <Select
-                  className={"mt-3"}
-                  labelId="label-instituto"
-                  variant="outlined"
-                  defaultValue=""
-                  fullWidth
-                  placeholder="Instituto"
-                  onChange={handleChangeInstituto}
-                >
-                  {institutos.map((instituto) => (
-                    <MenuItem key={instituto.id} value={instituto.id}>
+                <Select labelId="label-instituto" placeholder="Selecione">
+                  {institutos.map((instituto, key) => (
+                    <MenuItem
+                      key={key}
+                      value={instituto.id}
+                      onClick={() => handleSelectInstitute(instituto)}
+                    >
                       {instituto.nome}
                     </MenuItem>
                   ))}
                 </Select>
-              </div>
+            
               <div className="text-center mt-5">
                 <TextField
                   variant="outlined"
@@ -223,8 +227,6 @@ export default function CriarCurso() {
                 </Button>
               </div>
             </>
-          ) : (
-            ""
           )}
         </div>
       </Container>
