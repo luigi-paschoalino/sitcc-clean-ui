@@ -8,11 +8,19 @@ import Button from "@mui/material/Button"
 import InputLabel from "@mui/material/InputLabel"
 import { Select, MenuItem } from "@mui/material"
 import axios from "axios"
+import { HttpServiceImpl } from "../../../infra/httpService"
+import { TccHttpGatewayImpl } from "../../../@tfg/infra/Tcc.gateway"
+import { CadastrarTccUsecase } from "../../../@tfg/application/CadastrarTcc.usecase"
 
 interface Professor {
   value: string
   label: string
 }
+
+//HTTP Service
+const httpService = new HttpServiceImpl()
+const tccGateway = new TccHttpGatewayImpl(httpService)
+const cadastrarTccUsecase = new CadastrarTccUsecase(tccGateway)
 
 export default function MatriculaTfg() {
   const [professores, setProfessores] = useState<Professor[]>([])
@@ -29,6 +37,7 @@ export default function MatriculaTfg() {
   const [status, setStatus] = useState<string | boolean>(true)
   const navigate = useNavigate()
 
+  // TODO: rota back-end listar professor e editar TCC para 2 orientadores
   useEffect(() => {
     axios
       .post(
@@ -79,29 +88,36 @@ export default function MatriculaTfg() {
     setCoorientadorSelected(event.value)
   }
 
+  // TODO: editar rota back-end para receber a header Authorization e pegar os dados do usuário
   function onSubmit() {
+    // try {
     if (orientadorSelected !== null) {
       if (coorientadorSelected === null && checked) {
         setStatus("Coorientador está marcado e precisa ser selecionado")
         return
       }
 
+      //   await cadastrarTccUsecase.execute({
+      //     titulo:
+      //   })
+      // }
+
       axios
         .post(
           `${process.env.REACT_APP_API_URL}/tfg`,
           {
-            titulo: " ",
-            palavras_chave: " ",
-            introducao: " ",
-            objetivos: " ",
-            bibliografia: " ",
-            metodologia: " ",
-            resultados: " ",
-            status: "matricula_realizada",
+            titulo: "",
+            palavras_chave: "",
+            introducao: "",
+            objetivos: "",
+            bibliografia: "",
+            metodologia: "",
+            resultados: "",
+            status: "MATRICULA_REALIZADA",
           },
           {
             headers: {
-              Authorization: localStorage.getItem("accesstoken"),
+              Authorization: localStorage.getItem("authToken"),
             },
           },
         )
