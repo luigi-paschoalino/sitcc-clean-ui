@@ -1,7 +1,6 @@
 import { Tcc } from "../entities/Tcc"
 
 export interface CadastrarTccProps {
-  id: string
   aluno: string
   orientador: string
   titulo: string

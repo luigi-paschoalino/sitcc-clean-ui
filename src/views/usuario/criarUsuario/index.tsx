@@ -20,6 +20,7 @@ export interface UniversidadeProps {
   nome: string
   institutos: InstitutoProps[]
 }
+
 export interface InstitutoProps {
   id: string
   nome: string
@@ -349,10 +350,23 @@ export default function CriarUsuario() {
               fullWidth
               variant="contained"
               color="primary"
+              className="mb-3 mb-md-4 mt-4 backgroundcolor2"
               onClick={handleCadastro}
             >
               Criar usuário
             </Button>
+            <Link href="/login">
+              <Button
+                type="button"
+                variant="contained"
+                fullWidth
+                color="secondary"
+                size="large"
+                className="mb-3 mb-md-4 mt-2 backgroundcolor4"
+              >
+                Voltar
+              </Button>
+            </Link>
             <div className="d-flex justify-content-between mt-2">
               <Link href="/login" variant="body2">
                 Já tem uma conta? Faça login

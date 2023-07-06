@@ -37,6 +37,7 @@ export default function MatriculaTfg() {
   const [status, setStatus] = useState<string | boolean>(true)
   const navigate = useNavigate()
 
+  // TODO: rota back-end listar professor e editar TCC para 2 orientadores
   useEffect(() => {
     axios
       .post(
@@ -66,7 +67,6 @@ export default function MatriculaTfg() {
         setProfessores2(arrayProfessores2)
       })
   }, [])
-  
 
   const switchHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked)
@@ -88,94 +88,101 @@ export default function MatriculaTfg() {
     setCoorientadorSelected(event.value)
   }
 
-  // function onSubmit() {
-  //   if (orientadorSelected !== null) {
-  //     if (coorientadorSelected === null && checked) {
-  //       setStatus("Coorientador está marcado e precisa ser selecionado")
-  //       return
-  //     }
-  
-  //     axios
-  //       .post(
-  //         `${process.env.REACT_APP_API_URL}/tfg`,
-  //         {
-  //           titulo: " ",
-  //           palavras_chave: " ",
-  //           introducao: " ",
-  //           objetivos: " ",
-  //           bibliografia: " ",
-  //           metodologia: " ",
-  //           resultados: " ",
-  //           status: "matricula_realizada",
-  //         },
-  //         {
-  //           headers: {
-  //             Authorization: localStorage.getItem("accesstoken"),
-  //           },
-  //         },
-  //       )
-  //       .then((response) => {
-  //         if (response.data.status === 200) {
-  //           let idTfg = response.data.tfg.id
-  //           let idOrientador = orientadorSelected
-  //           let idCoorientador = coorientadorSelected
-  //           axios
-  //             .post(
-  //               `${process.env.REACT_APP_API_URL}/user_tfg`,
-  //               {
-  //                 id_usuario: idUsuario,
-  //                 id_tfg: idTfg,
-  //                 id_funcao: 1,
-  //               },
-  //               {
-  //                 headers: {
-  //                   Authorization: localStorage.getItem("accesstoken"),
-  //                 },
-  //               },
-  //             )
-  //             .then((response) => {})
-  //           axios
-  //             .post(
-  //               `${process.env.REACT_APP_API_URL}/user_tfg`,
-  //               {
-  //                 id_usuario: idOrientador,
-  //                 id_tfg: idTfg,
-  //                 id_funcao: 2,
-  //               },
-  //               {
-  //                 headers: {
-  //                   Authorization: localStorage.getItem("accesstoken"),
-  //                 },
-  //               },
-  //             )
-  //             .then((response) => {})
-  //           if (checked) {
-  //             axios
-  //               .post(
-  //                 `${process.env.REACT_APP_API_URL}/user_tfg`,
-  //                 {
-  //                   id_usuario: idCoorientador,
-  //                   id_tfg: idTfg,
-  //                   id_funcao: 3,
-  //                 },
-  //                 {
-  //                   headers: {
-  //                     Authorization: localStorage.getItem("accesstoken"),
-  //                   },
-  //                 },
-  //               )
-  //               .then((response) => {})
-  //           }
-  //           localStorage.setItem("userTccStatus", "matricula_realizada")
-  //           return navigate("/")
-  //         } else {
-  //           setStatus(response.data.error)
-  //         }
-  //       })
-  //   } else {
-  //     setStatus("Orientador precisa ser selecionado")
-  //   }
-  // }
+  // TODO: editar rota back-end para receber a header Authorization e pegar os dados do usuário
+  function onSubmit() {
+    // try {
+    if (orientadorSelected !== null) {
+      if (coorientadorSelected === null && checked) {
+        setStatus("Coorientador está marcado e precisa ser selecionado")
+        return
+      }
+
+      //   await cadastrarTccUsecase.execute({
+      //     titulo:
+      //   })
+      // }
+
+      axios
+        .post(
+          `${process.env.REACT_APP_API_URL}/tfg`,
+          {
+            titulo: "",
+            palavras_chave: "",
+            introducao: "",
+            objetivos: "",
+            bibliografia: "",
+            metodologia: "",
+            resultados: "",
+            status: "MATRICULA_REALIZADA",
+          },
+          {
+            headers: {
+              Authorization: localStorage.getItem("authToken"),
+            },
+          },
+        )
+        .then((response) => {
+          if (response.data.status === 200) {
+            let idTfg = response.data.tfg.id
+            let idOrientador = orientadorSelected
+            let idCoorientador = coorientadorSelected
+            axios
+              .post(
+                `${process.env.REACT_APP_API_URL}/user_tfg`,
+                {
+                  id_usuario: idUsuario,
+                  id_tfg: idTfg,
+                  id_funcao: 1,
+                },
+                {
+                  headers: {
+                    Authorization: localStorage.getItem("accesstoken"),
+                  },
+                },
+              )
+              .then((response) => {})
+            axios
+              .post(
+                `${process.env.REACT_APP_API_URL}/user_tfg`,
+                {
+                  id_usuario: idOrientador,
+                  id_tfg: idTfg,
+                  id_funcao: 2,
+                },
+                {
+                  headers: {
+                    Authorization: localStorage.getItem("accesstoken"),
+                  },
+                },
+              )
+              .then((response) => {})
+            if (checked) {
+              axios
+                .post(
+                  `${process.env.REACT_APP_API_URL}/user_tfg`,
+                  {
+                    id_usuario: idCoorientador,
+                    id_tfg: idTfg,
+                    id_funcao: 3,
+                  },
+                  {
+                    headers: {
+                      Authorization: localStorage.getItem("accesstoken"),
+                    },
+                  },
+                )
+                .then((response) => {})
+            }
+            localStorage.setItem("userTccStatus", "matricula_realizada")
+            return navigate("/")
+          } else {
+            setStatus(response.data.error)
+          }
+        })
+    } else {
+      setStatus("Orientador precisa ser selecionado")
+    }
+  }
 
   return (
     <Container component="main" maxWidth="xs">

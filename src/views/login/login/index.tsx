@@ -1,69 +1,56 @@
-import React, { useState, useCallback, ChangeEvent, KeyboardEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Alert from "@mui/material/Alert";
-import Link from "@mui/material/Link";
-import axios from "axios";
+import React, { useState, useCallback, ChangeEvent, KeyboardEvent } from "react"
+import { useNavigate } from "react-router-dom"
+import Container from "@mui/material/Container"
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
+import Alert from "@mui/material/Alert"
+import Link from "@mui/material/Link"
+import axios from "axios"
+import { HttpServiceImpl } from "../../../infra/httpService"
+import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
+import { AutenticarUsecase } from "../../../@usuario/application/Autenticar.usecase"
 
 interface InputValues {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 function Login() {
-  const [authStatus, setAuthStatus] = useState<boolean | null>(null);
+  const httpService = new HttpServiceImpl()
+  const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
+  const autenticarUsecase = new AutenticarUsecase(usuarioGateway)
+
+  const [authStatus, setAuthStatus] = useState<boolean | null>(null)
   const [inputValues, setInputValues] = useState<InputValues>({
     email: "",
     password: "",
-  });
-  const navigate = useNavigate();
+  })
+  const navigate = useNavigate()
 
-  const handleOnChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = event.target;
-      setInputValues((prevInputValues) => ({
-        ...prevInputValues,
-        [name]: value,
-      }));
-    },
-    []
-  );
+  const handleOnChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target
+    setInputValues((prevInputValues) => ({
+      ...prevInputValues,
+      [name]: value,
+    }))
+  }, [])
 
   function onSubmit() {
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/login`, {
-        email: inputValues.email,
-        senha: inputValues.password,
-      })
-      .then((res) => {
-        if (res.data.accesstoken) {
-          const accessToken = res.data.accesstoken;
-          localStorage.setItem("accesstoken", res.data.accesstoken);
-          localStorage.setItem("userId", res.data.usuario.id);
-          localStorage.setItem("username", res.data.usuario.nome);
-          localStorage.setItem(
-            "usertype",
-            res.data.usuario.id_perfil_usuario
-          );
-          setAuthStatus(true);
-          return navigate("/");
-        } else {
-          setAuthStatus(false);
-        }
-      });
+    autenticarUsecase.execute({
+      email: inputValues.email,
+      senha: inputValues.password,
+    })
   }
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
       if (event.key === "Enter") {
-        onSubmit();
+        onSubmit()
       }
     },
-    []
-  );
+    [],
+  )
 
   return (
     <div>
@@ -75,15 +62,11 @@ function Login() {
           <img
             className="mb-5 pt-5"
             style={{ width: "100%" }}
-            src={require("../../images/logovertical.png")}
+            src={require("../../../images/logovertical.png")}
             alt="logo"
           />
         </div>
-        <Container
-          className="content-login"
-          component="main"
-          maxWidth="xs"
-        >
+        <Container className="content-login" component="main" maxWidth="xs">
           <div className="mt-3 mt-md-5">
             <div className="text-center">
               {authStatus === false ? (
@@ -136,7 +119,7 @@ function Login() {
               >
                 Entrar
               </Button>
-              <Link href="/criar-usuario">
+              <Link href="/cadastro">
                 <Button
                   style={{ backgroundColor: "#FFC701" }}
                   type="button"
@@ -167,7 +150,7 @@ function Login() {
         </Container>
       </div>
     </div>
-  );
+  )
 }
 
-export default Login;
+export default Login

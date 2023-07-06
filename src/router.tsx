@@ -9,16 +9,20 @@ import Inicio from "./views/inicio/inicio"
 import CriarUniversidade from "./views/universidades/criarUniversidade"
 import MatriculaTfg from "./views/tfg/matriculaTfg"
 import CriarBanca from "./views/bancas/criarBancas"
+import CriarInstituto from "./views/institutos/criarInstituto"
+import Login from "./views/login/login"
 
 const AppRouter: React.FC = () => (
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Inicio />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/criarAtividade" element={<CriarAtividade />} />
       <Route path="/cadastro" element={<CriarUsuario />} />
-      <Route path='/criarUniversidade' element={<CriarUniversidade/>}/>
-      <Route path='/tcc' element={<MatriculaTfg/>}/>
-      <Route path='/banca' element={<CriarBanca/>}/>
+      <Route path="/criarUniversidade" element={<CriarUniversidade />} />
+      <Route path="/tcc" element={<MatriculaTfg />} />
+      <Route path="/banca" element={<CriarBanca />} />
+      <Route path="/criarInstituto" element={<CriarInstituto />} />
     </Routes>
   </BrowserRouter>
 )
