@@ -14,20 +14,18 @@ import Login from "./views/login/login"
 import CriarCurso from "./views/cursos/criarCurso"
 
 const AppRouter: React.FC = () => (
-    <BrowserRouter>
-        <Routes>
-            <Route path="/" element={<Inicio />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/criarAtividade" element={<CriarAtividade />} />
-            <Route path="/cadastro" element={<CriarUsuario />} />
-            <Route path="/criarUniversidade" element={<CriarUniversidade />} />
-            <Route path="/tcc" element={<MatriculaTfg />} />
-            <Route path="/banca" element={<CriarBanca />} />
-            <Route path="/criarInstituto" element={<CriarInstituto />} />
-            <Route path="/criarUniversidade" element={<CriarUniversidade />} />
-            <Route path="/criarCurso" element={<CriarCurso />} />
-        </Routes>
-    </BrowserRouter>
+    <Routes>
+        <Route path="/" element={<Inicio />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/criarAtividade" element={<CriarAtividade />} />
+        <Route path="/cadastro" element={<CriarUsuario />} />
+        <Route path="/criarUniversidade" element={<CriarUniversidade />} />
+        <Route path="/tcc" element={<MatriculaTfg />} />
+        <Route path="/banca" element={<CriarBanca />} />
+        <Route path="/criarInstituto" element={<CriarInstituto />} />
+        <Route path="/criarUniversidade" element={<CriarUniversidade />} />
+        <Route path="/criarCurso" element={<CriarCurso />} />
+    </Routes>
 )
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

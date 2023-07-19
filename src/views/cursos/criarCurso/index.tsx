@@ -5,13 +5,13 @@ import TextField from "@mui/material/TextField"
 import { Select, MenuItem } from "@mui/material"
 import Alert from "@mui/material/Alert"
 import Typography from "@mui/material/Typography"
-import { useNavigate } from "react-router-dom"
 import InputLabel from "@mui/material/InputLabel"
 import axios from "axios"
 import { HttpServiceImpl } from "../../../infra/httpService"
 import { UniversidadeHttpGatewayImpl } from "../../../@universidade/infra/gateways/Universidade.gateway"
 import { CadastrarCursoUsecase } from "../../../@universidade/application/CadastrarCurso.usecase"
 import { ListarUniversidadesQuery } from "../../../@universidade/application/ListarUniversidades.query"
+import { useNavigate } from "react-router-dom"
 
 interface UniversidadeProps {
     id: string

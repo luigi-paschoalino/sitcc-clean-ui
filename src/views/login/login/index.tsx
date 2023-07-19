@@ -46,10 +46,13 @@ function Login() {
                 senha: inputValues.password,
             })
 
-            console.log(result)
+            if (!result.data.token) throw new Error()
 
             localStorage.setItem("authToken", result.data.token)
+
             setAuthStatus(true)
+
+            window.location.href = "/home"
         } catch (err) {
             setAuthStatus(false)
         }
