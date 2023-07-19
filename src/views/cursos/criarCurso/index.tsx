@@ -5,7 +5,6 @@ import TextField from "@mui/material/TextField"
 import { Select, MenuItem } from "@mui/material"
 import Alert from "@mui/material/Alert"
 import Typography from "@mui/material/Typography"
-import { useNavigate } from "react-router-dom"
 import InputLabel from "@mui/material/InputLabel"
 import axios from "axios"
 import { HttpServiceImpl } from "../../../infra/httpService"
@@ -60,7 +59,6 @@ const [institutoAtivo, setInstitutoAtivo] = useState<InstitutoProps>({
 })
 const [status, setStatus] = useState<boolean | string>(true)
 const [exibirInstituto, setExibirInstituto] = useState(false)
-const navigate = useNavigate()
 
 
 //Funcions
