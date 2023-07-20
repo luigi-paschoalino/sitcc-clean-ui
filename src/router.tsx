@@ -16,6 +16,7 @@ import { AuthHttpGatewayImpl } from "./@auth/infra/Auth.gateway"
 import { AuthRotaUsecase } from "./@auth/application/AuthRota.usecase"
 import { HttpServiceImpl } from "./infra/httpService"
 import { useNavigate } from 'react-router-dom';
+import Logout from "./views/login/logout"
 
 const httpService = new HttpServiceImpl()
 const authGateway = new AuthHttpGatewayImpl(httpService)
@@ -27,17 +28,18 @@ const isAuthenticated = async (): Promise<boolean> => {
     
     if(!token)
       throw false
-
     const auth = await authRotaUsecase.execute(token);
-    if(!auth.auth)
-    throw false
+    if(!auth.data.auth) throw false
+    
 
-    localStorage.setItem('nome', auth.nome)
+    localStorage.setItem('nome', auth.data.nome)
+    localStorage.setItem('tipo', auth.data.tipo)
     return true
   }
   catch(error){
     localStorage.removeItem('authToken');
     localStorage.removeItem('nome');
+    localStorage.removeItem('tipo');
     window.location.href = '/login'
     return false
   }
@@ -72,6 +74,7 @@ const AppRouter: React.FC = () => (
   <Routes>
     <Route path="/" element={<Inicio />} />
     <Route path="/login" element={<Login />} />
+    <Route path="/logout" element={<Logout />} />
     <Route path="/criarAtividade" element={<PrivateRoute><CriarAtividade /></PrivateRoute>} />
     <Route path="/cadastro" element={<PrivateRoute><CriarUsuario /></PrivateRoute>} />
     <Route path="/criarUniversidade" element={<PrivateRoute><CriarUniversidade /></PrivateRoute>} />
