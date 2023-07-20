@@ -21,7 +21,7 @@ enum UserTccStatus {
 
 export default function Navbar() {
     const [auth, setAuth] = useState<boolean>(false)
-    const userType = localStorage.getItem("usertype")
+    const userType = localStorage.getItem("tipo")
     const idUsuario = localStorage.getItem("userId")
     const [userTccStatus, setUserTccStatus] = useState<UserTccStatus | null>(
         null,
@@ -31,7 +31,7 @@ export default function Navbar() {
         const token = localStorage.getItem("authToken")
         setAuth(token ? true : false)
 
-        if (userType === "1") {
+        /*if (userType === "1") {
             axios
                 .get(
                     `${process.env.REACT_APP_API_URL}/users/check/${idUsuario}`,
@@ -52,7 +52,7 @@ export default function Navbar() {
                         )
                     }
                 })
-        }
+        }*/
     }, [userType, idUsuario])
 
     return (
@@ -68,7 +68,7 @@ export default function Navbar() {
                 <Bars />
                 {auth === true ? (
                     <NavMenu>
-                        {userType === "1" && userTccStatus !== null ? (
+                        {userType === "ALUNO" /*&& userTccStatus !== null*/ ? (
                             <>
                                 <NavDropdown title="Meu TFG">
                                     {(() => {
@@ -116,7 +116,7 @@ export default function Navbar() {
                         ) : (
                             ""
                         )}
-                        {userType !== "1" ? (
+                        {userType !== "ALUNO" ? (
                             <NavDropdown
                                 title="Gerenciar TCCs"
                                 className="dropdownNav"
@@ -145,12 +145,12 @@ export default function Navbar() {
                         )}
                         <NavDropdown title="Projetos" className="dropdownNav">
                             <>
-                                {userType !== "1" ? (
+                                {userType !== "ALUNO" ? (
                                     <>
                                         <NavDropdown.Item href="/meu-perfil-professor">
                                             Perfil professor
                                         </NavDropdown.Item>
-                                        <NavDropdown.Item href="/criar-projeto">
+                                        <NavDropdown.Item href="/tcc">
                                             Criar Projeto
                                         </NavDropdown.Item>
                                     </>
@@ -243,7 +243,7 @@ export default function Navbar() {
                                 style={{ color: "white", borderColor: "white" }}
                                 id="dropdown-basic"
                             >
-                                Olá, {localStorage.getItem("username")}
+                                Bem Vindo, {localStorage.getItem("nome")}
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>

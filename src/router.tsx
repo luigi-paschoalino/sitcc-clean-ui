@@ -2,7 +2,7 @@ import React from "react"
 import "./index.css"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
-import { BrowserRouter, Route, Routes, Router } from "react-router-dom"
+import { BrowserRouter, Route, Routes, Router, Navigate } from "react-router-dom"
 import CriarAtividade from "./views/atividades/criarAtividade"
 import CriarUsuario from "./views/usuario/criarUsuario"
 import Inicio from "./views/inicio/inicio"
@@ -12,24 +12,77 @@ import CriarBanca from "./views/bancas/criarBancas"
 import CriarInstituto from "./views/institutos/criarInstituto"
 import Login from "./views/login/login"
 import CriarCurso from "./views/cursos/criarCurso"
+import { AuthHttpGatewayImpl } from "./@auth/infra/Auth.gateway"
+import { AuthRotaUsecase } from "./@auth/application/AuthRota.usecase"
+import { HttpServiceImpl } from "./infra/httpService"
+import { useNavigate } from 'react-router-dom';
+import Logout from "./views/login/logout"
+
+const httpService = new HttpServiceImpl()
+const authGateway = new AuthHttpGatewayImpl(httpService)
+const authRotaUsecase = new AuthRotaUsecase(authGateway)
+
+const isAuthenticated = async (): Promise<boolean> => {
+  try{
+    const token = localStorage.getItem('authToken');
+    
+    if(!token)
+      throw false
+    const auth = await authRotaUsecase.execute(token);
+    if(!auth.data.auth) throw false
+    
+
+    localStorage.setItem('nome', auth.data.nome)
+    localStorage.setItem('tipo', auth.data.tipo)
+    return true
+  }
+  catch(error){
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('nome');
+    localStorage.removeItem('tipo');
+    window.location.href = '/login'
+    return false
+  }
+};
+
+
+const PrivateRoute: React.FC<any> = ({ children }) => {
+  const [loading, setLoading] = React.useState(true);
+  const [authenticated, setAuthenticated] = React.useState(false);
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    (async () => {
+      const auth = await isAuthenticated();
+      setAuthenticated(auth);
+      setLoading(false);
+
+      if (!auth) {
+        navigate('/login', { replace: true });
+      }
+    })();
+  }, [navigate]);
+
+  if (loading) {
+    return null; // ou sua página/componente de carregamento
+  }
+
+  return <>{children}</>;
+};
 
 const AppRouter: React.FC = () => (
-    <Routes>
-        <Route path="/" element={<Inicio />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/criarAtividade" element={<CriarAtividade />} />
-        <Route path="/cadastro" element={<CriarUsuario />} />
-        <Route path="/criarUniversidade" element={<CriarUniversidade />} />
-        <Route path="/tcc" element={<MatriculaTfg />} />
-        <Route path="/banca" element={<CriarBanca />} />
-        <Route path="/criarInstituto" element={<CriarInstituto />} />
-        <Route path="/criarUniversidade" element={<CriarUniversidade />} />
-        <Route path="/criarCurso" element={<CriarCurso />} />
-    </Routes>
-)
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals()
+  <Routes>
+    <Route path="/" element={<Inicio />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/logout" element={<Logout />} />
+    <Route path="/criarAtividade" element={<PrivateRoute><CriarAtividade /></PrivateRoute>} />
+    <Route path="/cadastro" element={<PrivateRoute><CriarUsuario /></PrivateRoute>} />
+    <Route path="/criarUniversidade" element={<PrivateRoute><CriarUniversidade /></PrivateRoute>} />
+    <Route path="/tcc" element={<PrivateRoute><MatriculaTfg /></PrivateRoute>} />
+    <Route path="/banca" element={<PrivateRoute><CriarBanca /></PrivateRoute>} />
+    <Route path="/criarInstituto" element={<PrivateRoute><CriarInstituto /></PrivateRoute>} />
+    <Route path="/criarCurso" element={<PrivateRoute><CriarCurso /></PrivateRoute>} />
+  </Routes>
+);
 
-export default AppRouter
+export default AppRouter;

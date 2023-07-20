@@ -6,11 +6,8 @@ function Logout() {
     const navigate = useNavigate()
     React.useEffect(() => {
         localStorage.removeItem("authToken")
-        localStorage.removeItem("username")
-        localStorage.removeItem("usertype")
-        localStorage.removeItem("userId")
-        localStorage.removeItem("userTccId")
-        localStorage.removeItem("userTccStatus")
+        localStorage.removeItem("nome")
+        localStorage.removeItem("tipo")
         return navigate("/")
     }, [])
     return <div></div>
