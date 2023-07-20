@@ -5,6 +5,6 @@ export class AuthHttpGatewayImpl implements AuthHttpGateway {
   constructor(private readonly httpService: HttpServiceImpl) {}
 
   async validar(token: string): Promise<any> {
-    await this.httpService.post("http://localhost:3001/auth/validate", token)
+    await this.httpService.post("http://localhost:3001/login/validate", {token}, false)
   }
 }
