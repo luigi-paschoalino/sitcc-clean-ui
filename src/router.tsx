@@ -30,10 +30,6 @@ const isAuthenticated = async (): Promise<boolean> => {
       throw false
     const auth = await authRotaUsecase.execute(token);
     if(!auth.data.auth) throw false
-    
-
-    localStorage.setItem('nome', auth.data.nome)
-    localStorage.setItem('tipo', auth.data.tipo)
     return true
   }
   catch(error){
@@ -72,7 +68,7 @@ const PrivateRoute: React.FC<any> = ({ children }) => {
 
 const AppRouter: React.FC = () => (
   <Routes>
-    <Route path="/" element={<Inicio />} />
+    <Route path="/" element={<PrivateRoute><Inicio /></PrivateRoute>} />
     <Route path="/login" element={<Login />} />
     <Route path="/logout" element={<Logout />} />
     <Route path="/criarAtividade" element={<PrivateRoute><CriarAtividade /></PrivateRoute>} />

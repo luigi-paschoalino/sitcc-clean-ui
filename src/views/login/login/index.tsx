@@ -49,10 +49,12 @@ function Login() {
             if (!result.data.token) throw new Error()
 
             localStorage.setItem("authToken", result.data.token)
+            localStorage.setItem("nome", result.data.nome)
+            localStorage.setItem("tipo", result.data.tipo)
 
             setAuthStatus(true)
 
-            window.location.href = "/home"
+            window.location.href = "/"
         } catch (err) {
             setAuthStatus(false)
         }
