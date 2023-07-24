@@ -123,6 +123,7 @@ export default function CriarUsuario() {
                     senha: inputValues.senha,
                     numero: inputValues.numero,
                     tipo: tipoUsuario,
+                    codigo: inputValues.codigo,
                 })
             }
         } catch (error) {

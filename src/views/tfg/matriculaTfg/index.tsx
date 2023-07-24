@@ -11,14 +11,16 @@ import axios from "axios"
 import { HttpServiceImpl } from "../../../infra/httpService"
 import { TccHttpGatewayImpl } from "../../../@tfg/infra/Tcc.gateway"
 import { CadastrarTccUsecase } from "../../../@tfg/application/CadastrarTcc.usecase"
+import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
+import { ListarProfessoresQuery } from "../../../@usuario/application/ListarProfessores.query"
+import { Professor } from "../../../@usuario/domain/gateways/Usuario.gateway"
+import { get } from "https"
 
-interface Professor {
-    value: string
-    label: string
-}
 
 //HTTP Service
 const httpService = new HttpServiceImpl()
+const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
+const listarProfessores = new ListarProfessoresQuery(usuarioGateway)
 const tccGateway = new TccHttpGatewayImpl(httpService)
 const cadastrarTccUsecase = new CadastrarTccUsecase(tccGateway)
 
@@ -39,7 +41,15 @@ export default function MatriculaTfg() {
 
     // TODO: rota back-end listar professor e editar TCC para 2 orientadores
     useEffect(() => {
-        axios
+        async function getProfessores(): Promise<void> {
+            const listaProfessores = await listarProfessores.execute()
+            console.log(listaProfessores)
+            setProfessores(listaProfessores)
+            console.log('profs')
+            console.log(professores)}
+        
+        getProfessores()
+        /*axios
             .post(
                 `${process.env.REACT_APP_API_URL}/users/type`,
                 { perfil_usuario: 2 },
@@ -65,7 +75,9 @@ export default function MatriculaTfg() {
                 setProfessores(arrayProfessores)
                 setProfessores1(arrayProfessores)
                 setProfessores2(arrayProfessores2)
-            })
+            })*/
+
+        
     }, [])
 
     const switchHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +86,7 @@ export default function MatriculaTfg() {
 
     const handleChangeOrientador = (event: any) => {
         const filtered = professores.filter((prof) => {
-            return prof.value !== event.value
+            return prof.id !== event.value
         })
         setProfessores2(filtered)
         setOrientadorSelected(event.value)
@@ -82,7 +94,7 @@ export default function MatriculaTfg() {
 
     const handleChangeCoorientador = (event: any) => {
         const filtered = professores.filter((prof) => {
-            return prof.value !== event.value
+            return prof.id !== event.value
         })
         setProfessores1(filtered)
         setCoorientadorSelected(event.value)
@@ -225,8 +237,8 @@ export default function MatriculaTfg() {
                             onChange={handleChangeOrientador}
                         >
                             {professores1.map((professor) => (
-                                <MenuItem value={professor.value}>
-                                    {professor.label}
+                                <MenuItem value={professor.nome}>
+                                    {professor.nome}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -258,8 +270,8 @@ export default function MatriculaTfg() {
                                 onChange={handleChangeCoorientador}
                             >
                                 {professores2.map((professor) => (
-                                    <MenuItem value={professor.value}>
-                                        {professor.label}
+                                    <MenuItem value={professor.nome}>
+                                        {professor.nome}
                                     </MenuItem>
                                 ))}
                             </Select>

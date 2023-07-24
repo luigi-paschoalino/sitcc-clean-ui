@@ -73,7 +73,7 @@ const AppRouter: React.FC = () => (
     <Route path="/login" element={<Login />} />
     <Route path="/logout" element={<Logout />} />
     <Route path="/criarAtividade" element={<PrivateRoute><CriarAtividade /></PrivateRoute>} />
-    <Route path="/cadastro" element={<PrivateRoute><CriarUsuario /></PrivateRoute>} />
+    <Route path="/cadastro" element={<CriarUsuario />} />
     <Route path="/criarUniversidade" element={<PrivateRoute><CriarUniversidade /></PrivateRoute>} />
     <Route path="/tcc" element={<PrivateRoute><MatriculaTfg /></PrivateRoute>} />
     <Route path="/banca" element={<PrivateRoute><CriarBanca /></PrivateRoute>} />
