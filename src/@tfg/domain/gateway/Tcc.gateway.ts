@@ -3,13 +3,7 @@ import { Tcc } from "../entities/Tcc"
 export interface CadastrarTccProps {
     aluno: string
     orientador: string
-    titulo: string
-    palavras_chave: string[]
-    introducao: string
-    objetivos: string
-    bibliografia: string
-    metodologia: string
-    resultados: string
+    coorientador: string
 }
 
 export interface CadastrarBancaProps {

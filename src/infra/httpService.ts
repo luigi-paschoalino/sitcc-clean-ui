@@ -24,4 +24,15 @@ export class HttpServiceImpl {
         }
         return axios.post(url, body)
     }
+
+    async patch(url: string, body: any, auth: boolean): Promise<any> {
+        if (auth) {
+            return axios.patch(url, body, {
+                headers: {
+                    Authorization: localStorage.getItem("authToken"),
+                },
+            })
+        }
+        return axios.patch(url, body)
+    }
 }

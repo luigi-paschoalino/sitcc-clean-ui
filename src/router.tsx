@@ -17,6 +17,7 @@ import { AuthRotaUsecase } from "./@auth/application/AuthRota.usecase"
 import { HttpServiceImpl } from "./infra/httpService"
 import { useNavigate } from 'react-router-dom';
 import Logout from "./views/login/logout"
+import EnviarTccParcial from "./views/tfg/enviarTccParcial"
 
 const httpService = new HttpServiceImpl()
 const authGateway = new AuthHttpGatewayImpl(httpService)
@@ -78,6 +79,7 @@ const AppRouter: React.FC = () => (
     <Route path="/banca" element={<PrivateRoute><CriarBanca /></PrivateRoute>} />
     <Route path="/criarInstituto" element={<PrivateRoute><CriarInstituto /></PrivateRoute>} />
     <Route path="/criarCurso" element={<PrivateRoute><CriarCurso /></PrivateRoute>} />
+    <Route path="/piru" element={<EnviarTccParcial/>} />
   </Routes>
 );
 
