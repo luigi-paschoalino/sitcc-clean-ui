@@ -30,6 +30,7 @@ export default function Navbar() {
     useEffect(() => {
         const token = localStorage.getItem("authToken")
         setAuth(token ? true : false)
+        setUserTccStatus(UserTccStatus.SemTcc)
 
         /*if (userType === "1") {
             axios
@@ -93,7 +94,7 @@ export default function Navbar() {
                                                 )
                                             case "sem_tcc":
                                                 return (
-                                                    <NavDropdown.Item href="/realizar-matricula">
+                                                    <NavDropdown.Item href="/tcc">
                                                         Realizar Matrícula
                                                     </NavDropdown.Item>
                                                 )

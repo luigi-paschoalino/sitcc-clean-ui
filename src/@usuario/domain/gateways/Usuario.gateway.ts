@@ -7,15 +7,21 @@ export interface CadastrarUsuarioProps {
     senha: string
     tipo: string
     numero: string
+    codigo?: string
 }
 
 export interface AutenticarProps {
     email: string
     senha: string
 }
+export interface Professor {
+    id: string
+    nome: string
+}
 
 export interface UsuarioHttpGateway {
-    cadastrar(props: CadastrarUsuarioProps): Promise<void>
+    cadastrar(props: CadastrarUsuarioProps): Promise<any>
     buscar(id: string): Promise<Usuario>
     logar(props: AutenticarProps): Promise<any>
+    buscarProfs(): Promise<Professor[]>
 }

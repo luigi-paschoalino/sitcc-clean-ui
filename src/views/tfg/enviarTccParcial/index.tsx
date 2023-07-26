@@ -10,7 +10,7 @@ export default function EnviarTccParcial() {
     const navigate = useNavigate()
 
     function onSubmit() {
-        axios
+        /*axios
             .put(
                 `${process.env.REACT_APP_API_URL}/tfg/${idTcc}/status`,
                 {
@@ -25,7 +25,7 @@ export default function EnviarTccParcial() {
             .then((response) => {
                 localStorage.setItem("userTccStatus", "tfg_parcial_enviado")
                 return navigate("/")
-            })
+            })*/
     }
 
     return (

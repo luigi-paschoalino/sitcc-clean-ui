@@ -2,6 +2,7 @@ import { HttpServiceImpl } from "../../infra/httpService"
 import { Tcc } from "../domain/entities/Tcc"
 import {
     AvaliarNotaParcialProps,
+    AvaliarOrientacaoProps,
     CadastrarBancaProps,
     CadastrarTccProps,
     TccHttpGateway,
@@ -24,6 +25,15 @@ export class TccHttpGatewayImpl implements TccHttpGateway {
     async avaliarNotaParcial(props: AvaliarNotaParcialProps): Promise<void> {
         await this.httpService.post(
             "http://localhost:3001/tcc/notaParcial",
+            props,
+            true,
+        )
+    }
+
+    async avaliarOrientacao(props: AvaliarOrientacaoProps): Promise<void> {
+        await this.httpService.patch(
+            //rever await desnecessário
+            "http://localhost:3001/tcc/avaliar/:id",
             props,
             true,
         )
