@@ -1,9 +1,8 @@
 import { TccHttpGateway } from "../domain/gateway/Tcc.gateway"
 
 export interface CadastrarTccProps {
-    aluno: string
     orientador: string
-    coorientador: string
+    coorientador?: string
 }
 
 export class CadastrarTccUsecase {

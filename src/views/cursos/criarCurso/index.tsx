@@ -85,28 +85,6 @@ export default function CriarCurso() {
             codigo: inputValues.codigo,
             institutoId: institutoAtivo.id,
         })
-
-        /*axios
-      .post(
-        `${process.env.REACT_APP_API_URL}/course`,
-        {
-          nome: inputValues.nome,
-          codigo: inputValues.codigo,
-          id_instituto: institutoSelected,
-        },
-        {
-          headers: {
-            Authorization: localStorage.getItem("authToken"),
-          },
-        },
-      )
-      .then((res) => {
-        if (res.status === 200) {
-          return navigate("/cursos")
-        } else {
-          setStatus(res.data.error)
-        }
-      })*/
     }
 
     const handleOnChange = useCallback((event) => {

@@ -53,8 +53,9 @@ function Login() {
             localStorage.setItem("tipo", result.data.tipo)
 
             setAuthStatus(true)
-
-            window.location.href = "/"
+            setTimeout(() => {
+                window.location.href = "/"
+            }, 1000)
         } catch (err) {
             setAuthStatus(false)
         }

@@ -20,7 +20,7 @@ export interface Professor {
 }
 
 export interface UsuarioHttpGateway {
-    cadastrar(props: CadastrarUsuarioProps): Promise<void>
+    cadastrar(props: CadastrarUsuarioProps): Promise<any>
     buscar(id: string): Promise<Usuario>
     logar(props: AutenticarProps): Promise<any>
     buscarProfs(): Promise<Professor[]>

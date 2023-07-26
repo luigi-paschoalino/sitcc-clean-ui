@@ -36,6 +36,8 @@ const isAuthenticated = async (): Promise<boolean> => {
         if (!token) throw false
         const auth = await authRotaUsecase.execute(token)
         if (!auth.data.auth) throw false
+        localStorage.setItem("nome", auth.data.nome)
+        localStorage.setItem("tipo", auth.data.tipo)
         return true
     } catch (error) {
         localStorage.removeItem("authToken")
@@ -71,19 +73,68 @@ const PrivateRoute: React.FC<any> = ({ children }) => {
 }
 
 const AppRouter: React.FC = () => (
-  <Routes>
-    <Route path="/" element={<PrivateRoute><Inicio /></PrivateRoute>} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/logout" element={<Logout />} />
-    <Route path="/criarAtividade" element={<PrivateRoute><CriarAtividade /></PrivateRoute>} />
-    <Route path="/cadastro" element={<CriarUsuario />} />
-    <Route path="/criarUniversidade" element={<PrivateRoute><CriarUniversidade /></PrivateRoute>} />
-    <Route path="/tcc" element={<PrivateRoute><MatriculaTfg /></PrivateRoute>} />
-    <Route path="/banca" element={<PrivateRoute><CriarBanca /></PrivateRoute>} />
-    <Route path="/criarInstituto" element={<PrivateRoute><CriarInstituto /></PrivateRoute>} />
-    <Route path="/criarCurso" element={<PrivateRoute><CriarCurso /></PrivateRoute>} />
-    <Route path="/piru" element={<EnviarTccParcial/>} />
-  </Routes>
-);
+    <Routes>
+        <Route
+            path="/"
+            element={
+                <PrivateRoute>
+                    <Inicio />
+                </PrivateRoute>
+            }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route
+            path="/criarAtividade"
+            element={
+                <PrivateRoute>
+                    <CriarAtividade />
+                </PrivateRoute>
+            }
+        />
+        <Route path="/cadastro" element={<CriarUsuario />} />
+        <Route
+            path="/criarUniversidade"
+            element={
+                <PrivateRoute>
+                    <CriarUniversidade />
+                </PrivateRoute>
+            }
+        />
+        <Route
+            path="/tcc"
+            element={
+                <PrivateRoute>
+                    <MatriculaTfg />
+                </PrivateRoute>
+            }
+        />
+        <Route
+            path="/banca"
+            element={
+                <PrivateRoute>
+                    <CriarBanca />
+                </PrivateRoute>
+            }
+        />
+        <Route
+            path="/criarInstituto"
+            element={
+                <PrivateRoute>
+                    <CriarInstituto />
+                </PrivateRoute>
+            }
+        />
+        <Route
+            path="/criarCurso"
+            element={
+                <PrivateRoute>
+                    <CriarCurso />
+                </PrivateRoute>
+            }
+        />
+        <Route path="/envioParcial" element={<EnviarTccParcial />} />
+    </Routes>
+)
 
 export default AppRouter

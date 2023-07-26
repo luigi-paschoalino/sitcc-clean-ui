@@ -114,9 +114,8 @@ export default function CriarUsuario() {
 
     async function handleCadastro(): Promise<void> {
         try {
-            console.log(tipoUsuario, cursoAtivo, inputValues)
             if (tipoUsuario) {
-                await cadastrarUsuarioUsecase.execute({
+                const response = await cadastrarUsuarioUsecase.execute({
                     nome: inputValues.nome,
                     curso: cursoAtivo,
                     email: inputValues.email,
@@ -125,9 +124,15 @@ export default function CriarUsuario() {
                     tipo: tipoUsuario,
                     codigo: inputValues.codigo,
                 })
+                setStatus(response.message)
+                setTimeout(() => {
+                    window.location.href = "/"
+                }, 1000)
+            } else {
+                setStatus("Tipo não informado")
             }
         } catch (error) {
-            alert(error)
+            setStatus((error as any).response.data.message)
         }
     }
 
@@ -201,6 +206,7 @@ export default function CriarUsuario() {
                             Tipo de usuário
                         </InputLabel>
                         <Select
+                            id="select_tipo"
                             labelId="label-tipo-usuario"
                             placeholder="Selecione"
                         >
@@ -306,6 +312,7 @@ export default function CriarUsuario() {
                             Universidade
                         </InputLabel>
                         <Select
+                            id="select_universidade"
                             labelId="label-universidade"
                             placeholder="Selecione"
                         >
@@ -331,6 +338,7 @@ export default function CriarUsuario() {
                                     Instituto
                                 </InputLabel>
                                 <Select
+                                    id="select_instituto"
                                     labelId="label-instituto"
                                     placeholder="Selecione"
                                 >
@@ -358,6 +366,7 @@ export default function CriarUsuario() {
                                     Curso
                                 </InputLabel>
                                 <Select
+                                    id="select_curso"
                                     labelId="label-curso"
                                     placeholder="Selecione"
                                 >

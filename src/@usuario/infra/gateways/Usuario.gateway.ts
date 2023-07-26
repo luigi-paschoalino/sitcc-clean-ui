@@ -12,12 +12,13 @@ export interface LoginResponse {}
 export class UsuarioHttpGatewayImpl implements UsuarioHttpGateway {
     constructor(private readonly httpService: HttpServiceImpl) {}
 
-    async cadastrar(props: CadastrarUsuarioProps): Promise<void> {
-        await this.httpService.post(
+    async cadastrar(props: CadastrarUsuarioProps): Promise<any> {
+        const cadastro = await this.httpService.post(
             "http://localhost:3001/usuarios",
             props,
             false,
         )
+        return cadastro.data
     }
 
     async buscar(id: string): Promise<Usuario> {

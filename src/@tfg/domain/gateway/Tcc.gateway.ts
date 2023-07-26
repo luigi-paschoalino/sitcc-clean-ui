@@ -1,9 +1,8 @@
 import { Tcc } from "../entities/Tcc"
 
 export interface CadastrarTccProps {
-    aluno: string
     orientador: string
-    coorientador: string
+    coorientador?: string
 }
 
 export interface CadastrarBancaProps {
