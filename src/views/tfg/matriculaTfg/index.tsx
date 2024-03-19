@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+// import { useNavigate } from "react-router-dom"
 import Typography from "@mui/material/Typography"
 import Container from "@mui/material/Container"
 import Switch from "@mui/material/Switch"
 import Button from "@mui/material/Button"
 import InputLabel from "@mui/material/InputLabel"
-import { Select, MenuItem } from "@mui/material"
+import { Select, MenuItem, TextField } from "@mui/material"
 import { HttpServiceImpl } from "../../../infra/httpService"
-import { TccHttpGatewayImpl } from "../../../@tfg/infra/Tcc.gateway"
+import { TfgHttpGatewayImpl } from "../../../@tfg/infra/Tcc.gateway"
 import { CadastrarTccUsecase } from "../../../@tfg/application/CadastrarTcc.usecase"
 import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
 import { ListarProfessoresQuery } from "../../../@usuario/application/ListarProfessores.query"
@@ -17,9 +17,22 @@ import { Professor } from "../../../@usuario/domain/gateways/Usuario.gateway"
 const httpService = new HttpServiceImpl()
 const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
 const listarProfessores = new ListarProfessoresQuery(usuarioGateway)
-const tccGateway = new TccHttpGatewayImpl(httpService)
+const tccGateway = new TfgHttpGatewayImpl(httpService)
 const cadastrarTccUsecase = new CadastrarTccUsecase(tccGateway)
 
+interface InputValues {
+    titulo: string
+    palavrasChave: string
+    introducao: string
+    objetivos: string
+    bibliografia: string
+    metodoPesquisa: string
+    tecnicaPesquisa: string
+    descricaoMetodologia: string
+    resultadosEsperados: string
+}
+
+// TODO: ajeitar style pra aumentar o tamanho dos campos de texto e seleção
 export default function MatriculaTfg() {
     const [orientador, setOrientadores] = useState<Professor[]>([])
     const [orientadorAtivo, setOrientadorAtivo] = useState<Professor>({
@@ -32,7 +45,19 @@ export default function MatriculaTfg() {
         nome: "",
     })
     const [checked, setChecked] = useState(true)
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
+
+    const [preenchimentoTfg, setPreenchimentoTfg] = useState<InputValues>({
+        titulo: "",
+        palavrasChave: "",
+        introducao: "",
+        objetivos: "",
+        bibliografia: "",
+        descricaoMetodologia: "",
+        tecnicaPesquisa: "",
+        metodoPesquisa: "",
+        resultadosEsperados: "",
+    })
 
     useEffect(() => {
         async function getProfessores(): Promise<void> {
@@ -142,10 +167,187 @@ export default function MatriculaTfg() {
                                 ))}
                             </Select>
                         </div>
-                    ) : (
-                        ""
-                    )}
+                    ) : undefined}
                 </div>
+                {orientadorAtivo.id ? (
+                    <div className="imc_div">
+                        <InputLabel
+                            style={{ textAlign: "left" }}
+                            className={"mt-2 mb-0"}
+                            id="label-titulo"
+                        >
+                            Título
+                        </InputLabel>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="titulo"
+                            name="titulo"
+                            onChange={(e) => {
+                                setPreenchimentoTfg({
+                                    ...preenchimentoTfg,
+                                    titulo: e.target.value,
+                                })
+                            }}
+                        ></TextField>
+
+                        <InputLabel
+                            style={{ textAlign: "left" }}
+                            className={"mt-2 mb-0"}
+                            id="label-palavras"
+                        >
+                            Palavras-chave
+                        </InputLabel>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="palavras_chave"
+                            name="palavrasChave"
+                            onChange={(e) => {
+                                setPreenchimentoTfg({
+                                    ...preenchimentoTfg,
+                                    palavrasChave: e.target.value,
+                                })
+                            }}
+                        ></TextField>
+
+                        <InputLabel
+                            style={{ textAlign: "left" }}
+                            className={"mt-2 mb-0"}
+                            id="label-introducao"
+                        >
+                            Introdução/Justificativa/Relevância
+                        </InputLabel>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="introducao"
+                            name="introducao"
+                            onChange={(e) => {
+                                setPreenchimentoTfg({
+                                    ...preenchimentoTfg,
+                                    introducao: e.target.value,
+                                })
+                            }}
+                        ></TextField>
+
+                        <InputLabel
+                            style={{ textAlign: "left" }}
+                            className={"mt-2 mb-0"}
+                            id="label-objetivos"
+                        >
+                            Objetivos
+                        </InputLabel>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="objetivos"
+                            name="objetivos"
+                            onChange={(e) => {
+                                setPreenchimentoTfg({
+                                    ...preenchimentoTfg,
+                                    objetivos: e.target.value,
+                                })
+                            }}
+                        ></TextField>
+
+                        <InputLabel
+                            style={{ textAlign: "left" }}
+                            className={"mt-2 mb-0"}
+                            id="label-bibliografia"
+                        >
+                            Bibliografia básica
+                        </InputLabel>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="bibliografia"
+                            name="bibliografia"
+                            onChange={(e) => {
+                                setPreenchimentoTfg({
+                                    ...preenchimentoTfg,
+                                    bibliografia: e.target.value,
+                                })
+                            }}
+                        ></TextField>
+
+                        <InputLabel
+                            style={{ textAlign: "left" }}
+                            className={"mt-2 mb-0"}
+                            id="label-metodologia"
+                        >
+                            Descrição da metodologia
+                        </InputLabel>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="descricao_metodologia"
+                            name="descricaoMetodologia"
+                            onChange={(e) => {
+                                setPreenchimentoTfg({
+                                    ...preenchimentoTfg,
+                                    metodoPesquisa: e.target.value,
+                                })
+                            }}
+                        ></TextField>
+
+                        <InputLabel
+                            style={{ textAlign: "left" }}
+                            className={"mt-2 mb-0"}
+                            id="label-tecnica"
+                        >
+                            Técnica de pesquisa
+                        </InputLabel>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="tecnica_pesquisa"
+                            name="tecnicaPesquisa"
+                            onChange={(e) => {
+                                setPreenchimentoTfg({
+                                    ...preenchimentoTfg,
+                                    tecnicaPesquisa: e.target.value,
+                                })
+                            }}
+                        ></TextField>
+
+                        <InputLabel
+                            style={{ textAlign: "left" }}
+                            className={"mt-2 mb-0"}
+                            id="label-resultados"
+                        >
+                            Resultados esperados
+                        </InputLabel>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="resultados_esperados"
+                            name="resultadosEsperados"
+                            onChange={(e) => {
+                                setPreenchimentoTfg({
+                                    ...preenchimentoTfg,
+                                    resultadosEsperados: e.target.value,
+                                })
+                            }}
+                        ></TextField>
+                    </div>
+                ) : undefined}
                 <Button
                     type="button"
                     variant="contained"
@@ -154,6 +356,20 @@ export default function MatriculaTfg() {
                     size="large"
                     className="mb-3 mb-md-4 mt-4 backgroundcolor2"
                     onClick={() => onSubmit()}
+                    disabled={
+                        !(
+                            orientadorAtivo.id &&
+                            preenchimentoTfg.titulo &&
+                            preenchimentoTfg.palavrasChave &&
+                            preenchimentoTfg.introducao &&
+                            preenchimentoTfg.objetivos &&
+                            preenchimentoTfg.bibliografia &&
+                            preenchimentoTfg.metodoPesquisa &&
+                            preenchimentoTfg.tecnicaPesquisa &&
+                            preenchimentoTfg.descricaoMetodologia &&
+                            preenchimentoTfg.resultadosEsperados
+                        )
+                    }
                 >
                     Registrar
                 </Button>

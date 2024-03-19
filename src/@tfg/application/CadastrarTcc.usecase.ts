@@ -1,4 +1,4 @@
-import { TccHttpGateway } from "../domain/gateway/Tcc.gateway"
+import { TfgHttpGateway } from "../domain/gateway/Tfg.gateway"
 
 export interface CadastrarTccProps {
     orientador: string
@@ -6,7 +6,7 @@ export interface CadastrarTccProps {
 }
 
 export class CadastrarTccUsecase {
-    constructor(private tccGateway: TccHttpGateway) {}
+    constructor(private tccGateway: TfgHttpGateway) {}
 
     async execute(props: CadastrarTccProps): Promise<void> {
         return await this.tccGateway.cadastrar(props)

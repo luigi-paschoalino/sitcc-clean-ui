@@ -1,18 +1,18 @@
-import { TccHttpGateway } from "../domain/gateway/Tcc.gateway"
+import { TfgHttpGateway } from "../domain/gateway/Tfg.gateway"
 
 export interface CadastrarBancaProps {
-  id: string
-  id_professor: string
-  dia_hora: string
-  nota_final: number
-  nota_apresentacao: number
-  nota_trabalho: number
+    id: string
+    id_professor: string
+    dia_hora: string
+    nota_final: number
+    nota_apresentacao: number
+    nota_trabalho: number
 }
 
 export class CadastrarBancaUseCase {
-  constructor(private tccGateway: TccHttpGateway) {}
+    constructor(private tccGateway: TfgHttpGateway) {}
 
-  async execute(props: CadastrarBancaProps): Promise<void> {
-    return await this.tccGateway.cadastrarBanca(props)
-  }
+    async execute(props: CadastrarBancaProps): Promise<void> {
+        return await this.tccGateway.cadastrarBanca(props)
+    }
 }

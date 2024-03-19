@@ -1,4 +1,4 @@
-import { Tcc } from "../entities/Tcc"
+import { Tfg } from "../entities/Tcc"
 
 export interface CadastrarTccProps {
     orientador: string
@@ -15,21 +15,21 @@ export interface CadastrarBancaProps {
 }
 
 export interface AvaliarNotaParcialProps {
-    tccId: string
+    tfgId: string
     professorId: string
     nota: number
 }
 
 export interface AvaliarOrientacaoProps {
-    tccId: string
+    tfgId: string
     professorId: string
     status: boolean
     justificativa?: string
 }
 
-export interface TccHttpGateway {
+export interface TfgHttpGateway {
     cadastrar(props: CadastrarTccProps): Promise<void>
-    buscar(id: string): Promise<Tcc>
+    buscar(id: string): Promise<Tfg>
     avaliarNotaParcial(props: AvaliarNotaParcialProps): Promise<void>
     avaliarOrientacao(props: AvaliarOrientacaoProps): Promise<void>
     cadastrarBanca(props: CadastrarBancaProps): Promise<void>

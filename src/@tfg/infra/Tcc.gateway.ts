@@ -1,30 +1,30 @@
 import { HttpServiceImpl } from "../../infra/httpService"
-import { Tcc } from "../domain/entities/Tcc"
+import { Tfg } from "../domain/entities/Tcc"
 import {
     AvaliarNotaParcialProps,
     AvaliarOrientacaoProps,
     CadastrarBancaProps,
     CadastrarTccProps,
-    TccHttpGateway,
-} from "../domain/gateway/Tcc.gateway"
+    TfgHttpGateway,
+} from "../domain/gateway/Tfg.gateway"
 
-export class TccHttpGatewayImpl implements TccHttpGateway {
+export class TfgHttpGatewayImpl implements TfgHttpGateway {
     constructor(private readonly httpService: HttpServiceImpl) {}
 
     async cadastrar(props: CadastrarTccProps): Promise<void> {
-        await this.httpService.post("http://localhost:3001/tcc", props, true)
+        await this.httpService.post("http://localhost:3001/tfg", props, true)
     }
 
-    async buscar(id: string): Promise<Tcc> {
+    async buscar(id: string): Promise<Tfg> {
         return await this.httpService.get(
-            `http://localhost:3001/tcc/${id}`,
+            `http://localhost:3001/tfg/${id}`,
             true,
         )
     }
 
     async avaliarNotaParcial(props: AvaliarNotaParcialProps): Promise<void> {
         await this.httpService.post(
-            "http://localhost:3001/tcc/notaParcial",
+            "http://localhost:3001/tfg/nota-parcial",
             props,
             true,
         )
@@ -33,7 +33,7 @@ export class TccHttpGatewayImpl implements TccHttpGateway {
     async avaliarOrientacao(props: AvaliarOrientacaoProps): Promise<void> {
         await this.httpService.patch(
             //rever await desnecessário
-            "http://localhost:3001/tcc/avaliar/:id",
+            `http://localhost:3001/tfg/avaliar/${props.tfgId}`,
             props,
             true,
         )
@@ -41,7 +41,7 @@ export class TccHttpGatewayImpl implements TccHttpGateway {
 
     async cadastrarBanca(props: CadastrarBancaProps): Promise<void> {
         await this.httpService.post(
-            "http://localhost:3001/tcc/banca",
+            "http://localhost:3001/tfg/banca",
             props,
             true,
         )

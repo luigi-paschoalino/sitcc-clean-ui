@@ -14,8 +14,10 @@ interface InputValues {
     introducao: string
     objetivos: string
     bibliografia: string
-    metodologia: string
-    resultados: string
+    metodoPesquisa: string
+    tecnicaPesquisa: string
+    descricaoMetodologia: string
+    resultadosEsperados: string
 }
 
 export default function RegistroTfg() {
@@ -25,8 +27,10 @@ export default function RegistroTfg() {
         introducao: "",
         objetivos: "",
         bibliografia: "",
-        metodologia: "",
-        resultados: "",
+        metodoPesquisa: "",
+        tecnicaPesquisa: "",
+        descricaoMetodologia: "",
+        resultadosEsperados: "",
     })
 
     const idTcc = localStorage.getItem("userTccId")
@@ -44,6 +48,7 @@ export default function RegistroTfg() {
         [],
     )
 
+    // TODO: enviar via UseCase
     function onSubmit() {
         axios
             .put(
@@ -54,8 +59,8 @@ export default function RegistroTfg() {
                     introducao: inputValues.introducao,
                     objetivos: inputValues.objetivos,
                     bibliografia: inputValues.bibliografia,
-                    metodologia: inputValues.metodologia,
-                    resultados: inputValues.resultados,
+                    metodologia: inputValues.descricaoMetodologia,
+                    resultados: inputValues.resultadosEsperados,
                 },
                 {
                     headers: {
