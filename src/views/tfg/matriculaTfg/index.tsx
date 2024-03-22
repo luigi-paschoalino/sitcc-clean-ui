@@ -12,6 +12,7 @@ import { CadastrarTccUsecase } from "../../../@tfg/application/CadastrarTcc.usec
 import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
 import { ListarProfessoresQuery } from "../../../@usuario/application/ListarProfessores.query"
 import { Professor } from "../../../@usuario/domain/gateways/Usuario.gateway"
+import "./styles.scss"
 
 //HTTP Service
 const httpService = new HttpServiceImpl()
@@ -44,7 +45,7 @@ export default function MatriculaTfg() {
         id: "",
         nome: "",
     })
-    const [checked, setChecked] = useState(true)
+    const [checked, setChecked] = useState(false)
     // const navigate = useNavigate()
 
     const [preenchimentoTfg, setPreenchimentoTfg] = useState<InputValues>({
@@ -68,6 +69,7 @@ export default function MatriculaTfg() {
     }, [])
 
     const switchHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (!event.target.checked) setCoorientadorAtivo({ id: "", nome: "" })
         setChecked(event.target.checked)
     }
 
@@ -84,22 +86,24 @@ export default function MatriculaTfg() {
             (professor) => professor !== orientadorAtivo,
         )
         setCoorientadores(professoresFiltrados)
-    }, [orientadorAtivo])
+    }, [orientador, orientadorAtivo])
 
     async function onSubmit() {
-        if (!checked) {
-            console.log("entro")
-            coorientadorAtivo.id = ""
+        try {
+            console.log(preenchimentoTfg)
+            await cadastrarTccUsecase.execute({
+                orientador: orientadorAtivo.id,
+                coorientador: checked ? coorientadorAtivo.id : undefined,
+                ...preenchimentoTfg,
+            })
+        } catch (error) {
+            console.log(error)
         }
-        console.log(coorientadorAtivo.id)
-        await cadastrarTccUsecase.execute({
-            orientador: orientadorAtivo.id,
-            coorientador: coorientadorAtivo.id,
-        })
     }
 
+    // TODO: adicionar textArea em alguns campos de texto
     return (
-        <Container component="main" maxWidth="xs">
+        <Container component="main" maxWidth="md" style={{ width: "60%" }}>
             <div className="mt-3 mt-md-5">
                 <div className="text-center">
                     <Typography
@@ -107,15 +111,12 @@ export default function MatriculaTfg() {
                         component="h1"
                         variant="h4"
                     >
-                        Registrar Matrícula
+                        Registrar matrícula
                     </Typography>
                     <div className="imc_div">
-                        <InputLabel>
-                            Selecione o Professor Orientador
-                        </InputLabel>
+                        <InputLabel>Professor orientador</InputLabel>
                         <Select
-                            className={"mt-3"}
-                            labelId="label-tipo-usuario"
+                            className="mt-3"
                             placeholder="Professor Orientador"
                         >
                             {orientador.map((professor) => (
@@ -131,7 +132,7 @@ export default function MatriculaTfg() {
                         </Select>
                     </div>
                     <div
-                        className={"mt-3"}
+                        className="mt-3"
                         style={{
                             display: "flex",
                             justifyItems: "center",
@@ -286,15 +287,15 @@ export default function MatriculaTfg() {
                             className={"mt-2 mb-0"}
                             id="label-metodologia"
                         >
-                            Descrição da metodologia
+                            Método de pesquisa
                         </InputLabel>
                         <TextField
                             variant="outlined"
                             margin="normal"
                             required
                             fullWidth
-                            id="descricao_metodologia"
-                            name="descricaoMetodologia"
+                            id="metodo_pesquisa"
+                            name="metodoPesquisa"
                             onChange={(e) => {
                                 setPreenchimentoTfg({
                                     ...preenchimentoTfg,
@@ -328,6 +329,28 @@ export default function MatriculaTfg() {
                         <InputLabel
                             style={{ textAlign: "left" }}
                             className={"mt-2 mb-0"}
+                            id="label-metodologia"
+                        >
+                            Descrição da metodologia
+                        </InputLabel>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="descricao_metodologia"
+                            name="descricaoMetodologia"
+                            onChange={(e) => {
+                                setPreenchimentoTfg({
+                                    ...preenchimentoTfg,
+                                    descricaoMetodologia: e.target.value,
+                                })
+                            }}
+                        ></TextField>
+
+                        <InputLabel
+                            style={{ textAlign: "left" }}
+                            className={"mt-2 mb-0"}
                             id="label-resultados"
                         >
                             Resultados esperados
@@ -349,9 +372,9 @@ export default function MatriculaTfg() {
                     </div>
                 ) : undefined}
                 <Button
+                    id="button"
                     type="button"
                     variant="contained"
-                    fullWidth
                     color="primary"
                     size="large"
                     className="mb-3 mb-md-4 mt-4 backgroundcolor2"
@@ -367,7 +390,8 @@ export default function MatriculaTfg() {
                             preenchimentoTfg.metodoPesquisa &&
                             preenchimentoTfg.tecnicaPesquisa &&
                             preenchimentoTfg.descricaoMetodologia &&
-                            preenchimentoTfg.resultadosEsperados
+                            preenchimentoTfg.resultadosEsperados &&
+                            (checked ? coorientadorAtivo.id : true)
                         )
                     }
                 >

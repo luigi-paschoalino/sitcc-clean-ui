@@ -244,7 +244,7 @@ export default function Navbar() {
                                 style={{ color: "white", borderColor: "white" }}
                                 id="dropdown-basic"
                             >
-                                Bem Vindo, {localStorage.getItem("nome")}
+                                Bem-vindo, {localStorage.getItem("nome")}
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>

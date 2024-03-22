@@ -1,12 +1,10 @@
 import React, { useState, useCallback, ChangeEvent, KeyboardEvent } from "react"
-import { useNavigate } from "react-router-dom"
 import Container from "@mui/material/Container"
 import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
 import Alert from "@mui/material/Alert"
 import Link from "@mui/material/Link"
-import axios from "axios"
 import { HttpServiceImpl } from "../../../infra/httpService"
 import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
 import { AutenticarUsecase } from "../../../@usuario/application/Autenticar.usecase"
@@ -26,7 +24,6 @@ function Login() {
         email: "",
         password: "",
     })
-    const navigate = useNavigate()
 
     const handleOnChange = useCallback(
         (event: ChangeEvent<HTMLInputElement>) => {
@@ -63,11 +60,9 @@ function Login() {
 
     const handleKeyPress = useCallback(
         (event: KeyboardEvent<HTMLInputElement>) => {
-            if (event.key === "Enter") {
-                onSubmit()
-            }
+            if (event.key === "Enter") onSubmit()
         },
-        [],
+        [inputValues.email, inputValues.password],
     )
 
     return (
