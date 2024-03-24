@@ -93,7 +93,7 @@ export default function Navbar() {
                                                 )
                                             case "sem_tcc":
                                                 return (
-                                                    <NavDropdown.Item href="/tcc">
+                                                    <NavDropdown.Item href="/matricula-tfg">
                                                         Realizar Matrícula
                                                     </NavDropdown.Item>
                                                 )

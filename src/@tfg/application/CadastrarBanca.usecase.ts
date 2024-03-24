@@ -10,9 +10,9 @@ export interface CadastrarBancaProps {
 }
 
 export class CadastrarBancaUseCase {
-    constructor(private tccGateway: TfgHttpGateway) {}
+    constructor(private tfgGateway: TfgHttpGateway) {}
 
     async execute(props: CadastrarBancaProps): Promise<void> {
-        return await this.tccGateway.cadastrarBanca(props)
+        return await this.tfgGateway.cadastrarBanca(props)
     }
 }

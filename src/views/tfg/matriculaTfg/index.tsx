@@ -18,8 +18,8 @@ import "./styles.scss"
 const httpService = new HttpServiceImpl()
 const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
 const listarProfessores = new ListarProfessoresQuery(usuarioGateway)
-const tccGateway = new TfgHttpGatewayImpl(httpService)
-const cadastrarTccUsecase = new CadastrarTfgUsecase(tccGateway)
+const tfgGateway = new TfgHttpGatewayImpl(httpService)
+const cadastrarTccUsecase = new CadastrarTfgUsecase(tfgGateway)
 
 interface InputValues {
     titulo: string
@@ -101,7 +101,6 @@ export default function MatriculaTfg() {
         }
     }
 
-    // TODO: adicionar textArea em alguns campos de texto
     return (
         <Container component="main" maxWidth="md" style={{ width: "60%" }}>
             <div className="mt-3 mt-md-5">
@@ -113,6 +112,7 @@ export default function MatriculaTfg() {
                     >
                         Registrar matrícula
                     </Typography>
+                    {/* TODO: ajustar tamanho e fundo do drop down */}
                     <div className="imc_div">
                         <InputLabel>Professor orientador</InputLabel>
                         <Select
@@ -184,6 +184,7 @@ export default function MatriculaTfg() {
                             margin="normal"
                             required
                             fullWidth
+                            multiline
                             id="titulo"
                             name="titulo"
                             onChange={(e) => {
@@ -192,7 +193,7 @@ export default function MatriculaTfg() {
                                     titulo: e.target.value,
                                 })
                             }}
-                        ></TextField>
+                        />
 
                         <InputLabel
                             style={{ textAlign: "left" }}
@@ -206,6 +207,7 @@ export default function MatriculaTfg() {
                             margin="normal"
                             required
                             fullWidth
+                            multiline
                             id="palavras_chave"
                             name="palavrasChave"
                             onChange={(e) => {
@@ -214,7 +216,7 @@ export default function MatriculaTfg() {
                                     palavrasChave: e.target.value,
                                 })
                             }}
-                        ></TextField>
+                        />
 
                         <InputLabel
                             style={{ textAlign: "left" }}
@@ -228,6 +230,7 @@ export default function MatriculaTfg() {
                             margin="normal"
                             required
                             fullWidth
+                            multiline
                             id="introducao"
                             name="introducao"
                             onChange={(e) => {
@@ -236,7 +239,7 @@ export default function MatriculaTfg() {
                                     introducao: e.target.value,
                                 })
                             }}
-                        ></TextField>
+                        />
 
                         <InputLabel
                             style={{ textAlign: "left" }}
@@ -250,6 +253,7 @@ export default function MatriculaTfg() {
                             margin="normal"
                             required
                             fullWidth
+                            multiline
                             id="objetivos"
                             name="objetivos"
                             onChange={(e) => {
@@ -258,7 +262,7 @@ export default function MatriculaTfg() {
                                     objetivos: e.target.value,
                                 })
                             }}
-                        ></TextField>
+                        />
 
                         <InputLabel
                             style={{ textAlign: "left" }}
@@ -272,6 +276,7 @@ export default function MatriculaTfg() {
                             margin="normal"
                             required
                             fullWidth
+                            multiline
                             id="bibliografia"
                             name="bibliografia"
                             onChange={(e) => {
@@ -280,7 +285,7 @@ export default function MatriculaTfg() {
                                     bibliografia: e.target.value,
                                 })
                             }}
-                        ></TextField>
+                        />
 
                         <InputLabel
                             style={{ textAlign: "left" }}
@@ -294,6 +299,7 @@ export default function MatriculaTfg() {
                             margin="normal"
                             required
                             fullWidth
+                            multiline
                             id="metodo_pesquisa"
                             name="metodoPesquisa"
                             onChange={(e) => {
@@ -302,7 +308,7 @@ export default function MatriculaTfg() {
                                     metodoPesquisa: e.target.value,
                                 })
                             }}
-                        ></TextField>
+                        />
 
                         <InputLabel
                             style={{ textAlign: "left" }}
@@ -316,6 +322,7 @@ export default function MatriculaTfg() {
                             margin="normal"
                             required
                             fullWidth
+                            multiline
                             id="tecnica_pesquisa"
                             name="tecnicaPesquisa"
                             onChange={(e) => {
@@ -324,7 +331,7 @@ export default function MatriculaTfg() {
                                     tecnicaPesquisa: e.target.value,
                                 })
                             }}
-                        ></TextField>
+                        />
 
                         <InputLabel
                             style={{ textAlign: "left" }}
@@ -338,6 +345,7 @@ export default function MatriculaTfg() {
                             margin="normal"
                             required
                             fullWidth
+                            multiline
                             id="descricao_metodologia"
                             name="descricaoMetodologia"
                             onChange={(e) => {
@@ -346,7 +354,7 @@ export default function MatriculaTfg() {
                                     descricaoMetodologia: e.target.value,
                                 })
                             }}
-                        ></TextField>
+                        />
 
                         <InputLabel
                             style={{ textAlign: "left" }}
@@ -360,6 +368,7 @@ export default function MatriculaTfg() {
                             margin="normal"
                             required
                             fullWidth
+                            multiline
                             id="resultados_esperados"
                             name="resultadosEsperados"
                             onChange={(e) => {
@@ -368,7 +377,7 @@ export default function MatriculaTfg() {
                                     resultadosEsperados: e.target.value,
                                 })
                             }}
-                        ></TextField>
+                        />
                     </div>
                 ) : undefined}
                 <Button

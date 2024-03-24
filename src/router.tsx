@@ -16,6 +16,7 @@ import MatriculaTfg from "./views/tfg/matriculaTfg"
 import CriarUniversidade from "./views/universidades/criarUniversidade"
 import CriarUsuario from "./views/usuario/criarUsuario"
 import ListarOrientacoes from "./views/tfg/listarOrientacoes"
+import DetalhesTfg from "./views/tfg/detalhesTfg"
 
 const httpService = new HttpServiceImpl()
 const authGateway = new AuthHttpGatewayImpl(httpService)
@@ -94,21 +95,31 @@ const AppRouter: React.FC = () => (
             }
         />
         <Route
-            path="/tcc"
+            path="/matricula-tfg"
             element={
                 <PrivateRoute>
                     <MatriculaTfg />
                 </PrivateRoute>
             }
         />
-        <Route
-            path="/tfgs"
-            element={
-                <PrivateRoute>
-                    <ListarOrientacoes />
-                </PrivateRoute>
-            }
-        />
+        <Route path="/tfgs">
+            <Route
+                index
+                element={
+                    <PrivateRoute>
+                        <ListarOrientacoes />
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path=":id"
+                element={
+                    <PrivateRoute>
+                        <DetalhesTfg />
+                    </PrivateRoute>
+                }
+            />
+        </Route>
         <Route
             path="/banca"
             element={

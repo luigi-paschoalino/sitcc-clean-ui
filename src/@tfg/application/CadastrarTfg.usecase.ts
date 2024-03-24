@@ -15,9 +15,9 @@ export interface CadastrarTfgProps {
 }
 
 export class CadastrarTfgUsecase {
-    constructor(private tccGateway: TfgHttpGateway) {}
+    constructor(private tfgGateway: TfgHttpGateway) {}
 
     async execute(props: CadastrarTfgProps): Promise<void> {
-        return await this.tccGateway.cadastrar(props)
+        return await this.tfgGateway.cadastrar(props)
     }
 }
