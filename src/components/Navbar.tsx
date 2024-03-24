@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from "react"
-import Dropdown from "react-bootstrap/Dropdown"
+import { useEffect, useState } from "react"
 import { NavDropdown } from "react-bootstrap"
+import Dropdown from "react-bootstrap/Dropdown"
 import {
-    Nav,
-    NavLink,
     Bars,
-    NavMenu,
+    Nav,
     NavBtn,
     NavBtnLink,
+    NavLink,
+    NavMenu,
 } from "./NavbarElements"
-import axios from "axios"
 
 enum UserTccStatus {
     MatriculaAprovada = "matricula_aprovada",
@@ -134,11 +133,11 @@ export default function Navbar() {
                                 ) : (
                                     ""
                                 )}
-                                <NavDropdown.Item href="/aceitar-orientacao">
-                                    Aceitar Orientação
+                                <NavDropdown.Item href="/tfgs">
+                                    Listar Orientações
                                 </NavDropdown.Item>
-                                <NavDropdown.Item href="/avaliar-tcc-parcial">
-                                    Avaliar TCC Parcial
+                                <NavDropdown.Item href="/avaliar-tfg">
+                                    Avaliar TFG
                                 </NavDropdown.Item>
                             </NavDropdown>
                         ) : (

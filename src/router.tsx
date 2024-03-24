@@ -1,29 +1,21 @@
 import React from "react"
+import { Route, Routes, useNavigate } from "react-router-dom"
+import { AuthRotaUsecase } from "./@auth/application/AuthRota.usecase"
+import { AuthHttpGatewayImpl } from "./@auth/infra/Auth.gateway"
 import "./index.css"
-import App from "./App"
-import reportWebVitals from "./reportWebVitals"
-import {
-    BrowserRouter,
-    Route,
-    Routes,
-    Router,
-    Navigate,
-} from "react-router-dom"
+import { HttpServiceImpl } from "./infra/httpService"
 import CriarAtividade from "./views/atividades/criarAtividade"
-import CriarUsuario from "./views/usuario/criarUsuario"
-import Inicio from "./views/inicio/inicio"
-import CriarUniversidade from "./views/universidades/criarUniversidade"
-import MatriculaTfg from "./views/tfg/matriculaTfg"
 import CriarBanca from "./views/bancas/criarBancas"
+import CriarCurso from "./views/cursos/criarCurso"
+import Inicio from "./views/inicio/inicio"
 import CriarInstituto from "./views/institutos/criarInstituto"
 import Login from "./views/login/login"
-import CriarCurso from "./views/cursos/criarCurso"
-import { AuthHttpGatewayImpl } from "./@auth/infra/Auth.gateway"
-import { AuthRotaUsecase } from "./@auth/application/AuthRota.usecase"
-import { HttpServiceImpl } from "./infra/httpService"
-import { useNavigate } from "react-router-dom"
 import Logout from "./views/login/logout"
 import EnviarTccParcial from "./views/tfg/enviarTccParcial"
+import MatriculaTfg from "./views/tfg/matriculaTfg"
+import CriarUniversidade from "./views/universidades/criarUniversidade"
+import CriarUsuario from "./views/usuario/criarUsuario"
+import ListarOrientacoes from "./views/tfg/listarOrientacoes"
 
 const httpService = new HttpServiceImpl()
 const authGateway = new AuthHttpGatewayImpl(httpService)
@@ -106,6 +98,14 @@ const AppRouter: React.FC = () => (
             element={
                 <PrivateRoute>
                     <MatriculaTfg />
+                </PrivateRoute>
+            }
+        />
+        <Route
+            path="/tfgs"
+            element={
+                <PrivateRoute>
+                    <ListarOrientacoes />
                 </PrivateRoute>
             }
         />

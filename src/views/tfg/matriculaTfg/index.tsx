@@ -7,8 +7,8 @@ import Button from "@mui/material/Button"
 import InputLabel from "@mui/material/InputLabel"
 import { Select, MenuItem, TextField } from "@mui/material"
 import { HttpServiceImpl } from "../../../infra/httpService"
-import { TfgHttpGatewayImpl } from "../../../@tfg/infra/Tcc.gateway"
-import { CadastrarTccUsecase } from "../../../@tfg/application/CadastrarTcc.usecase"
+import { TfgHttpGatewayImpl } from "../../../@tfg/infra/Tfg.gateway"
+import { CadastrarTfgUsecase } from "../../../@tfg/application/CadastrarTfg.usecase"
 import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
 import { ListarProfessoresQuery } from "../../../@usuario/application/ListarProfessores.query"
 import { Professor } from "../../../@usuario/domain/gateways/Usuario.gateway"
@@ -19,7 +19,7 @@ const httpService = new HttpServiceImpl()
 const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
 const listarProfessores = new ListarProfessoresQuery(usuarioGateway)
 const tccGateway = new TfgHttpGatewayImpl(httpService)
-const cadastrarTccUsecase = new CadastrarTccUsecase(tccGateway)
+const cadastrarTccUsecase = new CadastrarTfgUsecase(tccGateway)
 
 interface InputValues {
     titulo: string

@@ -1,5 +1,4 @@
 import { HttpServiceImpl } from "../../infra/httpService"
-import { Tfg } from "../domain/entities/Tcc"
 import {
     AvaliarNotaParcialProps,
     AvaliarOrientacaoProps,
@@ -12,19 +11,32 @@ export class TfgHttpGatewayImpl implements TfgHttpGateway {
     constructor(private readonly httpService: HttpServiceImpl) {}
 
     async cadastrar(props: CadastrarTccProps): Promise<void> {
-        await this.httpService.post("http://localhost:3001/tfg", props, true)
-    }
-
-    async buscar(id: string): Promise<Tfg> {
-        return await this.httpService.get(
-            `http://localhost:3001/tfg/${id}`,
+        await this.httpService.post(
+            `${process.env.REACT_APP_BACKEND_URL}/tfg`,
+            props,
             true,
         )
     }
 
+    async buscar(id: string): Promise<any> {
+        const response = await this.httpService.get(
+            `${process.env.REACT_APP_BACKEND_URL}/tfg/${id}`,
+            true,
+        )
+        return response.data
+    }
+
+    async listar(): Promise<any[]> {
+        const response = await this.httpService.get(
+            `${process.env.REACT_APP_BACKEND_URL}/tfg`,
+            true,
+        )
+        return response.data
+    }
+
     async avaliarNotaParcial(props: AvaliarNotaParcialProps): Promise<void> {
         await this.httpService.post(
-            "http://localhost:3001/tfg/nota-parcial",
+            `${process.env.REACT_APP_BACKEND_URL}/tfg/nota-parcial`,
             props,
             true,
         )
@@ -32,8 +44,7 @@ export class TfgHttpGatewayImpl implements TfgHttpGateway {
 
     async avaliarOrientacao(props: AvaliarOrientacaoProps): Promise<void> {
         await this.httpService.patch(
-            //rever await desnecessário
-            `http://localhost:3001/tfg/avaliar/${props.tfgId}`,
+            `${process.env.REACT_APP_BACKEND_URL}/tfg/avaliar/${props.tfgId}`,
             props,
             true,
         )
@@ -41,7 +52,7 @@ export class TfgHttpGatewayImpl implements TfgHttpGateway {
 
     async cadastrarBanca(props: CadastrarBancaProps): Promise<void> {
         await this.httpService.post(
-            "http://localhost:3001/tfg/banca",
+            `${process.env.REACT_APP_BACKEND_URL}/tfg/banca`,
             props,
             true,
         )
