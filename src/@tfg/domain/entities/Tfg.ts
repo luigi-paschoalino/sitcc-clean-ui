@@ -73,7 +73,7 @@ export class Tfg {
             id: this.id,
             aluno: this.aluno,
             orientador: this.orientador,
-            coorientador: this.coorientador,
+            coorientador: this.coorientador ?? "SEM COORIENTADOR",
             titulo: this.titulo,
             palavrasChave: this.palavrasChave,
             introducao: this.introducao,

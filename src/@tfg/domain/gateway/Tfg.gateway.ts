@@ -1,5 +1,3 @@
-import { Tfg } from "../entities/Tfg"
-
 export interface CadastrarTccProps {
     orientador: string
     coorientador?: string
@@ -28,15 +26,14 @@ export interface CadastrarBancaProps {
     nota_trabalho: number
 }
 
-export interface AvaliarNotaParcialProps {
+export interface AvaliarTfgProps {
     tfgId: string
-    professorId: string
     nota: number
+    tipoEntrega: "PARCIAL" | "FINAL"
 }
 
 export interface AvaliarOrientacaoProps {
     tfgId: string
-    professorId: string
     status: boolean
     justificativa?: string
 }
@@ -45,7 +42,7 @@ export interface TfgHttpGateway {
     cadastrar(props: CadastrarTccProps): Promise<void>
     buscar(id: string): Promise<any>
     listar(filtros?: FiltroProps): Promise<any[]>
-    avaliarNotaParcial(props: AvaliarNotaParcialProps): Promise<void>
+    avaliarNotaTfg(props: AvaliarTfgProps): Promise<void>
     avaliarOrientacao(props: AvaliarOrientacaoProps): Promise<void>
     cadastrarBanca(props: CadastrarBancaProps): Promise<void>
 }

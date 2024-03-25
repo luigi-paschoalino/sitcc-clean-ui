@@ -1,6 +1,6 @@
 import { HttpServiceImpl } from "../../infra/httpService"
 import {
-    AvaliarNotaParcialProps,
+    AvaliarTfgProps,
     AvaliarOrientacaoProps,
     CadastrarBancaProps,
     CadastrarTccProps,
@@ -34,9 +34,11 @@ export class TfgHttpGatewayImpl implements TfgHttpGateway {
         return response.data
     }
 
-    async avaliarNotaParcial(props: AvaliarNotaParcialProps): Promise<void> {
+    async avaliarNotaTfg(props: AvaliarTfgProps): Promise<void> {
         await this.httpService.post(
-            `${process.env.REACT_APP_BACKEND_URL}/tfg/nota-parcial`,
+            `${process.env.REACT_APP_BACKEND_URL}/tfg/${
+                props.tipoEntrega === "PARCIAL" ? "nota-parcial" : "nota-final"
+            }`,
             props,
             true,
         )
