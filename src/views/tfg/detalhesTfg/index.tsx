@@ -2,7 +2,7 @@ import Container from "@mui/material/Container"
 import InputLabel from "@mui/material/InputLabel"
 import TextField from "@mui/material/TextField"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { HttpServiceImpl } from "../../../infra/httpService"
 import { TfgHttpGatewayImpl } from "../../../@tfg/infra/Tfg.gateway"
 import { BuscarTfgQuery } from "../../../@tfg/application/BuscarTfg.query"
@@ -10,15 +10,18 @@ import ModalAvaliarEntrega from "./modalEntregaParcial"
 import { AvaliarNotaTfgUsecase } from "../../../@tfg/application/AvaliarNotaTfg.usecase"
 import MessageSnackbar from "../../../components/MessageSnackbar"
 import ModalAvaliarOrientacao from "./modalAvaliarOrientacao"
+import { AvaliarOrientacaoUsecase } from "../../../@tfg/application/AvaliarOrientacaoTfg.usecase"
 
 //HTTP Service
 const httpService = new HttpServiceImpl()
 const tfgGateway = new TfgHttpGatewayImpl(httpService)
 const buscarTfgQuery = new BuscarTfgQuery(tfgGateway)
 const avaliarTfgUsecase = new AvaliarNotaTfgUsecase(tfgGateway)
+const avaliarOrientacaoUsecase = new AvaliarOrientacaoUsecase(tfgGateway)
 
 function DetalhesTfg() {
     const { id } = useParams<{ id: string }>()
+    const navigate = useNavigate()
 
     // Snackbar
     const [snackbarSeverity, setSnackbarSeverity] = useState<
@@ -93,9 +96,11 @@ function DetalhesTfg() {
                         ? "FINAL"
                         : "PARCIAL",
             })
+            handleCloseModal()
             setSnackbarSeverity("success")
             setSnackbarMessage("TFG avaliado com sucesso")
-            handleCloseModal()
+
+            navigate("/")
         } catch (error) {
             setSnackbarSeverity("error")
             setSnackbarMessage("Erro ao avaliar TFG")
@@ -107,13 +112,17 @@ function DetalhesTfg() {
         justificativa?: string,
     ) {
         try {
-            await tfgGateway.avaliarOrientacao({
+            await avaliarOrientacaoUsecase.execute({
                 tfgId: id ?? "",
                 status: orientacao,
                 justificativa: !orientacao ? justificativa : undefined,
             })
+            handleCloseModal()
             setSnackbarSeverity("success")
             setSnackbarMessage("Orientação avaliada com sucesso")
+            setTimeout(() => {
+                navigate("/")
+            }, 6000)
         } catch (error) {
             setSnackbarSeverity("error")
             setSnackbarMessage("Erro ao avaliar orientação")
@@ -188,12 +197,6 @@ function DetalhesTfg() {
                                 </span>
                             </div>
                         </Container>
-                        <MessageSnackbar
-                            severity={snackbarSeverity}
-                            message={snackbarMessage}
-                            open={showSnackbar}
-                            handleClose={() => setShowSnackbar(false)}
-                        />
                         <InputLabel
                             style={{ textAlign: "left" }}
                             className={"mt-2 mb-0"}
@@ -386,6 +389,13 @@ function DetalhesTfg() {
                     </div>
                 </div>
             </Container>
+
+            <MessageSnackbar
+                severity={snackbarSeverity}
+                message={snackbarMessage}
+                open={showSnackbar}
+                handleClose={() => setShowSnackbar(false)}
+            />
 
             <ModalAvaliarEntrega
                 show={showModalNota}
