@@ -1,25 +1,24 @@
 import { InputLabel, TextField } from "@mui/material"
+import { useState } from "react"
 import { Modal } from "react-bootstrap"
 
 interface ModalAvaliarEntregaParcialProps {
     show: boolean
     aluno: string
-    nota: number
     tipoEntrega: "PARCIAL" | "FINAL"
     handleClose: () => void
-    setNota: (nota: number) => void
-    avaliar: () => void
+    avaliar: (nota: number) => void
 }
 
 export default function ModalAvaliarEntrega({
     show,
     aluno,
-    nota,
     tipoEntrega,
     handleClose,
-    setNota,
     avaliar,
 }: ModalAvaliarEntregaParcialProps) {
+    const [nota, setNota] = useState<number>(0)
+
     return (
         <Modal
             size="lg"
@@ -37,7 +36,8 @@ export default function ModalAvaliarEntrega({
             </Modal.Header>
             <Modal.Body>
                 <p style={{ fontSize: "1.2rem" }}>
-                    Esta será a nota parcial de {aluno}. Avalie com cuidado!
+                    Esta será a nota {tipoEntrega.toLocaleLowerCase()} de{" "}
+                    {aluno}. Avalie com cuidado!
                 </p>
                 <div className="row">
                     <div className="col">
@@ -74,7 +74,7 @@ export default function ModalAvaliarEntrega({
                     type="button"
                     className="btn btn-primary"
                     disabled={nota < 0 || nota > 10}
-                    onClick={avaliar}
+                    onClick={() => avaliar(nota)}
                 >
                     Avaliar
                 </button>

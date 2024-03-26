@@ -35,8 +35,8 @@ export class TfgHttpGatewayImpl implements TfgHttpGateway {
     }
 
     async avaliarNotaTfg(props: AvaliarTfgProps): Promise<void> {
-        await this.httpService.post(
-            `${process.env.REACT_APP_BACKEND_URL}/tfg/${
+        await this.httpService.put(
+            `${process.env.REACT_APP_BACKEND_URL}/tfg/${props.tfgId}/${
                 props.tipoEntrega === "PARCIAL" ? "nota-parcial" : "nota-final"
             }`,
             props,

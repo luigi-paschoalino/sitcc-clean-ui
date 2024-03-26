@@ -30,11 +30,6 @@ function DetalhesTfg() {
     const [snackbarMessage, setSnackbarMessage] = useState<string>("")
     const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
 
-    // Avaliação orientação
-
-    // Avaliação entrega
-    const [nota, setNota] = useState<number>(0)
-
     // Dados TFG
     const [preenchimentoTfg, setPreenchimentoTfg] = useState({
         id: "",
@@ -86,21 +81,22 @@ function DetalhesTfg() {
         )
     }
 
-    async function avaliarNota() {
+    async function avaliarNota(nota: number) {
         try {
             await avaliarTfgUsecase.execute({
                 tfgId: id ?? "",
-                nota: nota,
+                nota,
                 tipoEntrega:
-                    preenchimentoTfg.status === "ENTREGA_PARCIAL_AVALIADA"
+                    preenchimentoTfg.status === "ENTREGA_FINAL"
                         ? "FINAL"
                         : "PARCIAL",
             })
             handleCloseModal()
             setSnackbarSeverity("success")
             setSnackbarMessage("TFG avaliado com sucesso")
-
-            navigate("/")
+            setTimeout(() => {
+                navigate("/")
+            }, 6000)
         } catch (error) {
             setSnackbarSeverity("error")
             setSnackbarMessage("Erro ao avaliar TFG")
@@ -140,8 +136,6 @@ function DetalhesTfg() {
         }
         getTfg(id ?? "")
     }, [id])
-
-    useEffect(() => {})
 
     return (
         <div>
@@ -400,14 +394,12 @@ function DetalhesTfg() {
             <ModalAvaliarEntrega
                 show={showModalNota}
                 aluno={preenchimentoTfg.aluno}
-                nota={nota}
                 tipoEntrega={
-                    preenchimentoTfg.status === "ENTREGA_PARCIAL_AVALIADA"
+                    preenchimentoTfg.status === "ENTREGA_FINAL"
                         ? "FINAL"
                         : "PARCIAL"
                 }
                 handleClose={handleCloseModal}
-                setNota={setNota}
                 avaliar={avaliarNota}
             />
 
