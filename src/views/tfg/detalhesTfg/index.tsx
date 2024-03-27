@@ -11,6 +11,7 @@ import { AvaliarNotaTfgUsecase } from "../../../@tfg/application/AvaliarNotaTfg.
 import MessageSnackbar from "../../../components/MessageSnackbar"
 import ModalAvaliarOrientacao from "./modalAvaliarOrientacao"
 import { AvaliarOrientacaoUsecase } from "../../../@tfg/application/AvaliarOrientacaoTfg.usecase"
+import FileDownload from "../../../components/FileDownload"
 
 //HTTP Service
 const httpService = new HttpServiceImpl()
@@ -74,7 +75,7 @@ function DetalhesTfg() {
             ![
                 "ORIENTACAO_ACEITA",
                 "ORIENTACAO_RECUSADA",
-                "ENTREGA_PARCIAL_AVALIADA",
+                "ENTREGA_PARCIAL_APROVADA",
                 "APROVADO",
                 "REPROVADO",
             ].includes(preenchimentoTfg.status)
@@ -123,6 +124,13 @@ function DetalhesTfg() {
             setSnackbarSeverity("error")
             setSnackbarMessage("Erro ao avaliar orientação")
         }
+    }
+
+    function download(id: string, tipoEntrega: "PARCIAL" | "FINAL") {
+        console.log(
+            `Download do TFG ${tipoEntrega.toLocaleLowerCase()} com id: `,
+            id,
+        )
     }
 
     useEffect(() => {
@@ -362,6 +370,42 @@ function DetalhesTfg() {
                             disabled={true}
                             value={preenchimentoTfg.resultadosEsperados}
                         />
+                        <InputLabel
+                            style={{ textAlign: "left" }}
+                            className={"mt-2 mb-0"}
+                            id="label-resultados"
+                        >
+                            Documento
+                        </InputLabel>
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                width: "20%",
+                            }}
+                        >
+                            {/* TODO: melhorar esse componente de download. Tá horrível */}
+                            <FileDownload
+                                texto="TFG parcial"
+                                enabled={[
+                                    "ENTREGA_PARCIAL_ENVIADA",
+                                    "ENTREGA_PARCIAL_APROVADA",
+                                    "REPROVADO",
+                                    "APROVADO",
+                                    "ENTREGA_FINAL",
+                                ].includes(preenchimentoTfg.status)}
+                                download={() => download(id ?? "", "PARCIAL")}
+                            />
+                            <FileDownload
+                                texto="TFG final"
+                                enabled={[
+                                    "REPROVADO",
+                                    "APROVADO",
+                                    "ENTREGA_FINAL",
+                                ].includes(preenchimentoTfg.status)}
+                                download={() => download(id ?? "", "FINAL")}
+                            />
+                        </div>
                     </div>
                     <div className="mt-3" style={{ width: "100%" }}>
                         {displayAvaliarButton() ? (

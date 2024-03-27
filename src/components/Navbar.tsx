@@ -134,10 +134,10 @@ export default function Navbar() {
                                     ""
                                 )}
                                 <NavDropdown.Item href="/tfgs">
-                                    Listar Orientações
+                                    Minhas Orientações
                                 </NavDropdown.Item>
-                                <NavDropdown.Item href="/avaliar-tfg">
-                                    Avaliar TFG
+                                <NavDropdown.Item href="/bancas">
+                                    Minhas Bancas
                                 </NavDropdown.Item>
                             </NavDropdown>
                         ) : (
