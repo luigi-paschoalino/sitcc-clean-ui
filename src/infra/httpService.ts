@@ -1,9 +1,14 @@
-import axios from "axios"
+import axios, { AxiosRequestConfig } from "axios"
 
 export class HttpServiceImpl {
-    async get(url: string, auth: boolean): Promise<any> {
+    async get(
+        url: string,
+        auth: boolean,
+        options?: AxiosRequestConfig,
+    ): Promise<any> {
         if (auth) {
             return axios.get(url, {
+                ...options,
                 headers: {
                     Authorization: localStorage.getItem("authToken"),
                 },

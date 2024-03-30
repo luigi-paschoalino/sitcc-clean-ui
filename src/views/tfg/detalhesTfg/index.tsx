@@ -12,6 +12,7 @@ import MessageSnackbar from "../../../components/MessageSnackbar"
 import ModalAvaliarOrientacao from "./modalAvaliarOrientacao"
 import { AvaliarOrientacaoUsecase } from "../../../@tfg/application/AvaliarOrientacaoTfg.usecase"
 import FileDownload from "../../../components/FileDownload"
+import { BaixarTfgUsecase } from "../../../@tfg/application/BaixarTfg.usecase"
 
 //HTTP Service
 const httpService = new HttpServiceImpl()
@@ -19,6 +20,7 @@ const tfgGateway = new TfgHttpGatewayImpl(httpService)
 const buscarTfgQuery = new BuscarTfgQuery(tfgGateway)
 const avaliarTfgUsecase = new AvaliarNotaTfgUsecase(tfgGateway)
 const avaliarOrientacaoUsecase = new AvaliarOrientacaoUsecase(tfgGateway)
+const baixarTfgUsecase = new BaixarTfgUsecase(tfgGateway)
 
 function DetalhesTfg() {
     const { id } = useParams<{ id: string }>()
@@ -126,11 +128,19 @@ function DetalhesTfg() {
         }
     }
 
-    function download(id: string, tipoEntrega: "PARCIAL" | "FINAL") {
-        console.log(
-            `Download do TFG ${tipoEntrega.toLocaleLowerCase()} com id: `,
-            id,
-        )
+    async function download(id: string, tipoEntrega: "PARCIAL" | "FINAL") {
+        try {
+            const result = await baixarTfgUsecase.execute({
+                id,
+                tipoEntrega,
+            })
+
+            window.open(result, "_blank")
+        } catch (error) {
+            console.log(error)
+            setSnackbarSeverity("error")
+            setSnackbarMessage("Erro ao avaliar orientação")
+        }
     }
 
     useEffect(() => {

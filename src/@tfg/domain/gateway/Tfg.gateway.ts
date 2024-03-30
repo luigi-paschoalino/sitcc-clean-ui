@@ -38,6 +38,11 @@ export interface AvaliarOrientacaoProps {
     justificativa?: string
 }
 
+export interface BaixarTfgUsecaseProps {
+    id: string
+    tipoEntrega: "PARCIAL" | "FINAL"
+}
+
 export interface TfgHttpGateway {
     cadastrar(props: CadastrarTccProps): Promise<void>
     buscar(id: string): Promise<any>
@@ -45,4 +50,5 @@ export interface TfgHttpGateway {
     avaliarNotaTfg(props: AvaliarTfgProps): Promise<void>
     avaliarOrientacao(props: AvaliarOrientacaoProps): Promise<void>
     cadastrarBanca(props: CadastrarBancaProps): Promise<void>
+    baixarTfg(props: BaixarTfgUsecaseProps): Promise<any>
 }

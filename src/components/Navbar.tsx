@@ -10,49 +10,14 @@ import {
     NavMenu,
 } from "./NavbarElements"
 
-enum UserTccStatus {
-    MatriculaAprovada = "matricula_aprovada",
-    RegistroDeProjetoAprovado = "registro_de_projeto_aprovado",
-    TfgParcialAprovado = "tfg_parcial_aprovado",
-    SemTcc = "sem_tcc",
-    TfgFinalEnviado = "tfg_final_enviado",
-}
-
 export default function Navbar() {
     const [auth, setAuth] = useState<boolean>(false)
     const userType = localStorage.getItem("tipo")
     const idUsuario = localStorage.getItem("userId")
-    const [userTccStatus, setUserTccStatus] = useState<UserTccStatus | null>(
-        null,
-    )
 
     useEffect(() => {
         const token = localStorage.getItem("authToken")
         setAuth(token ? true : false)
-        setUserTccStatus(UserTccStatus.SemTcc)
-
-        /*if (userType === "1") {
-            axios
-                .get(
-                    `${process.env.REACT_APP_API_URL}/users/check/${idUsuario}`,
-                )
-                .then((response) => {
-                    if (response.data.code === 200) {
-                        setUserTccStatus(response.data.status as UserTccStatus)
-                        localStorage.setItem(
-                            "userTccStatus",
-                            response.data.status,
-                        )
-                        localStorage.setItem("userTccId", response.data.id)
-                    } else {
-                        setUserTccStatus(UserTccStatus.SemTcc)
-                        localStorage.setItem(
-                            "userTccStatus",
-                            UserTccStatus.SemTcc,
-                        )
-                    }
-                })
-        }*/
     }, [userType, idUsuario])
 
     return (
@@ -72,44 +37,16 @@ export default function Navbar() {
                             <>
                                 <NavDropdown title="Meu TFG">
                                     {(() => {
-                                        switch (userTccStatus) {
-                                            case "matricula_aprovada":
-                                                return (
-                                                    <NavDropdown.Item href="/registro-tfg">
-                                                        Registro de Tfg
-                                                    </NavDropdown.Item>
-                                                )
-                                            case "registro_de_projeto_aprovado":
-                                                return (
-                                                    <NavDropdown.Item href="/enviar-tcc-parcial">
-                                                        Enviar TCC Parcial
-                                                    </NavDropdown.Item>
-                                                )
-                                            case "tfg_parcial_aprovado":
-                                                return (
-                                                    <NavDropdown.Item href="/enviar-tcc-final">
-                                                        Enviar TCC Final
-                                                    </NavDropdown.Item>
-                                                )
-                                            case "sem_tcc":
-                                                return (
-                                                    <NavDropdown.Item href="/matricula-tfg">
-                                                        Realizar Matrícula
-                                                    </NavDropdown.Item>
-                                                )
-                                            case "tfg_final_enviado":
-                                                return (
-                                                    <NavDropdown.Item href="/criar-banca">
-                                                        Marcar Banca Avalidadora
-                                                    </NavDropdown.Item>
-                                                )
-                                            default:
-                                                return (
-                                                    <NavDropdown.Item href="/status-tcc">
-                                                        Status TCC
-                                                    </NavDropdown.Item>
-                                                )
-                                        }
+                                        return (
+                                            <>
+                                                <NavDropdown.Item href="/registro-tfg">
+                                                    Realizar Matrícula
+                                                </NavDropdown.Item>
+                                                <NavDropdown.Item href="/meu-tfg">
+                                                    Acompanhar TFG
+                                                </NavDropdown.Item>
+                                            </>
+                                        )
                                     })()}
                                 </NavDropdown>
                             </>

@@ -1,7 +1,8 @@
 import { HttpServiceImpl } from "../../infra/httpService"
 import {
-    AvaliarTfgProps,
     AvaliarOrientacaoProps,
+    AvaliarTfgProps,
+    BaixarTfgUsecaseProps,
     CadastrarBancaProps,
     CadastrarTccProps,
     TfgHttpGateway,
@@ -50,6 +51,12 @@ export class TfgHttpGatewayImpl implements TfgHttpGateway {
             props,
             true,
         )
+    }
+
+    async baixarTfg(props: BaixarTfgUsecaseProps): Promise<any> {
+        return `${process.env.REACT_APP_BACKEND_URL}/tfg/${props.id}/download/${
+            props.tipoEntrega === "PARCIAL" ? "parcial" : "final"
+        }`
     }
 
     async cadastrarBanca(props: CadastrarBancaProps): Promise<void> {
