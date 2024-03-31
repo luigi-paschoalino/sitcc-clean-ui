@@ -12,11 +12,6 @@ export interface CadastrarTccProps {
     resultadosEsperados: string
 }
 
-export interface FiltroProps {
-    orientadorId?: string
-    alunoId?: string
-}
-
 export interface CadastrarBancaProps {
     id: string
     id_professor: string
@@ -29,7 +24,7 @@ export interface CadastrarBancaProps {
 export interface AvaliarTfgProps {
     tfgId: string
     nota: number
-    tipoEntrega: "PARCIAL" | "FINAL"
+    tipoEntrega: "parcial" | "final"
 }
 
 export interface AvaliarOrientacaoProps {
@@ -40,15 +35,22 @@ export interface AvaliarOrientacaoProps {
 
 export interface BaixarTfgUsecaseProps {
     id: string
-    tipoEntrega: "PARCIAL" | "FINAL"
+    tipoEntrega: "parcial" | "final"
+}
+
+export interface EnviarTfgUsecaseProps {
+    id: string
+    tipoEntrega: "parcial" | "final"
+    arquivo: File
 }
 
 export interface TfgHttpGateway {
     cadastrar(props: CadastrarTccProps): Promise<void>
     buscar(id: string): Promise<any>
-    listar(filtros?: FiltroProps): Promise<any[]>
+    listar(): Promise<any[]>
     avaliarNotaTfg(props: AvaliarTfgProps): Promise<void>
     avaliarOrientacao(props: AvaliarOrientacaoProps): Promise<void>
     cadastrarBanca(props: CadastrarBancaProps): Promise<void>
     baixarTfg(props: BaixarTfgUsecaseProps): Promise<any>
+    enviarTfg(props: EnviarTfgUsecaseProps): Promise<any>
 }

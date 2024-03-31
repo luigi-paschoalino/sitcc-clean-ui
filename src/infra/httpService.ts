@@ -17,9 +17,15 @@ export class HttpServiceImpl {
         return axios.get(url)
     }
 
-    async post(url: string, body: any, auth: boolean): Promise<any> {
+    async post(
+        url: string,
+        body: any,
+        auth: boolean,
+        options?: AxiosRequestConfig,
+    ): Promise<any> {
         if (auth) {
             return axios.post(url, body, {
+                ...options,
                 headers: {
                     Authorization: localStorage.getItem("authToken"),
                 },

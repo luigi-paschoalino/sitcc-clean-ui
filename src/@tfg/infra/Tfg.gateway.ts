@@ -5,6 +5,7 @@ import {
     BaixarTfgUsecaseProps,
     CadastrarBancaProps,
     CadastrarTccProps,
+    EnviarTfgUsecaseProps,
     TfgHttpGateway,
 } from "../domain/gateway/Tfg.gateway"
 
@@ -37,9 +38,9 @@ export class TfgHttpGatewayImpl implements TfgHttpGateway {
 
     async avaliarNotaTfg(props: AvaliarTfgProps): Promise<void> {
         await this.httpService.put(
-            `${process.env.REACT_APP_BACKEND_URL}/tfg/${props.tfgId}/${
-                props.tipoEntrega === "PARCIAL" ? "nota-parcial" : "nota-final"
-            }`,
+            `${process.env.REACT_APP_BACKEND_URL}/tfg/${
+                props.tfgId
+            }/${`nota-${props.tipoEntrega}`}`,
             props,
             true,
         )
@@ -54,9 +55,22 @@ export class TfgHttpGatewayImpl implements TfgHttpGateway {
     }
 
     async baixarTfg(props: BaixarTfgUsecaseProps): Promise<any> {
-        return `${process.env.REACT_APP_BACKEND_URL}/tfg/${props.id}/download/${
-            props.tipoEntrega === "PARCIAL" ? "parcial" : "final"
-        }`
+        return `${process.env.REACT_APP_BACKEND_URL}/tfg/${props.id}/download/${props.tipoEntrega}`
+    }
+
+    async enviarTfg(props: EnviarTfgUsecaseProps) {
+        const formData = new FormData()
+        formData.append("file", props.arquivo)
+        await this.httpService.post(
+            `${process.env.REACT_APP_BACKEND_URL}/tfg/${props.id}/${props.tipoEntrega}`,
+            formData,
+            true,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            },
+        )
     }
 
     async cadastrarBanca(props: CadastrarBancaProps): Promise<void> {

@@ -6,39 +6,46 @@ import { ListarTfgsQuery } from "../../../@tfg/application/ListarTfgs.query"
 import { Tfg } from "../../../@tfg/domain/entities/Tfg"
 import OrientacaoBar from "./orientacaoBar"
 import { useNavigate } from "react-router-dom"
+import { TIPO_USUARIO } from "../../../@usuario/domain/entities/Usuario"
 
 //HTTP Service
 const httpService = new HttpServiceImpl()
 const tfgGateway = new TfgHttpGatewayImpl(httpService)
 const listarTfgsQuery = new ListarTfgsQuery(tfgGateway)
 
-function ListarOrientacoes() {
-    const [orientacoes, setOrientacoes] = useState<Tfg[]>([])
+function ListagemTfgs() {
+    const [tfgs, setTfgs] = useState<Tfg[]>([])
     const navigate = useNavigate()
 
     useEffect(() => {
-        async function getOrientacoes(): Promise<void> {
-            const orientacoes = await listarTfgsQuery.execute()
-            setOrientacoes(orientacoes)
+        async function getTfgs(): Promise<void> {
+            const tfgs = await listarTfgsQuery.execute()
+            setTfgs(tfgs)
         }
-        getOrientacoes()
+        getTfgs()
     }, [])
 
-    // TODO: navegar para a página de detalhes do TFG ao clicar no botão
     return (
         <div>
             <Container component="main" maxWidth="sm">
                 <div className="mt-3 mt-md-5">
-                    {orientacoes.length ? (
+                    {tfgs.length ? (
                         <div>
                             <h2 className="text-center pt-3 pb-5">
-                                Orientações
+                                {localStorage.getItem("tipo") ===
+                                TIPO_USUARIO.ALUNO
+                                    ? "Meus TFGs"
+                                    : "Orientações"}
                             </h2>
                             <div>
-                                {orientacoes.map((orientacao, index) => (
+                                {tfgs.map((tfg, index) => (
                                     <OrientacaoBar
                                         key={index}
-                                        tfg={orientacao}
+                                        tfg={tfg}
+                                        displayAtivo={
+                                            localStorage.getItem("tipo") ===
+                                            TIPO_USUARIO.ALUNO
+                                        }
                                         redirect={(id: string) => {
                                             navigate(`/tfgs/${id}`)
                                         }}
@@ -57,4 +64,4 @@ function ListarOrientacoes() {
     )
 }
 
-export default ListarOrientacoes
+export default ListagemTfgs

@@ -35,15 +35,15 @@ export default function Navbar() {
                     <NavMenu>
                         {userType === "ALUNO" /*&& userTccStatus !== null*/ ? (
                             <>
-                                <NavDropdown title="Meu TFG">
+                                <NavDropdown title="TFG">
                                     {(() => {
                                         return (
                                             <>
                                                 <NavDropdown.Item href="/registro-tfg">
                                                     Realizar Matrícula
                                                 </NavDropdown.Item>
-                                                <NavDropdown.Item href="/meu-tfg">
-                                                    Acompanhar TFG
+                                                <NavDropdown.Item href="/tfgs">
+                                                    Meus TFGs
                                                 </NavDropdown.Item>
                                             </>
                                         )

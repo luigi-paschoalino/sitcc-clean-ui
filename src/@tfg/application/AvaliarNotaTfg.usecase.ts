@@ -3,7 +3,7 @@ import { TfgHttpGateway } from "../domain/gateway/Tfg.gateway"
 export interface AvaliarNotaTfgUsecaseProps {
     tfgId: string
     nota: number
-    tipoEntrega: "PARCIAL" | "FINAL"
+    tipoEntrega: "parcial" | "final"
 }
 
 export class AvaliarNotaTfgUsecase {

@@ -13,6 +13,9 @@ import ModalAvaliarOrientacao from "./modalAvaliarOrientacao"
 import { AvaliarOrientacaoUsecase } from "../../../@tfg/application/AvaliarOrientacaoTfg.usecase"
 import FileDownload from "../../../components/FileDownload"
 import { BaixarTfgUsecase } from "../../../@tfg/application/BaixarTfg.usecase"
+import { TIPO_USUARIO } from "../../../@usuario/domain/entities/Usuario"
+import { EnviarTfgUsecase } from "../../../@tfg/application/EnviarTfg.usecase"
+import { Button, CircularProgress, Input } from "@mui/material"
 
 //HTTP Service
 const httpService = new HttpServiceImpl()
@@ -21,6 +24,7 @@ const buscarTfgQuery = new BuscarTfgQuery(tfgGateway)
 const avaliarTfgUsecase = new AvaliarNotaTfgUsecase(tfgGateway)
 const avaliarOrientacaoUsecase = new AvaliarOrientacaoUsecase(tfgGateway)
 const baixarTfgUsecase = new BaixarTfgUsecase(tfgGateway)
+const enviarTfgUsecase = new EnviarTfgUsecase(tfgGateway)
 
 function DetalhesTfg() {
     const { id } = useParams<{ id: string }>()
@@ -32,6 +36,13 @@ function DetalhesTfg() {
     >("success")
     const [snackbarMessage, setSnackbarMessage] = useState<string>("")
     const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
+
+    // Upload TFG
+    const [file, setFile] = useState<File | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) setFile(event.target.files[0])
+    }
 
     // Dados TFG
     const [preenchimentoTfg, setPreenchimentoTfg] = useState({
@@ -84,6 +95,16 @@ function DetalhesTfg() {
         )
     }
 
+    function displayUploadEntregaButton() {
+        return (
+            localStorage.getItem("tipo") === TIPO_USUARIO.ALUNO &&
+            localStorage.getItem("nome") === preenchimentoTfg.aluno &&
+            ["ORIENTACAO_ACEITA", "ENTREGA_PARCIAL_APROVADA"].includes(
+                preenchimentoTfg.status,
+            )
+        )
+    }
+
     async function avaliarNota(nota: number) {
         try {
             await avaliarTfgUsecase.execute({
@@ -91,8 +112,8 @@ function DetalhesTfg() {
                 nota,
                 tipoEntrega:
                     preenchimentoTfg.status === "ENTREGA_FINAL"
-                        ? "FINAL"
-                        : "PARCIAL",
+                        ? "final"
+                        : "parcial",
             })
             handleCloseModal()
             setSnackbarSeverity("success")
@@ -116,6 +137,7 @@ function DetalhesTfg() {
                 status: orientacao,
                 justificativa: !orientacao ? justificativa : undefined,
             })
+
             handleCloseModal()
             setSnackbarSeverity("success")
             setSnackbarMessage("Orientação avaliada com sucesso")
@@ -128,7 +150,7 @@ function DetalhesTfg() {
         }
     }
 
-    async function download(id: string, tipoEntrega: "PARCIAL" | "FINAL") {
+    async function download(id: string, tipoEntrega: "parcial" | "final") {
         try {
             const result = await baixarTfgUsecase.execute({
                 id,
@@ -140,6 +162,39 @@ function DetalhesTfg() {
             console.log(error)
             setSnackbarSeverity("error")
             setSnackbarMessage("Erro ao avaliar orientação")
+        }
+    }
+
+    async function uploadEntrega() {
+        try {
+            if (!file) throw new Error("Arquivo não informado")
+
+            setIsLoading(true)
+            await enviarTfgUsecase.execute({
+                id: id ?? "",
+                tipoEntrega:
+                    preenchimentoTfg.status === "ENTREGA_PARCIAL_APROVADA"
+                        ? "final"
+                        : "parcial",
+                arquivo: file,
+            })
+
+            setIsLoading(false)
+
+            setShowSnackbar(true)
+            setSnackbarSeverity("success")
+            setSnackbarMessage("Entrega realizada com sucesso")
+            setTimeout(() => {
+                navigate("/")
+            }, 6000)
+        } catch (error) {
+            setShowSnackbar(true)
+            setSnackbarSeverity("error")
+            setSnackbarMessage(
+                error instanceof Error
+                    ? error.message
+                    : "Erro ao realizar entrega de TFG",
+            )
         }
     }
 
@@ -392,19 +447,20 @@ function DetalhesTfg() {
                                 display: "flex",
                                 flexDirection: "column",
                                 width: "20%",
+                                gap: "1rem",
                             }}
                         >
                             {/* TODO: melhorar esse componente de download. Tá horrível */}
                             <FileDownload
                                 texto="TFG parcial"
                                 enabled={[
-                                    "ENTREGA_PARCIAL_ENVIADA",
+                                    "ENTREGA_PARCIAL_REALIZADA",
                                     "ENTREGA_PARCIAL_APROVADA",
                                     "REPROVADO",
                                     "APROVADO",
                                     "ENTREGA_FINAL",
                                 ].includes(preenchimentoTfg.status)}
-                                download={() => download(id ?? "", "PARCIAL")}
+                                download={() => download(id ?? "", "parcial")}
                             />
                             <FileDownload
                                 texto="TFG final"
@@ -413,9 +469,47 @@ function DetalhesTfg() {
                                     "APROVADO",
                                     "ENTREGA_FINAL",
                                 ].includes(preenchimentoTfg.status)}
-                                download={() => download(id ?? "", "FINAL")}
+                                download={() => download(id ?? "", "final")}
                             />
                         </div>
+                        {/* TODO: atualizar botão de entrega */}
+                        {displayUploadEntregaButton() ? (
+                            <div
+                                style={{
+                                    textAlign: "left",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    width: "50%",
+                                }}
+                            >
+                                <InputLabel
+                                    className={"mt-2 mb-0"}
+                                    id="label-resultados"
+                                >
+                                    Entrega
+                                </InputLabel>
+                                <div>
+                                    <Input
+                                        type="file"
+                                        color="primary"
+                                        onChange={handleFileChange}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={uploadEntrega}
+                                        disabled={!file || isLoading}
+                                        sx={{ mt: 2 }}
+                                    >
+                                        {isLoading ? (
+                                            <CircularProgress size={24} />
+                                        ) : (
+                                            "Enviar Arquivo"
+                                        )}
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : undefined}
                     </div>
                     <div className="mt-3" style={{ width: "100%" }}>
                         {displayAvaliarButton() ? (

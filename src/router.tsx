@@ -11,12 +11,11 @@ import Inicio from "./views/inicio/inicio"
 import CriarInstituto from "./views/institutos/criarInstituto"
 import Login from "./views/login/login"
 import Logout from "./views/login/logout"
-import EnviarTccParcial from "./views/tfg/enviarTccParcial"
+import DetalhesTfg from "./views/tfg/detalhesTfg"
+import ListagemTfgs from "./views/tfg/listarOrientacoes"
 import MatriculaTfg from "./views/tfg/matriculaTfg"
 import CriarUniversidade from "./views/universidades/criarUniversidade"
 import CriarUsuario from "./views/usuario/criarUsuario"
-import ListarOrientacoes from "./views/tfg/listarOrientacoes"
-import DetalhesTfg from "./views/tfg/detalhesTfg"
 
 const httpService = new HttpServiceImpl()
 const authGateway = new AuthHttpGatewayImpl(httpService)
@@ -107,7 +106,7 @@ const AppRouter: React.FC = () => (
                 index
                 element={
                     <PrivateRoute>
-                        <ListarOrientacoes />
+                        <ListagemTfgs />
                     </PrivateRoute>
                 }
             />
@@ -144,7 +143,6 @@ const AppRouter: React.FC = () => (
                 </PrivateRoute>
             }
         />
-        <Route path="/envioParcial" element={<EnviarTccParcial />} />
     </Routes>
 )
 

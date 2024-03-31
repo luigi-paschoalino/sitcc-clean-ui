@@ -2,10 +2,20 @@ import { Tfg } from "../../../../../@tfg/domain/entities/Tfg"
 
 interface OrientacaoDataProps {
     tfg: Tfg
+    displayAtivo: boolean
     redirect: (id: string) => void
 }
 
-export default function OrientacaoData({ tfg, redirect }: OrientacaoDataProps) {
+export default function OrientacaoData({
+    tfg,
+    displayAtivo,
+    redirect,
+}: OrientacaoDataProps) {
+    function isAtivo(): boolean {
+        return !["APROVADO", "REPROVADO", "ORIENTACAO_RECUSADA"].includes(
+            tfg.getStatus(),
+        )
+    }
     return (
         <div
             style={{
@@ -32,6 +42,17 @@ export default function OrientacaoData({ tfg, redirect }: OrientacaoDataProps) {
             <div style={{ marginBottom: "0.5rem" }}>
                 <strong>Status:</strong> {tfg.getStatus()}
             </div>
+
+            {isAtivo() && displayAtivo && (
+                <div
+                    style={{
+                        marginBottom: "0.5rem",
+                        color: "green",
+                    }}
+                >
+                    <strong>ATIVO</strong>
+                </div>
+            )}
 
             <div style={{ alignSelf: "flex-end", marginTop: "15px" }}>
                 <button
