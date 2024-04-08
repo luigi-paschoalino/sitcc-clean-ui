@@ -5,15 +5,13 @@ import { Modal } from "react-bootstrap"
 interface ModalAvaliarEntregaParcialProps {
     show: boolean
     aluno: string
-    tipoEntrega: "PARCIAL" | "FINAL"
     handleClose: () => void
     avaliar: (nota: number) => void
 }
 
-export default function ModalAvaliarEntrega({
+export default function ModalAvaliarEntregaParcial({
     show,
     aluno,
-    tipoEntrega,
     handleClose,
     avaliar,
 }: ModalAvaliarEntregaParcialProps) {
@@ -36,8 +34,7 @@ export default function ModalAvaliarEntrega({
             </Modal.Header>
             <Modal.Body>
                 <p style={{ fontSize: "1.2rem" }}>
-                    Esta será a nota {tipoEntrega.toLocaleLowerCase()} de{" "}
-                    {aluno}. Avalie com cuidado!
+                    Esta será a nota parcial de {aluno}. Avalie com cuidado!
                 </p>
                 <div className="row">
                     <div className="col">

@@ -21,10 +21,17 @@ export interface CadastrarBancaProps {
     nota_trabalho: number
 }
 
-export interface AvaliarTfgProps {
+export interface AvaliarEntregaParcialTfgProps {
     tfgId: string
     nota: number
-    tipoEntrega: "parcial" | "final"
+    tipoEntrega: "parcial"
+}
+
+export interface AvaliarEntregaFinalTfgProps {
+    tfgId: string
+    notaApresentacao: number
+    notaTrabalho: number
+    tipoEntrega: "final"
 }
 
 export interface AvaliarOrientacaoProps {
@@ -48,9 +55,12 @@ export interface TfgHttpGateway {
     cadastrar(props: CadastrarTccProps): Promise<void>
     buscar(id: string): Promise<any>
     listar(): Promise<any[]>
-    avaliarNotaTfg(props: AvaliarTfgProps): Promise<void>
+    avaliarNotaTfg(
+        props: AvaliarEntregaParcialTfgProps | AvaliarEntregaFinalTfgProps,
+    ): Promise<void>
     avaliarOrientacao(props: AvaliarOrientacaoProps): Promise<void>
     cadastrarBanca(props: CadastrarBancaProps): Promise<void>
     baixarTfg(props: BaixarTfgUsecaseProps): Promise<any>
     enviarTfg(props: EnviarTfgUsecaseProps): Promise<any>
+    listarBancas(): Promise<any[]>
 }

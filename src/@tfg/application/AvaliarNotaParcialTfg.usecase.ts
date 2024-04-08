@@ -1,15 +1,15 @@
 import { TfgHttpGateway } from "../domain/gateway/Tfg.gateway"
 
-export interface AvaliarNotaTfgUsecaseProps {
+export interface AvaliarNotaParcialTfgUsecaseProps {
     tfgId: string
     nota: number
-    tipoEntrega: "parcial" | "final"
+    tipoEntrega: "parcial"
 }
 
-export class AvaliarNotaTfgUsecase {
+export class AvaliarNotaParcialTfgUsecase {
     constructor(private tfgHttpGateway: TfgHttpGateway) {}
 
-    async execute(props: AvaliarNotaTfgUsecaseProps): Promise<void> {
+    async execute(props: AvaliarNotaParcialTfgUsecaseProps): Promise<void> {
         return await this.tfgHttpGateway.avaliarNotaTfg(props)
     }
 }

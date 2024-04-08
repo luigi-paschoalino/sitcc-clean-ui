@@ -1,21 +1,64 @@
 export class Banca {
-  constructor(
-    private id: string,
-    private id_professor,
-    private dia_hora,
-    private nota_final,
-    private nota_apresentacao,
-    private nota_trabalho,
-  ) {}
+    constructor(
+        private professorId: string,
+        private segundoProfessorId: string,
+        private data: Date,
+        private tfgId: string,
+        private tfgNome: string,
+        private notaApresentacaoProfessor?: number,
+        private notaApresentacaoSegundoProfessor?: number,
+        private notaTrabalhoProfessor?: number,
+        private notaTrabalhoSegundoProfessor?: number,
+    ) {}
 
-  toJson() {
-    return {
-      id: this.id,
-      id_professor: this.id_professor,
-      dia_hora: this.dia_hora,
-      nota_final: this.nota_final,
-      nota_apresentacao: this.nota_apresentacao,
-      nota_trabalho: this.nota_trabalho,
+    getProfessorId() {
+        return this.professorId
     }
-  }
+
+    getSegundoProfessorId() {
+        return this.segundoProfessorId
+    }
+
+    getData() {
+        return this.data
+    }
+
+    getNotaApresentacaoProfessor() {
+        return this.notaApresentacaoProfessor
+    }
+
+    getNotaApresentacaoSegundoProfessor() {
+        return this.notaApresentacaoSegundoProfessor
+    }
+
+    getNotaTrabalhoProfessor() {
+        return this.notaTrabalhoProfessor
+    }
+
+    getNotaTrabalhoSegundoProfessor() {
+        return this.notaTrabalhoSegundoProfessor
+    }
+
+    getTfgId() {
+        return this.tfgId
+    }
+
+    getTfgNome() {
+        return this.tfgNome
+    }
+
+    toJson() {
+        return {
+            professorId: this.professorId,
+            segundoProfessorId: this.segundoProfessorId,
+            data: this.data,
+            notaApresentacaoProfessor: this.notaApresentacaoProfessor,
+            notaApresentacaoSegundoProfessor:
+                this.notaApresentacaoSegundoProfessor,
+            notaTrabalhoProfessor: this.notaTrabalhoProfessor,
+            notaTrabalhoSegundoProfessor: this.notaTrabalhoSegundoProfessor,
+            tfgId: this.tfgId,
+            tfgNome: this.tfgNome,
+        }
+    }
 }

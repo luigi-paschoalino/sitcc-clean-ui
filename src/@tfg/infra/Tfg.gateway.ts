@@ -1,7 +1,8 @@
 import { HttpServiceImpl } from "../../infra/httpService"
 import {
+    AvaliarEntregaFinalTfgProps,
     AvaliarOrientacaoProps,
-    AvaliarTfgProps,
+    AvaliarEntregaParcialTfgProps,
     BaixarTfgUsecaseProps,
     CadastrarBancaProps,
     CadastrarTccProps,
@@ -36,7 +37,9 @@ export class TfgHttpGatewayImpl implements TfgHttpGateway {
         return response.data
     }
 
-    async avaliarNotaTfg(props: AvaliarTfgProps): Promise<void> {
+    async avaliarNotaTfg(
+        props: AvaliarEntregaParcialTfgProps | AvaliarEntregaFinalTfgProps,
+    ): Promise<void> {
         await this.httpService.put(
             `${process.env.REACT_APP_BACKEND_URL}/tfg/${
                 props.tfgId
@@ -79,5 +82,13 @@ export class TfgHttpGatewayImpl implements TfgHttpGateway {
             props,
             true,
         )
+    }
+
+    async listarBancas(): Promise<any[]> {
+        const response = await this.httpService.get(
+            `${process.env.REACT_APP_BACKEND_URL}/tfg/bancas`,
+            true,
+        )
+        return response.data
     }
 }

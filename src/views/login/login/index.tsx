@@ -48,6 +48,7 @@ function Login() {
             localStorage.setItem("authToken", result.data.token)
             localStorage.setItem("nome", result.data.nome)
             localStorage.setItem("tipo", result.data.tipo)
+            localStorage.setItem("id", result.data.id)
 
             setAuthStatus(true)
             setTimeout(() => {
@@ -62,6 +63,7 @@ function Login() {
         (event: KeyboardEvent<HTMLInputElement>) => {
             if (event.key === "Enter") onSubmit()
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [inputValues.email, inputValues.password],
     )
 

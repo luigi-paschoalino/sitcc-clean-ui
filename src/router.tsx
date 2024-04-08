@@ -16,6 +16,7 @@ import ListagemTfgs from "./views/tfg/listarOrientacoes"
 import MatriculaTfg from "./views/tfg/matriculaTfg"
 import CriarUniversidade from "./views/universidades/criarUniversidade"
 import CriarUsuario from "./views/usuario/criarUsuario"
+import ListagemBancas from "./views/bancas/minhasBancas"
 
 const httpService = new HttpServiceImpl()
 const authGateway = new AuthHttpGatewayImpl(httpService)
@@ -124,6 +125,14 @@ const AppRouter: React.FC = () => (
             element={
                 <PrivateRoute>
                     <CriarBanca />
+                </PrivateRoute>
+            }
+        />
+        <Route
+            path="/bancas"
+            element={
+                <PrivateRoute>
+                    <ListagemBancas />
                 </PrivateRoute>
             }
         />

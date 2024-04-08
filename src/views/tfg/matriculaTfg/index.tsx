@@ -90,7 +90,6 @@ export default function MatriculaTfg() {
 
     async function onSubmit() {
         try {
-            console.log(preenchimentoTfg)
             await cadastrarTccUsecase.execute({
                 orientador: orientadorAtivo.id,
                 coorientador: checked ? coorientadorAtivo.id : undefined,

@@ -1,6 +1,8 @@
 export enum TIPO_USUARIO {
     ALUNO = "ALUNO",
     PROFESSOR = "PROFESSOR",
+    COORDENADOR = "COORDENADOR",
+    ADMINISTRADOR = "ADMINISTRADOR",
 }
 
 export class Usuario {
