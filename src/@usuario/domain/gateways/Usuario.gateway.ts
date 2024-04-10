@@ -1,5 +1,3 @@
-import { TIPO_USUARIO, Usuario } from "../entities/Usuario"
-
 export interface CadastrarUsuarioProps {
     nome: string
     curso: string
@@ -21,7 +19,7 @@ export interface Professor {
 
 export interface UsuarioHttpGateway {
     cadastrar(props: CadastrarUsuarioProps): Promise<any>
-    buscar(id: string): Promise<Usuario>
+    buscar(id: string): Promise<any>
     logar(props: AutenticarProps): Promise<any>
     buscarProfs(): Promise<Professor[]>
 }

@@ -6,9 +6,7 @@ import "./index.css"
 import { HttpServiceImpl } from "./infra/httpService"
 import CriarAtividade from "./views/atividades/criarAtividade"
 import CriarBanca from "./views/bancas/criarBancas"
-import CriarCurso from "./views/cursos/criarCurso"
 import Inicio from "./views/inicio/inicio"
-import CriarInstituto from "./views/institutos/criarInstituto"
 import Login from "./views/login/login"
 import Logout from "./views/login/logout"
 import DetalhesTfg from "./views/tfg/detalhesTfg"
@@ -17,6 +15,7 @@ import MatriculaTfg from "./views/tfg/matriculaTfg"
 import CriarUniversidade from "./views/universidades/criarUniversidade"
 import CriarUsuario from "./views/usuario/criarUsuario"
 import ListagemBancas from "./views/bancas/minhasBancas"
+import CriarCronograma from "./views/cronogramas/criarCronograma"
 
 const httpService = new HttpServiceImpl()
 const authGateway = new AuthHttpGatewayImpl(httpService)
@@ -121,7 +120,7 @@ const AppRouter: React.FC = () => (
             />
         </Route>
         <Route
-            path="/banca"
+            path="/cadastrar-banca"
             element={
                 <PrivateRoute>
                     <CriarBanca />
@@ -136,22 +135,16 @@ const AppRouter: React.FC = () => (
                 </PrivateRoute>
             }
         />
-        <Route
-            path="/criarInstituto"
-            element={
-                <PrivateRoute>
-                    <CriarInstituto />
-                </PrivateRoute>
-            }
-        />
-        <Route
-            path="/criarCurso"
-            element={
-                <PrivateRoute>
-                    <CriarCurso />
-                </PrivateRoute>
-            }
-        />
+        <Route path="/cronogramas">
+            <Route
+                path="criar"
+                element={
+                    <PrivateRoute>
+                        <CriarCronograma />
+                    </PrivateRoute>
+                }
+            />
+        </Route>
     </Routes>
 )
 

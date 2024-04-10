@@ -9,12 +9,44 @@ export class Usuario {
     constructor(
         private id: string,
         private nome: string,
-        private curso: string,
-        private email?: string,
-        private senha?: string,
-        private tipo?: TIPO_USUARIO,
-        private numero?: string,
+        private curso: {
+            id: string
+            nome: string
+            codigo: string
+        },
+        private email: string,
+        private tipo: TIPO_USUARIO,
+        private numero: string,
+        private matricula: string,
     ) {}
+
+    public getId() {
+        return this.id
+    }
+
+    public getNome() {
+        return this.nome
+    }
+
+    public getCurso() {
+        return this.curso
+    }
+
+    public getEmail() {
+        return this.email
+    }
+
+    public getMatricula() {
+        return this.matricula
+    }
+
+    public getTipo() {
+        return this.tipo
+    }
+
+    public getNumero() {
+        return this.numero
+    }
 
     toJson() {
         return {
@@ -22,7 +54,7 @@ export class Usuario {
             curso: this.curso,
             nome: this.nome,
             email: this.email,
-            senha: this.senha,
+            matricula: this.matricula,
             tipo: this.tipo,
             numero: this.numero,
         }

@@ -1,5 +1,4 @@
 import { HttpServiceImpl } from "../../../infra/httpService"
-import { Usuario } from "../../domain/entities/Usuario"
 import {
     AutenticarProps,
     CadastrarUsuarioProps,
@@ -21,11 +20,12 @@ export class UsuarioHttpGatewayImpl implements UsuarioHttpGateway {
         return cadastro.data
     }
 
-    async buscar(id: string): Promise<Usuario> {
-        return await this.httpService.get(
+    async buscar(id: string): Promise<any> {
+        const result = await this.httpService.get(
             `http://localhost:3001/usuarios/${id}`,
             true,
         )
+        return result.data
     }
 
     async logar(props: AutenticarProps): Promise<any> {

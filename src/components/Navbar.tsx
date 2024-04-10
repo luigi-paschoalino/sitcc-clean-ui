@@ -33,7 +33,7 @@ export default function Navbar() {
                 <Bars />
                 {auth === true ? (
                     <NavMenu>
-                        {userType === "ALUNO" /*&& userTccStatus !== null*/ ? (
+                        {userType === "ALUNO" ? (
                             <>
                                 <NavDropdown title="TFG">
                                     {(() => {
@@ -53,28 +53,31 @@ export default function Navbar() {
                         ) : (
                             ""
                         )}
-                        {userType !== "ALUNO" ? (
+                        {userType === "PROFESSOR" ? (
                             <NavDropdown
                                 title="Gerenciar TCCs"
                                 className="dropdownNav"
                             >
-                                {userType === "3" ? (
-                                    <>
-                                        <NavDropdown.Item href="/confirmar-matricula">
-                                            Confirmar matrícula
-                                        </NavDropdown.Item>
-                                        <NavDropdown.Item href="/confirmar-projeto">
-                                            Confirmar registro
-                                        </NavDropdown.Item>
-                                    </>
-                                ) : (
-                                    ""
-                                )}
                                 <NavDropdown.Item href="/tfgs">
                                     Minhas Orientações
                                 </NavDropdown.Item>
                                 <NavDropdown.Item href="/bancas">
                                     Minhas Bancas
+                                </NavDropdown.Item>
+                            </NavDropdown>
+                        ) : (
+                            ""
+                        )}
+                        {userType === "COORDENADOR" ? (
+                            <NavDropdown
+                                title="Gerenciar bancas"
+                                className="dropdownNav"
+                            >
+                                <NavDropdown.Item href="/cadastrar-banca">
+                                    Cadastrar banca
+                                </NavDropdown.Item>
+                                <NavDropdown.Item href="/bancas">
+                                    Visualizar bancas
                                 </NavDropdown.Item>
                             </NavDropdown>
                         ) : (
@@ -102,70 +105,17 @@ export default function Navbar() {
                                 </NavDropdown.Item>
                             </>
                         </NavDropdown>
-                        {userType === "3" ? (
-                            <NavDropdown
-                                title="Cronograma"
-                                className="dropdownNav"
-                            >
+                        <NavDropdown title="Cronograma" className="dropdownNav">
+                            {userType === "COORDENADOR" && (
                                 <NavDropdown.Item href="/criar-cronograma">
                                     Criar cronograma
                                 </NavDropdown.Item>
-                                <NavDropdown.Item href="/cronogramas">
-                                    Visualizar cronograma
-                                </NavDropdown.Item>
-                            </NavDropdown>
-                        ) : (
-                            <NavLink to="/cronogramas">Cronograma</NavLink>
-                        )}
-                        {userType === "3" ? (
-                            <>
-                                <NavDropdown
-                                    title="Gerencial"
-                                    className="dropdownNav"
-                                >
-                                    <NavDropdown.Item href="/criar-usuarios">
-                                        Criar usuarios
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item href="/criar-universidade">
-                                        Criar universidade
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item href="/universidades">
-                                        Visualizar universidades
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item href="/criar-instituto">
-                                        Criar institutos
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item href="/institutos">
-                                        Visualizar institutos
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item href="/criar-curso">
-                                        Criar curso
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item href="/cursos">
-                                        Visualizar cursos
-                                    </NavDropdown.Item>
-                                </NavDropdown>
-                            </>
-                        ) : (
-                            ""
-                        )}
-                        {userType === "3" ? (
-                            <>
-                                <NavDropdown
-                                    title="Template"
-                                    className="dropdownNav"
-                                >
-                                    <NavDropdown.Item href="/criar-template">
-                                        Criar template
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item href="/template">
-                                        Visualizar template
-                                    </NavDropdown.Item>
-                                </NavDropdown>
-                            </>
-                        ) : (
-                            <NavLink to="/template">Template</NavLink>
-                        )}
+                            )}
+                            <NavDropdown.Item href="/cronogramas">
+                                Visualizar cronograma vigente
+                            </NavDropdown.Item>
+                        </NavDropdown>
+                        <NavLink to="/template">Template</NavLink>
                     </NavMenu>
                 ) : (
                     ""
