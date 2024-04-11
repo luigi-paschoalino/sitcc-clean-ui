@@ -13,11 +13,16 @@ import { useNavigate } from "react-router-dom"
 import { BuscarUsuarioQuery } from "../../../@usuario/application/BuscarUsuario.query"
 import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
 import { HttpServiceImpl } from "../../../infra/httpService"
+import { CursoHttpGatewayImpl } from "../../../@curso/infra/gateways/Curso.gateway"
+import { CriarCronogramaUsecase } from "../../../@curso/application/CriarCronograma.usecase"
+import MessageSnackbar from "../../../components/MessageSnackbar"
 
 //HTTP Service
 const httpService = new HttpServiceImpl()
 const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
+const cursoGateway = new CursoHttpGatewayImpl(httpService)
 const buscarUsuarioQuery = new BuscarUsuarioQuery(usuarioGateway)
+const criarCronogramaUsecase = new CriarCronogramaUsecase(cursoGateway)
 
 export default function CriarCronograma() {
     const [curso, setCurso] = useState({
@@ -25,14 +30,55 @@ export default function CriarCronograma() {
         nome: "",
     })
     const [inputValues, setInputValues] = useState<{
-        ano: number
-        semestre: "1" | "2"
+        ano: number | null
+        semestre: "PRIMEIRO" | "SEGUNDO" | null
     }>({
-        ano: new Date().getFullYear(),
-        semestre: "1",
+        ano: null,
+        semestre: null,
     })
 
+    // Snackbar
+    const [open, setOpen] = useState(false)
+    const [message, setMessage] = useState("")
+    const [severity, setSeverity] = useState<
+        "success" | "error" | "info" | "warning"
+    >("success")
+
     const navigate = useNavigate()
+
+    async function criarCronograma() {
+        try {
+            if (!inputValues.ano) {
+                setMessage("O ano é obrigatório")
+                setSeverity("warning")
+                setOpen(true)
+                return
+            }
+            if (!inputValues.semestre) {
+                setMessage("O semestre é obrigatório")
+                setSeverity("warning")
+                setOpen(true)
+                return
+            }
+
+            await criarCronogramaUsecase.execute({
+                ano: inputValues.ano,
+                cursoId: curso.id,
+                semestre: inputValues.semestre,
+            })
+
+            setMessage("Cronograma criado com sucesso")
+            setSeverity("success")
+            setOpen(true)
+            setTimeout(() => {
+                navigate("/cronogramas")
+            }, 5000)
+        } catch (error) {
+            setMessage("Erro ao criar cronograma")
+            setSeverity("error")
+            setOpen(true)
+        }
+    }
 
     useEffect(() => {
         async function buscarUsuario() {
@@ -97,17 +143,17 @@ export default function CriarCronograma() {
                     onChange={(e) =>
                         setInputValues({
                             ...inputValues,
-                            semestre: e.target.value as "1" | "2",
+                            semestre: e.target.value as "PRIMEIRO" | "SEGUNDO",
                         })
                     }
                 >
                     <FormControlLabel
-                        value="1"
+                        value="PRIMEIRO"
                         control={<Radio />}
                         label="Primeiro"
                     />
                     <FormControlLabel
-                        value="2"
+                        value="SEGUNDO"
                         control={<Radio />}
                         label="Segundo"
                     />
@@ -120,10 +166,17 @@ export default function CriarCronograma() {
                 color="primary"
                 size="large"
                 className="mb-3 mb-md-4 mt-4"
-                // seu onClick aqui
+                onClick={criarCronograma}
             >
                 Cadastrar
             </Button>
+
+            <MessageSnackbar
+                open={open}
+                handleClose={() => setOpen(false)}
+                message={message}
+                severity={severity}
+            />
         </Container>
     )
 }

@@ -12,7 +12,6 @@ import Logout from "./views/login/logout"
 import DetalhesTfg from "./views/tfg/detalhesTfg"
 import ListagemTfgs from "./views/tfg/listarOrientacoes"
 import MatriculaTfg from "./views/tfg/matriculaTfg"
-import CriarUniversidade from "./views/universidades/criarUniversidade"
 import CriarUsuario from "./views/usuario/criarUsuario"
 import ListagemBancas from "./views/bancas/minhasBancas"
 import CriarCronograma from "./views/cronogramas/criarCronograma"
@@ -85,14 +84,6 @@ const AppRouter: React.FC = () => (
             }
         />
         <Route path="/cadastro" element={<CriarUsuario />} />
-        <Route
-            path="/criarUniversidade"
-            element={
-                <PrivateRoute>
-                    <CriarUniversidade />
-                </PrivateRoute>
-            }
-        />
         <Route
             path="/matricula-tfg"
             element={

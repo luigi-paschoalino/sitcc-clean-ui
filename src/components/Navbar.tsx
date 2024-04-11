@@ -107,7 +107,7 @@ export default function Navbar() {
                         </NavDropdown>
                         <NavDropdown title="Cronograma" className="dropdownNav">
                             {userType === "COORDENADOR" && (
-                                <NavDropdown.Item href="/criar-cronograma">
+                                <NavDropdown.Item href="/cronogramas/criar">
                                     Criar cronograma
                                 </NavDropdown.Item>
                             )}

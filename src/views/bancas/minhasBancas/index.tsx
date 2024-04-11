@@ -9,6 +9,7 @@ import { ListarBancasQuery } from "../../../@tfg/application/ListarBancas.query"
 import ModalAvaliarEntregaFinal from "./modalEntregaFinal"
 import MessageSnackbar from "../../../components/MessageSnackbar"
 import { AvaliarEntregaFinalTfgUsecase } from "../../../@tfg/application/AvaliarNotaFinalTfg.usecase"
+import { TIPO_USUARIO } from "../../../@usuario/domain/entities/Usuario"
 
 //HTTP Service
 const httpService = new HttpServiceImpl()
@@ -82,7 +83,10 @@ function ListagemBancas() {
                     {bancas.length ? (
                         <div>
                             <h2 className="text-center pt-3 pb-5">
-                                Minhas bancas
+                                {localStorage.getItem("tipo") ===
+                                TIPO_USUARIO.PROFESSOR
+                                    ? "Minhas bancas"
+                                    : "Todas as bancas"}
                             </h2>
                             <div>
                                 {bancas.map((banca, index) => (

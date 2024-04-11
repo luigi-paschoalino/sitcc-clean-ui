@@ -12,8 +12,6 @@ import Link from "@mui/material/Link"
 import { HttpServiceImpl } from "../../../infra/httpService"
 import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
 import { CadastrarUsuarioUsecase } from "../../../@usuario/application/CadastrarUsuario.usecase"
-import { UniversidadeHttpGatewayImpl } from "../../../@universidade/infra/gateways/Universidade.gateway"
-import { ListarUniversidadesQuery } from "../../../@universidade/application/ListarUniversidades.query"
 
 export interface UniversidadeProps {
     id: string
@@ -54,11 +52,6 @@ export default function CriarUsuario() {
     const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
     const cadastrarUsuarioUsecase = new CadastrarUsuarioUsecase(usuarioGateway)
 
-    const universidadeGateway = new UniversidadeHttpGatewayImpl(httpService)
-    const listarUniversidadesQuery = new ListarUniversidadesQuery(
-        universidadeGateway,
-    )
-
     /* States */
 
     const [tipoUsuario, setTipoUsuario] = useState<string>("")
@@ -81,36 +74,6 @@ export default function CriarUsuario() {
     const [exibirInstituto, setExibirInstituto] = useState(false)
     const [exibirCurso, setExibirCurso] = useState(false)
     const navigate = useNavigate()
-
-    /* Functions */
-    useEffect(() => {
-        async function getUniversidades(): Promise<void> {
-            const universidadesData = await listarUniversidadesQuery.execute()
-            setUniversidades(universidadesData)
-        }
-        getUniversidades()
-        console.log(universidades)
-    }, [])
-
-    useEffect(() => {
-        if (universidadeAtiva.id !== "") {
-            setInstitutos(universidadeAtiva.institutos)
-            setExibirInstituto(true)
-        }
-    }, [universidadeAtiva])
-
-    useEffect(() => {
-        if (institutoAtivo.id !== "") {
-            setCursos(institutoAtivo.cursos)
-            setExibirCurso(true)
-        }
-    }, [institutoAtivo])
-
-    useEffect(() => {
-        if (cursoAtivo !== "") {
-            console.log(cursoAtivo)
-        }
-    }, [cursoAtivo])
 
     async function handleCadastro(): Promise<void> {
         try {
