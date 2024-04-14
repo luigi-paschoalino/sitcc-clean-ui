@@ -18,6 +18,16 @@ export class Usuario {
         private tipo: TIPO_USUARIO,
         private numero: string,
         private matricula: string,
+        private perfilProfessor?: {
+            id: string
+            areasAtuacao: string[]
+            projetos: {
+                titulo: string
+                descricao: string
+                preRequisitos: string
+                disponivel: boolean
+            }[]
+        },
     ) {}
 
     public getId() {
@@ -48,6 +58,10 @@ export class Usuario {
         return this.numero
     }
 
+    public getPerfilProfessor() {
+        return this.perfilProfessor
+    }
+
     toJson() {
         return {
             id: this.id,
@@ -57,6 +71,7 @@ export class Usuario {
             matricula: this.matricula,
             tipo: this.tipo,
             numero: this.numero,
+            perfilProfessor: this.perfilProfessor,
         }
     }
 }

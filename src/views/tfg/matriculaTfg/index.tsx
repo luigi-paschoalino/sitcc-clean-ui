@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-// import { useNavigate } from "react-router-dom"
 import Typography from "@mui/material/Typography"
 import Container from "@mui/material/Container"
 import Switch from "@mui/material/Switch"
@@ -11,13 +10,13 @@ import { TfgHttpGatewayImpl } from "../../../@tfg/infra/Tfg.gateway"
 import { CadastrarTfgUsecase } from "../../../@tfg/application/CadastrarTfg.usecase"
 import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
 import { ListarProfessoresQuery } from "../../../@usuario/application/ListarProfessores.query"
-import { Professor } from "../../../@usuario/domain/gateways/Usuario.gateway"
 import "./styles.scss"
+import { Usuario } from "../../../@usuario/domain/entities/Usuario"
 
 //HTTP Service
 const httpService = new HttpServiceImpl()
 const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
-const listarProfessores = new ListarProfessoresQuery(usuarioGateway)
+const listarProfessoresQuery = new ListarProfessoresQuery(usuarioGateway)
 const tfgGateway = new TfgHttpGatewayImpl(httpService)
 const cadastrarTccUsecase = new CadastrarTfgUsecase(tfgGateway)
 
@@ -35,13 +34,19 @@ interface InputValues {
 
 // TODO: ajeitar style pra aumentar o tamanho dos campos de texto e seleção
 export default function MatriculaTfg() {
-    const [orientador, setOrientadores] = useState<Professor[]>([])
-    const [orientadorAtivo, setOrientadorAtivo] = useState<Professor>({
+    const [orientador, setOrientadores] = useState<Usuario[]>([])
+    const [orientadorAtivo, setOrientadorAtivo] = useState<{
+        id: string
+        nome: string
+    }>({
         id: "",
         nome: "",
     })
-    const [coorientador, setCoorientadores] = useState<Professor[]>([])
-    const [coorientadorAtivo, setCoorientadorAtivo] = useState<Professor>({
+    const [coorientador, setCoorientadores] = useState<Usuario[]>([])
+    const [coorientadorAtivo, setCoorientadorAtivo] = useState<{
+        id: string
+        nome: string
+    }>({
         id: "",
         nome: "",
     })
@@ -62,8 +67,8 @@ export default function MatriculaTfg() {
 
     useEffect(() => {
         async function getProfessores(): Promise<void> {
-            const listaProfessores = await listarProfessores.execute()
-            setOrientadores(listaProfessores.slice())
+            const listaProfessores = await listarProfessoresQuery.execute()
+            setOrientadores(listaProfessores)
         }
         getProfessores()
     }, [])
@@ -73,17 +78,23 @@ export default function MatriculaTfg() {
         setChecked(event.target.checked)
     }
 
-    const handleChangeOrientador = (professor: Professor) => {
-        setOrientadorAtivo(professor)
+    const handleChangeOrientador = (professor: Usuario) => {
+        setOrientadorAtivo({
+            id: professor.getId(),
+            nome: professor.getNome(),
+        })
     }
 
-    const handleChangeCoorientador = (professor: Professor) => {
-        setCoorientadorAtivo(professor)
+    const handleChangeCoorientador = (professor: Usuario) => {
+        setCoorientadorAtivo({
+            id: professor.getId(),
+            nome: professor.getNome(),
+        })
     }
 
     useEffect(() => {
         const professoresFiltrados = orientador.filter(
-            (professor) => professor !== orientadorAtivo,
+            (professor) => professor.getId() !== orientadorAtivo.id,
         )
         setCoorientadores(professoresFiltrados)
     }, [orientador, orientadorAtivo])
@@ -120,12 +131,12 @@ export default function MatriculaTfg() {
                         >
                             {orientador.map((professor) => (
                                 <MenuItem
-                                    value={professor.nome}
+                                    value={professor.getNome()}
                                     onClick={() =>
                                         handleChangeOrientador(professor)
                                     }
                                 >
-                                    {professor.nome}
+                                    {professor.getNome()}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -157,12 +168,12 @@ export default function MatriculaTfg() {
                             >
                                 {coorientador.map((professor) => (
                                     <MenuItem
-                                        value={professor.nome}
+                                        value={professor.getNome()}
                                         onClick={() =>
                                             handleChangeCoorientador(professor)
                                         }
                                     >
-                                        {professor.nome}
+                                        {professor.getNome()}
                                     </MenuItem>
                                 ))}
                             </Select>

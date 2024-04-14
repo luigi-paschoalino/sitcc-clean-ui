@@ -2,7 +2,6 @@ import { HttpServiceImpl } from "../../../infra/httpService"
 import {
     AutenticarProps,
     CadastrarUsuarioProps,
-    Professor,
     UsuarioHttpGateway,
 } from "../../domain/gateways/Usuario.gateway"
 
@@ -36,16 +35,11 @@ export class UsuarioHttpGatewayImpl implements UsuarioHttpGateway {
         )
     }
 
-    async buscarProfs(): Promise<Professor[]> {
+    async buscarProfs(): Promise<any[]> {
         const result = await this.httpService.get(
             "http://localhost:3001/usuarios/professores",
             true,
         )
-
-        const professores: Professor[] = result.data.map((professor) => ({
-            id: professor.id,
-            nome: professor.nome,
-        }))
-        return professores
+        return result.data
     }
 }

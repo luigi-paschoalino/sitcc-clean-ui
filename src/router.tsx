@@ -16,6 +16,7 @@ import CriarUsuario from "./views/usuario/criarUsuario"
 import ListagemBancas from "./views/bancas/minhasBancas"
 import CriarCronograma from "./views/cronogramas/criarCronograma"
 import Cronogramas from "./views/cronogramas/cronogramas"
+import Orientadores from "./views/professor/orientadores"
 
 const httpService = new HttpServiceImpl()
 const authGateway = new AuthHttpGatewayImpl(httpService)
@@ -145,6 +146,14 @@ const AppRouter: React.FC = () => (
                 }
             />
         </Route>
+        <Route
+            path="/orientadores"
+            element={
+                <PrivateRoute>
+                    <Orientadores />
+                </PrivateRoute>
+            }
+        />
     </Routes>
 )
 

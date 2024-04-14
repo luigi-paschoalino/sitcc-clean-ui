@@ -12,14 +12,9 @@ export interface AutenticarProps {
     email: string
     senha: string
 }
-export interface Professor {
-    id: string
-    nome: string
-}
-
 export interface UsuarioHttpGateway {
     cadastrar(props: CadastrarUsuarioProps): Promise<any>
     buscar(id: string): Promise<any>
     logar(props: AutenticarProps): Promise<any>
-    buscarProfs(): Promise<Professor[]>
+    buscarProfs(): Promise<any[]>
 }

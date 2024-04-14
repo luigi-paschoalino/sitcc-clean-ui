@@ -9,6 +9,7 @@ import {
     NavLink,
     NavMenu,
 } from "./NavbarElements"
+import { TIPO_USUARIO } from "../@usuario/domain/entities/Usuario"
 
 export default function Navbar() {
     const [auth, setAuth] = useState<boolean>(false)
@@ -39,7 +40,7 @@ export default function Navbar() {
                                     {(() => {
                                         return (
                                             <>
-                                                <NavDropdown.Item href="/registro-tfg">
+                                                <NavDropdown.Item href="/matricula-tfg">
                                                     Realizar Matrícula
                                                 </NavDropdown.Item>
                                                 <NavDropdown.Item href="/tfgs">
@@ -85,18 +86,6 @@ export default function Navbar() {
                         )}
                         <NavDropdown title="Projetos" className="dropdownNav">
                             <>
-                                {userType !== "ALUNO" ? (
-                                    <>
-                                        <NavDropdown.Item href="/meu-perfil-professor">
-                                            Perfil professor
-                                        </NavDropdown.Item>
-                                        <NavDropdown.Item href="/tcc">
-                                            Criar Projeto
-                                        </NavDropdown.Item>
-                                    </>
-                                ) : (
-                                    ""
-                                )}
                                 <NavDropdown.Item href="/orientadores">
                                     Orientadores
                                 </NavDropdown.Item>
@@ -134,6 +123,11 @@ export default function Navbar() {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
+                                {userType === TIPO_USUARIO.PROFESSOR && (
+                                    <Dropdown.Item href="/perfil-professor">
+                                        Meu perfil
+                                    </Dropdown.Item>
+                                )}
                                 <Dropdown.Item href="/editar-usuario">
                                     Editar usuário
                                 </Dropdown.Item>
