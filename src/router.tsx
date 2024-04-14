@@ -15,6 +15,7 @@ import MatriculaTfg from "./views/tfg/matriculaTfg"
 import CriarUsuario from "./views/usuario/criarUsuario"
 import ListagemBancas from "./views/bancas/minhasBancas"
 import CriarCronograma from "./views/cronogramas/criarCronograma"
+import Cronogramas from "./views/cronogramas/cronogramas"
 
 const httpService = new HttpServiceImpl()
 const authGateway = new AuthHttpGatewayImpl(httpService)
@@ -127,6 +128,14 @@ const AppRouter: React.FC = () => (
             }
         />
         <Route path="/cronogramas">
+            <Route
+                index
+                element={
+                    <PrivateRoute>
+                        <Cronogramas />
+                    </PrivateRoute>
+                }
+            />
             <Route
                 path="criar"
                 element={

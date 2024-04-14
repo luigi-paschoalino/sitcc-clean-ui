@@ -1,4 +1,5 @@
 import { HttpServiceImpl } from "../../../infra/httpService"
+import { BuscarCronogramaVigenteQueryProps } from "../../application/BuscarCronogramaVigente.query"
 import { CriarCronogramaUsecaseProps } from "../../application/CriarCronograma.usecase"
 import { CursoHttpGateway } from "../../domain/gateways/Curso.gateway"
 
@@ -30,5 +31,15 @@ export class CursoHttpGatewayImpl implements CursoHttpGateway {
             },
             true,
         )
+    }
+
+    async buscarCronogramaVigente(
+        props: BuscarCronogramaVigenteQueryProps,
+    ): Promise<any> {
+        const result = await this.httpService.get(
+            `http://localhost:3001/cursos/${props.cursoId}/cronogramas/vigente`,
+            true,
+        )
+        return result.data
     }
 }
