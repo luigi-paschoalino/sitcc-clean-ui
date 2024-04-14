@@ -85,7 +85,6 @@ export default function CriarCronograma() {
             const usuario = await buscarUsuarioQuery.execute(
                 localStorage.getItem("id") || "",
             )
-            console.log(usuario)
             setCurso({
                 id: usuario.getCurso().id,
                 nome: usuario.getCurso().nome,
@@ -93,10 +92,6 @@ export default function CriarCronograma() {
         }
         buscarUsuario()
     }, [])
-
-    useEffect(() => {
-        console.log(inputValues)
-    }, [inputValues])
 
     return (
         <Container component="main" maxWidth="sm">

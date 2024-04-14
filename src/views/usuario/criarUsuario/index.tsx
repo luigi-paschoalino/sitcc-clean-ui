@@ -4,7 +4,6 @@ import Container from "@mui/material/Container"
 import InputLabel from "@mui/material/InputLabel"
 import Link from "@mui/material/Link"
 import TextField from "@mui/material/TextField"
-import Typography from "@mui/material/Typography"
 import "date-fns"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -102,13 +101,7 @@ export default function CriarUsuario() {
             <Container component="main" maxWidth="xs">
                 <div className="mt-3 mt-md-5">
                     <div className="text-center">
-                        <Typography
-                            className="pb-5 pt-2"
-                            component="h1"
-                            variant="h4"
-                        >
-                            Criar usuário
-                        </Typography>
+                        <h2 className="mb-3">Criar usuário</h2>
                         {
                             // TODO: mudar para SnackbarMessage dos components
                             /* {status !== true ? (

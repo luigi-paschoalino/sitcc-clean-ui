@@ -10,6 +10,9 @@ import { useNavigate } from "react-router-dom"
 import CronogramaBar from "./cronogramaBar"
 import ModalEditarCronograma from "./modalEditarCronograma"
 import MessageSnackbar from "../../../components/MessageSnackbar"
+import { TIPO_ATIVIDADE } from "../../../@curso/domain/entities/Atividade"
+import { AdicionarAtividadeCronogramaUsecase } from "../../../@curso/application/AdicionarAtividadeCronograma.usecase"
+import { AtualizarAtividadeCronogramaUsecase } from "../../../@curso/application/AtualizarAtividadeCronograma.usecase"
 
 // HTTP Service
 const httpService = new HttpServiceImpl()
@@ -18,10 +21,15 @@ const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
 const buscarCronogramaVigenteQuery = new BuscarCronogramaVigenteQuery(
     cursoGateway,
 )
+const adicionarAtividadeCronogramaUsecase =
+    new AdicionarAtividadeCronogramaUsecase(cursoGateway)
+const atualizarAtividadeCronogramaUsecase =
+    new AtualizarAtividadeCronogramaUsecase(cursoGateway)
 const buscarUsuarioQuery = new BuscarUsuarioQuery(usuarioGateway)
 
 export default function Cronogramas() {
     const [cronograma, setCronograma] = useState<Cronograma>()
+    const [cursoId, setCursoId] = useState<string>("")
 
     // Modal
     const [show, setShow] = useState(false)
@@ -35,6 +43,50 @@ export default function Cronogramas() {
 
     const navigate = useNavigate()
 
+    async function salvar(
+        tipo: TIPO_ATIVIDADE,
+        descricao: string,
+        data: Date,
+        atividadeId?: string,
+    ) {
+        try {
+            if (!cronograma) throw new Error("Cronograma não encontrado!")
+            atividadeId
+                ? await atualizarAtividadeCronogramaUsecase.execute({
+                      cursoId,
+                      cronogramaId: cronograma?.getId(),
+                      titulo: tipo,
+                      descricao,
+                      data,
+                      atividadeId,
+                  })
+                : await adicionarAtividadeCronogramaUsecase.execute({
+                      cursoId,
+                      cronogramaId: cronograma?.getId(),
+                      titulo: tipo,
+                      descricao,
+                      data,
+                  })
+            setSnackbarMessage(
+                `Atividade ${
+                    atividadeId ? "atualizada" : "adicionada"
+                } com sucesso!`,
+            )
+            setSnackbarSeverity("success")
+            setShowSnackbar(true)
+            setShow(false)
+            setTimeout(() => {
+                window.location.reload()
+            }, 2000)
+        } catch (error) {
+            setSnackbarMessage(
+                `Erro ao ${atividadeId ? "atualizar" : "adicionar"} atividade!`,
+            )
+            setSnackbarSeverity("error")
+            setShowSnackbar(true)
+        }
+    }
+
     useEffect(() => {
         const id = localStorage.getItem("id")
         async function buscarCronogramaVigente() {
@@ -43,6 +95,7 @@ export default function Cronogramas() {
                 return
             }
             const usuario = await buscarUsuarioQuery.execute(id)
+            setCursoId(usuario.getCurso().id)
             const cronograma = await buscarCronogramaVigenteQuery.execute({
                 cursoId: usuario.getCurso().id,
             })
@@ -58,7 +111,7 @@ export default function Cronogramas() {
                 <div className="mt-3 mt-md-5">
                     <h2 className="text-center pt-3 pb-5">Cronogramas</h2>
                 </div>
-                {cronograma && cronograma.getAtividades()?.length ? (
+                {cronograma ? (
                     <div className="row justify-content-center">
                         <CronogramaBar
                             displayAtivo={true}
@@ -85,6 +138,7 @@ export default function Cronogramas() {
                     show={show}
                     cronograma={cronograma}
                     handleClose={() => setShow(false)}
+                    salvar={salvar}
                 />
             )}
         </div>
