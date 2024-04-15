@@ -20,6 +20,8 @@ export class Usuario {
         private matricula: string,
         private perfilProfessor?: {
             id: string
+            descricao: string
+            link: string
             areasAtuacao: string[]
             projetos: {
                 titulo: string

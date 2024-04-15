@@ -89,9 +89,9 @@ export default function Navbar() {
                                 <NavDropdown.Item href="/orientadores">
                                     Orientadores
                                 </NavDropdown.Item>
-                                <NavDropdown.Item href="/projetos">
+                                {/* <NavDropdown.Item href="/projetos">
                                     Projetos
-                                </NavDropdown.Item>
+                                </NavDropdown.Item> */}
                             </>
                         </NavDropdown>
                         <NavDropdown title="Cronograma" className="dropdownNav">

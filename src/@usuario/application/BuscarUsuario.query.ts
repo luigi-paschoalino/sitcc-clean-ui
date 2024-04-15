@@ -14,6 +14,7 @@ export class BuscarUsuarioQuery {
             result.tipo,
             result.numero,
             result.matricula,
+            result.perfilProfessor ?? null,
         )
     }
 }
