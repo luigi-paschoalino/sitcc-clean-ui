@@ -18,6 +18,7 @@ import CriarCronograma from "./views/cronogramas/criarCronograma"
 import Cronogramas from "./views/cronogramas/cronogramas"
 import Orientadores from "./views/professor/orientadores"
 import PerfilProfessor from "./views/professor/perfilProfessor"
+import CodigoProfessor from "./views/codigoProfesssor"
 
 const httpService = new HttpServiceImpl()
 const authGateway = new AuthHttpGatewayImpl(httpService)
@@ -165,6 +166,14 @@ const AppRouter: React.FC = () => (
                 }
             />
         </Route>
+        <Route
+            path="/codigo-professor"
+            element={
+                <PrivateRoute>
+                    <CodigoProfessor />
+                </PrivateRoute>
+            }
+        />
     </Routes>
 )
 

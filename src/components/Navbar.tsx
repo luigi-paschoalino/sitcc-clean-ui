@@ -34,7 +34,7 @@ export default function Navbar() {
                 <Bars />
                 {auth === true ? (
                     <NavMenu>
-                        {userType === "ALUNO" ? (
+                        {userType === TIPO_USUARIO.ALUNO ? (
                             <>
                                 <NavDropdown title="TFG">
                                     {(() => {
@@ -54,7 +54,7 @@ export default function Navbar() {
                         ) : (
                             ""
                         )}
-                        {userType === "PROFESSOR" ? (
+                        {userType === TIPO_USUARIO.PROFESSOR ? (
                             <NavDropdown
                                 title="Gerenciar TCCs"
                                 className="dropdownNav"
@@ -69,7 +69,7 @@ export default function Navbar() {
                         ) : (
                             ""
                         )}
-                        {userType === "COORDENADOR" ? (
+                        {userType === TIPO_USUARIO.COORDENADOR ? (
                             <NavDropdown
                                 title="Gerenciar bancas"
                                 className="dropdownNav"
@@ -95,7 +95,7 @@ export default function Navbar() {
                             </>
                         </NavDropdown>
                         <NavDropdown title="Cronograma" className="dropdownNav">
-                            {userType === "COORDENADOR" && (
+                            {userType === TIPO_USUARIO.COORDENADOR && (
                                 <NavDropdown.Item href="/cronogramas/criar">
                                     Criar cronograma
                                 </NavDropdown.Item>
@@ -105,6 +105,11 @@ export default function Navbar() {
                             </NavDropdown.Item>
                         </NavDropdown>
                         <NavLink to="/template">Template</NavLink>
+                        {userType === TIPO_USUARIO.ADMINISTRADOR && (
+                            <NavLink to="/codigo-professor">
+                                Código do professor
+                            </NavLink>
+                        )}
                     </NavMenu>
                 ) : (
                     ""
