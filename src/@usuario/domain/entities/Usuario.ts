@@ -24,6 +24,7 @@ export class Usuario {
             link: string
             areasAtuacao: string[]
             projetos: {
+                id: string
                 titulo: string
                 descricao: string
                 preRequisitos: string

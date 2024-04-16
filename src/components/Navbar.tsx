@@ -14,12 +14,12 @@ import { TIPO_USUARIO } from "../@usuario/domain/entities/Usuario"
 export default function Navbar() {
     const [auth, setAuth] = useState<boolean>(false)
     const userType = localStorage.getItem("tipo")
-    const idUsuario = localStorage.getItem("userId")
+    const usuarioId = localStorage.getItem("id")
 
     useEffect(() => {
         const token = localStorage.getItem("authToken")
         setAuth(token ? true : false)
-    }, [userType, idUsuario])
+    }, [userType, usuarioId])
 
     return (
         <>
@@ -129,7 +129,9 @@ export default function Navbar() {
 
                             <Dropdown.Menu>
                                 {userType === TIPO_USUARIO.PROFESSOR && (
-                                    <Dropdown.Item href="/perfil-professor">
+                                    <Dropdown.Item
+                                        href={`/orientadores/${usuarioId}`}
+                                    >
                                         Meu perfil
                                     </Dropdown.Item>
                                 )}
