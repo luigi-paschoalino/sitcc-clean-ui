@@ -1,4 +1,5 @@
 import { CriarProjetoUsecaseProps } from "../../application/CriarProjeto.usecase"
+import { EditarPerfilProfessorUsecaseProps } from "../../application/EditarPerfilProfessor.usecase"
 import { EditarProjetoUsecaseProps } from "../../application/EditarProjeto.usecase"
 import { ExcluirProjetoUsecaseProps } from "../../application/ExcluirProjeto.usecase"
 
@@ -24,4 +25,7 @@ export interface UsuarioHttpGateway {
     criarProjeto(props: CriarProjetoUsecaseProps): Promise<void>
     editarProjeto(props: EditarProjetoUsecaseProps): Promise<void>
     excluirProjeto(props: ExcluirProjetoUsecaseProps): Promise<void>
+    editarPerfilProfessor(
+        props: EditarPerfilProfessorUsecaseProps,
+    ): Promise<void>
 }

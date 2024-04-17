@@ -1,5 +1,6 @@
 import { HttpServiceImpl } from "../../../infra/httpService"
 import { CriarProjetoUsecaseProps } from "../../application/CriarProjeto.usecase"
+import { EditarPerfilProfessorUsecaseProps } from "../../application/EditarPerfilProfessor.usecase"
 import { EditarProjetoUsecaseProps } from "../../application/EditarProjeto.usecase"
 import { ExcluirProjetoUsecaseProps } from "../../application/ExcluirProjeto.usecase"
 import {
@@ -65,6 +66,16 @@ export class UsuarioHttpGatewayImpl implements UsuarioHttpGateway {
     async excluirProjeto(props: ExcluirProjetoUsecaseProps): Promise<void> {
         return await this.httpService.delete(
             `http://localhost:3001/usuarios/perfil-professor/projetos/${props.projetoId}`,
+            true,
+        )
+    }
+
+    async editarPerfilProfessor(
+        props: EditarPerfilProfessorUsecaseProps,
+    ): Promise<void> {
+        return await this.httpService.patch(
+            "http://localhost:3001/usuarios/perfil-professor",
+            props,
             true,
         )
     }

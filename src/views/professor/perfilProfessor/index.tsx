@@ -1,4 +1,4 @@
-import { Divider } from "@mui/material"
+import { Divider, TextField } from "@mui/material"
 import Container from "@mui/material/Container"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
@@ -14,6 +14,7 @@ import { ExcluirProjetoUsecase } from "../../../@usuario/application/ExcluirProj
 import MessageSnackbar from "../../../components/MessageSnackbar"
 import { EditarProjetoUsecase } from "../../../@usuario/application/EditarProjeto.usecase"
 import { CriarProjetoUsecase } from "../../../@usuario/application/CriarProjeto.usecase"
+import { EditarPerfilProfessorUsecase } from "../../../@usuario/application/EditarPerfilProfessor.usecase"
 
 // HTTP Service
 const httpService = new HttpServiceImpl()
@@ -22,13 +23,53 @@ const buscarUsuarioQuery = new BuscarUsuarioQuery(usuarioGateway)
 const criarProjetoUsecase = new CriarProjetoUsecase(usuarioGateway)
 const editarProjetoUsecase = new EditarProjetoUsecase(usuarioGateway)
 const excluirProjetoUsecase = new ExcluirProjetoUsecase(usuarioGateway)
-// TODO: implementar editar perfil professor
+const editarPerfilProfessorUsecase = new EditarPerfilProfessorUsecase(
+    usuarioGateway,
+)
 
 export default function PerfilProfessor() {
     const { id } = useParams()
 
     const [professor, setProfessor] = useState<Usuario | null>(null)
     const [isProfessor, setIsProfessor] = useState(false)
+    const [isEditMode, setIsEditMode] = useState(false)
+    const [editInfo, setEditInfo] = useState({
+        descricao: "",
+        link: "",
+        areasAtuacao: "",
+    })
+
+    const handleEditChange = (e) => {
+        const { name, value } = e.target
+        setEditInfo({ ...editInfo, [name]: value })
+    }
+
+    const toggleEditMode = () => {
+        setIsEditMode(!isEditMode)
+    }
+
+    const handleSave = async () => {
+        try {
+            if (professor) {
+                await editarPerfilProfessorUsecase.execute({
+                    descricao: editInfo.descricao,
+                    link: editInfo.link,
+                    areasAtuacao: editInfo.areasAtuacao.split(","),
+                })
+                setSnackbarSeverity("success")
+                setSnackbarMessage("Informações editadas com sucesso")
+                setShowSnackbar(true)
+                setIsEditMode(false)
+                setTimeout(() => {
+                    window.location.reload()
+                }, 2000)
+            }
+        } catch (error) {
+            setSnackbarSeverity("error")
+            setSnackbarMessage("Erro ao editar informações")
+            setShowSnackbar(true)
+        }
+    }
 
     // Modal
     const [open, setOpen] = useState(false)
@@ -138,6 +179,14 @@ export default function PerfilProfessor() {
                 const professor = await buscarUsuarioQuery.execute(id)
                 setProfessor(professor)
                 setIsProfessor(id === localStorage.getItem("id"))
+
+                setEditInfo({
+                    areasAtuacao: professor
+                        .getPerfilProfessor()!
+                        .areasAtuacao.join(", "),
+                    descricao: professor.getPerfilProfessor()!.descricao,
+                    link: professor.getPerfilProfessor()!.link,
+                })
             } catch (error) {}
         }
         getPerfilProfessor()
@@ -183,44 +232,127 @@ export default function PerfilProfessor() {
                                         margin: "0 0 20px 20px",
                                     }}
                                 />
-                                <h4 className="py-2">
-                                    <strong>Nome: </strong>
-                                    {professor.getNome()}
-                                </h4>
-                                <h4 className="py-2">
-                                    <strong>Matrícula: </strong>
-                                    {professor.getMatricula()}
-                                </h4>
-                                <h4 className="py-2">
-                                    <strong>Email: </strong>
-                                    {professor.getEmail()}
-                                </h4>
-                                <h4 className="py-2">
-                                    <strong>Telefone: </strong>
-                                    {professor.getNumero()}
-                                </h4>
-                                <h4 className="py-2">
-                                    <strong>Descrição: </strong>
-                                    {professor.getPerfilProfessor()!.descricao}
-                                </h4>
-                                <h4 className="py-2">
-                                    <strong>Link página pessoal: </strong>
-                                    <a
-                                        href={
-                                            professor.getPerfilProfessor()!.link
-                                        }
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                {isEditMode ? (
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "center",
+                                            width: "90%",
+                                        }}
                                     >
-                                        Link
-                                    </a>
-                                </h4>
-                                <h4 className="py-2">
-                                    <strong>Áreas de atuação: </strong>
-                                    {professor
-                                        ?.getPerfilProfessor()!
-                                        .areasAtuacao.join(", ")}
-                                </h4>
+                                        {/* Campos editáveis */}
+                                        <TextField
+                                            label="Descrição"
+                                            name="descricao"
+                                            value={editInfo.descricao}
+                                            onChange={handleEditChange}
+                                            fullWidth
+                                            style={{
+                                                marginTop: "20px",
+                                                marginBottom: "20px",
+                                            }}
+                                        />
+                                        <TextField
+                                            label="Link página pessoal"
+                                            name="link"
+                                            value={editInfo.link}
+                                            onChange={handleEditChange}
+                                            fullWidth
+                                            style={{
+                                                marginBottom: "20px",
+                                            }}
+                                        />
+                                        <TextField
+                                            label="Áreas de atuação"
+                                            name="areasAtuacao"
+                                            value={editInfo.areasAtuacao}
+                                            onChange={handleEditChange}
+                                            fullWidth
+                                            style={{
+                                                marginBottom: "20px",
+                                            }}
+                                        />
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                justifyContent: "center",
+                                            }}
+                                        >
+                                            <button
+                                                className="btn btn-primary"
+                                                onClick={handleSave}
+                                                style={{ marginBottom: "10px" }}
+                                            >
+                                                Salvar
+                                            </button>
+                                            <button
+                                                className="btn btn-danger"
+                                                onClick={toggleEditMode}
+                                            >
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div
+                                        style={{
+                                            textAlign: "center",
+                                        }}
+                                    >
+                                        <h4 className="py-2">
+                                            <strong>Nome: </strong>
+                                            {professor.getNome()}
+                                        </h4>
+                                        <h4 className="py-2">
+                                            <strong>Matrícula: </strong>
+                                            {professor.getMatricula()}
+                                        </h4>
+                                        <h4 className="py-2">
+                                            <strong>Email: </strong>
+                                            {professor.getEmail()}
+                                        </h4>
+                                        <h4 className="py-2">
+                                            <strong>Telefone: </strong>
+                                            {professor.getNumero()}
+                                        </h4>
+                                        <h4 className="py-2">
+                                            <strong>Descrição: </strong>
+                                            {
+                                                professor.getPerfilProfessor()!
+                                                    .descricao
+                                            }
+                                        </h4>
+                                        <h4 className="py-2">
+                                            <strong>
+                                                Link página pessoal:{" "}
+                                            </strong>
+                                            <a
+                                                href={
+                                                    professor.getPerfilProfessor()!
+                                                        .link
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                Link
+                                            </a>
+                                        </h4>
+                                        <h4 className="py-2">
+                                            <strong>Áreas de atuação: </strong>
+                                            {professor
+                                                ?.getPerfilProfessor()!
+                                                .areasAtuacao.join(", ")}
+                                        </h4>
+                                        <button
+                                            onClick={toggleEditMode}
+                                            className="btn btn-primary"
+                                        >
+                                            Editar
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                             <Divider orientation="vertical" flexItem />
                             <div
