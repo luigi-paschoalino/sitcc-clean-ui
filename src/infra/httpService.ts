@@ -55,4 +55,15 @@ export class HttpServiceImpl {
         }
         return axios.patch(url, body)
     }
+
+    async delete(url: string, auth: boolean): Promise<any> {
+        if (auth) {
+            return axios.delete(url, {
+                headers: {
+                    Authorization: localStorage.getItem("authToken"),
+                },
+            })
+        }
+        return axios.delete(url)
+    }
 }

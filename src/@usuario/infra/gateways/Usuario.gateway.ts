@@ -1,4 +1,7 @@
 import { HttpServiceImpl } from "../../../infra/httpService"
+import { CriarProjetoUsecaseProps } from "../../application/CriarProjeto.usecase"
+import { EditarProjetoUsecaseProps } from "../../application/EditarProjeto.usecase"
+import { ExcluirProjetoUsecaseProps } from "../../application/ExcluirProjeto.usecase"
 import {
     AutenticarProps,
     CadastrarUsuarioProps,
@@ -41,5 +44,28 @@ export class UsuarioHttpGatewayImpl implements UsuarioHttpGateway {
             true,
         )
         return result.data
+    }
+
+    async criarProjeto(props: CriarProjetoUsecaseProps): Promise<void> {
+        return await this.httpService.put(
+            "http://localhost:3001/usuarios/perfil-professor/projetos",
+            props,
+            true,
+        )
+    }
+
+    async editarProjeto(props: EditarProjetoUsecaseProps): Promise<void> {
+        return await this.httpService.patch(
+            `http://localhost:3001/usuarios/perfil-professor/projetos/${props.projetoId}`,
+            props,
+            true,
+        )
+    }
+
+    async excluirProjeto(props: ExcluirProjetoUsecaseProps): Promise<void> {
+        return await this.httpService.delete(
+            `http://localhost:3001/usuarios/perfil-professor/projetos/${props.projetoId}`,
+            true,
+        )
     }
 }

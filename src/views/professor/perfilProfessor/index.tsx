@@ -9,11 +9,20 @@ import { HttpServiceImpl } from "../../../infra/httpService"
 import ProjetoList from "./projetoList"
 import ModalCriarProjeto from "./modalCriarProjeto"
 import { ProjetoProps } from "./projetoList/projetoCard"
+import ModalExcluirProjeto from "./modalExcluirProjeto"
+import { ExcluirProjetoUsecase } from "../../../@usuario/application/ExcluirProjeto.usecase"
+import MessageSnackbar from "../../../components/MessageSnackbar"
+import { EditarProjetoUsecase } from "../../../@usuario/application/EditarProjeto.usecase"
+import { CriarProjetoUsecase } from "../../../@usuario/application/CriarProjeto.usecase"
 
 // HTTP Service
 const httpService = new HttpServiceImpl()
 const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
 const buscarUsuarioQuery = new BuscarUsuarioQuery(usuarioGateway)
+const criarProjetoUsecase = new CriarProjetoUsecase(usuarioGateway)
+const editarProjetoUsecase = new EditarProjetoUsecase(usuarioGateway)
+const excluirProjetoUsecase = new ExcluirProjetoUsecase(usuarioGateway)
+// TODO: implementar editar perfil professor
 
 export default function PerfilProfessor() {
     const { id } = useParams()
@@ -23,10 +32,104 @@ export default function PerfilProfessor() {
 
     // Modal
     const [open, setOpen] = useState(false)
-    const [editing, setEditing] = useState(true)
+    const [openExcluir, setOpenExcluir] = useState(false)
+    const [editing, setEditing] = useState(false)
     const [selectedProjeto, setSelectedProjeto] = useState<ProjetoProps | null>(
         null,
     )
+
+    // Snackbar
+    const [snackbarSeverity, setSnackbarSeverity] = useState<
+        "success" | "error" | "info" | "warning"
+    >("success")
+    const [snackbarMessage, setSnackbarMessage] = useState<string>("")
+    const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
+
+    function handleEditar(projeto: ProjetoProps) {
+        setEditing(true)
+        setSelectedProjeto(projeto)
+        setOpen(true)
+    }
+
+    function handleExcluir(id: string) {
+        if (isProfessor && professor) {
+            setSelectedProjeto(
+                professor
+                    .getPerfilProfessor()!
+                    .projetos.find((p) => p.id === id) || null,
+            )
+            setOpenExcluir(true)
+        }
+    }
+
+    async function editarProjeto(projeto: ProjetoProps) {
+        try {
+            if (selectedProjeto && isProfessor && professor) {
+                await editarProjetoUsecase.execute({
+                    projetoId: selectedProjeto.id,
+                    titulo: projeto.titulo,
+                    descricao: projeto.descricao,
+                    preRequisitos: projeto.preRequisitos,
+                    disponivel: projeto.disponivel,
+                })
+                setSnackbarSeverity("success")
+                setSnackbarMessage("Projeto editado com sucesso")
+                setShowSnackbar(true)
+                setOpen(false)
+                setSelectedProjeto(null)
+                setTimeout(() => {
+                    window.location.reload()
+                }, 2000)
+            }
+        } catch (error) {
+            setSnackbarSeverity("error")
+            setSnackbarMessage("Erro ao editar projeto")
+            setShowSnackbar(true)
+        }
+    }
+
+    async function criarProjeto(projeto: ProjetoProps) {
+        try {
+            await criarProjetoUsecase.execute({
+                titulo: projeto.titulo,
+                descricao: projeto.descricao,
+                preRequisitos: projeto.preRequisitos,
+            })
+            setSnackbarSeverity("success")
+            setSnackbarMessage("Projeto criado com sucesso")
+            setShowSnackbar(true)
+            setOpen(false)
+            setTimeout(() => {
+                window.location.reload()
+            }, 2000)
+        } catch (error) {
+            setSnackbarSeverity("error")
+            setSnackbarMessage("Erro ao criar projeto")
+            setShowSnackbar(true)
+        }
+    }
+
+    async function excluirProjeto() {
+        try {
+            if (selectedProjeto && professor) {
+                await excluirProjetoUsecase.execute({
+                    projetoId: selectedProjeto.id,
+                })
+                setSnackbarSeverity("success")
+                setSnackbarMessage("Projeto excluído com sucesso")
+                setShowSnackbar(true)
+                setOpenExcluir(false)
+                setSelectedProjeto(null)
+                setTimeout(() => {
+                    window.location.reload()
+                }, 2000)
+            }
+        } catch (error) {
+            setSnackbarSeverity("error")
+            setSnackbarMessage("Erro ao excluir projeto")
+            setShowSnackbar(true)
+        }
+    }
 
     useEffect(() => {
         async function getPerfilProfessor() {
@@ -156,6 +259,8 @@ export default function PerfilProfessor() {
                                               }
                                             : undefined
                                     }
+                                    editar={handleEditar}
+                                    excluir={handleExcluir}
                                     isProfessor={isProfessor}
                                 />
                             </div>
@@ -170,8 +275,31 @@ export default function PerfilProfessor() {
                 <ModalCriarProjeto
                     show={open}
                     editing={editing}
-                    handleClose={() => setOpen(false)}
+                    handleClose={() => {
+                        setOpen(false)
+                        setEditing(false)
+                        setSelectedProjeto(null)
+                    }}
                     projeto={selectedProjeto}
+                    criar={criarProjeto}
+                    editar={editarProjeto}
+                />
+
+                <ModalExcluirProjeto
+                    show={openExcluir}
+                    handleClose={() => {
+                        setOpenExcluir(false)
+                        setSelectedProjeto(null)
+                    }}
+                    projeto={selectedProjeto}
+                    excluir={excluirProjeto}
+                />
+
+                <MessageSnackbar
+                    message={snackbarMessage}
+                    severity={snackbarSeverity}
+                    open={showSnackbar}
+                    handleClose={() => setShowSnackbar(false)}
                 />
             </Container>
         </div>

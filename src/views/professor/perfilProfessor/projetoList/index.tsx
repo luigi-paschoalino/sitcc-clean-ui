@@ -6,10 +6,14 @@ interface ProjetoListProps {
     projetos: ProjetoProps[]
     openModal?: () => void
     isProfessor?: boolean
+    editar: (projeto: ProjetoProps) => void
+    excluir: (id: string) => void
 }
 export default function ProjetoList({
     projetos,
     openModal,
+    editar,
+    excluir,
     isProfessor = false,
 }: ProjetoListProps) {
     return (
@@ -21,9 +25,15 @@ export default function ProjetoList({
             style={{ minHeight: "100vh" }}
         >
             {projetos
-                .filter((p) => p.disponivel)
+                .filter((p) => (!isProfessor ? p.disponivel : true))
                 .map((projeto, index) => (
-                    <ProjetoCard key={index} projeto={projeto} />
+                    <ProjetoCard
+                        key={index}
+                        projeto={projeto}
+                        isProfessor={isProfessor}
+                        editar={editar}
+                        excluir={excluir}
+                    />
                 ))}
             {isProfessor && (
                 <AddOutlinedIcon
