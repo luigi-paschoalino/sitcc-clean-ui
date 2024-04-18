@@ -1,3 +1,4 @@
+import { AlterarSenhaUsecaseProps } from "../../application/AlterarSenha.usecase"
 import { CriarProjetoUsecaseProps } from "../../application/CriarProjeto.usecase"
 import { EditarPerfilProfessorUsecaseProps } from "../../application/EditarPerfilProfessor.usecase"
 import { EditarProjetoUsecaseProps } from "../../application/EditarProjeto.usecase"
@@ -28,4 +29,7 @@ export interface UsuarioHttpGateway {
     editarPerfilProfessor(
         props: EditarPerfilProfessorUsecaseProps,
     ): Promise<void>
+    buscarPorHashSenha(hash: string): Promise<any>
+    recuperarSenha(email: string): Promise<void>
+    alterarSenha(props: AlterarSenhaUsecaseProps): Promise<void>
 }

@@ -19,6 +19,7 @@ import Cronogramas from "./views/cronogramas/cronogramas"
 import Orientadores from "./views/professor/orientadores"
 import PerfilProfessor from "./views/professor/perfilProfessor"
 import CodigoProfessor from "./views/codigoProfesssor"
+import AlteracaoSenha from "./views/login/alteracaoSenha"
 
 const httpService = new HttpServiceImpl()
 const authGateway = new AuthHttpGatewayImpl(httpService)
@@ -174,6 +175,9 @@ const AppRouter: React.FC = () => (
                 </PrivateRoute>
             }
         />
+        <Route path="/senha">
+            <Route path=":hash" element={<AlteracaoSenha />} />
+        </Route>
     </Routes>
 )
 

@@ -135,9 +135,6 @@ export default function Navbar() {
                                         Meu perfil
                                     </Dropdown.Item>
                                 )}
-                                <Dropdown.Item href="/editar-usuario">
-                                    Editar usuário
-                                </Dropdown.Item>
                                 <Dropdown.Item href="/logout">
                                     Sair
                                 </Dropdown.Item>

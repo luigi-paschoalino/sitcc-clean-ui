@@ -1,4 +1,5 @@
 import { HttpServiceImpl } from "../../../infra/httpService"
+import { AlterarSenhaUsecaseProps } from "../../application/AlterarSenha.usecase"
 import { CriarProjetoUsecaseProps } from "../../application/CriarProjeto.usecase"
 import { EditarPerfilProfessorUsecaseProps } from "../../application/EditarPerfilProfessor.usecase"
 import { EditarProjetoUsecaseProps } from "../../application/EditarProjeto.usecase"
@@ -76,6 +77,30 @@ export class UsuarioHttpGatewayImpl implements UsuarioHttpGateway {
         return await this.httpService.patch(
             "http://localhost:3001/usuarios/perfil-professor",
             props,
+            true,
+        )
+    }
+
+    async buscarPorHashSenha(hash: string): Promise<any> {
+        const result = await this.httpService.get(
+            `http://localhost:3001/usuarios/recuperar/${hash}`,
+            false,
+        )
+        return result.data
+    }
+
+    async recuperarSenha(email: string): Promise<void> {
+        return await this.httpService.patch(
+            "http://localhost:3001/usuarios/recuperar",
+            { email },
+            false,
+        )
+    }
+
+    async alterarSenha(props: AlterarSenhaUsecaseProps): Promise<void> {
+        return await this.httpService.patch(
+            `http://localhost:3001/usuarios/alterar-senha/${props.hashRecuperacaoSenha}`,
+            { ...props },
             true,
         )
     }
