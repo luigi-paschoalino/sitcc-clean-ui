@@ -14,6 +14,7 @@ export class Tfg {
         private resultadosEsperados: string,
         private status: string,
         private coorientador?: string,
+        private banca?: string,
     ) {}
 
     getId() {
@@ -68,6 +69,14 @@ export class Tfg {
         return this.status
     }
 
+    getCoorientador() {
+        return this.coorientador
+    }
+
+    getBanca() {
+        return this.banca
+    }
+
     toJson() {
         return {
             id: this.id,
@@ -84,6 +93,7 @@ export class Tfg {
             descricaoMetodologia: this.descricaoMetodologia,
             resultadosEsperados: this.resultadosEsperados,
             status: this.status,
+            banca: this.banca,
         }
     }
 }

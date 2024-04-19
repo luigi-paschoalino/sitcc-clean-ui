@@ -2,12 +2,14 @@ import { Banca } from "../../../../../@tfg/domain/entities/Banca"
 
 interface BancaDataProps {
     banca: Banca
+    isProfessor: boolean
     redirect: (id: string) => void
     avaliar: () => void
 }
 
 export default function BancaData({
     banca,
+    isProfessor,
     redirect,
     avaliar,
 }: BancaDataProps) {
@@ -44,9 +46,11 @@ export default function BancaData({
                 <strong>Data da defesa:</strong>{" "}
                 {`${new Date(
                     banca.getData(),
-                ).toLocaleDateString()} - ${new Date(
-                    banca.getData(),
-                ).toLocaleTimeString()}`}
+                ).toLocaleDateString()} - ${new Date(banca.getData())
+                    .toLocaleTimeString()
+                    .split(":")
+                    .slice(0, 2)
+                    .join(":")}`}
             </div>
             <div
                 style={{
@@ -66,7 +70,7 @@ export default function BancaData({
                 }}
             >
                 <div style={{ alignSelf: "flex-start", marginTop: "15px" }}>
-                    {!isAvaliado() ? (
+                    {!isAvaliado() && isProfessor ? (
                         <button
                             type="button"
                             className="btn btn-primary"

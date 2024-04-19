@@ -100,6 +100,10 @@ function ListagemBancas() {
                                             setBancaSelecionada(banca)
                                             setOpen(true)
                                         }}
+                                        isProfessor={
+                                            localStorage.getItem("tipo") ===
+                                            TIPO_USUARIO.PROFESSOR
+                                        }
                                     />
                                 ))}
                             </div>

@@ -1,10 +1,10 @@
 import { HttpServiceImpl } from "../../infra/httpService"
+import { CadastrarBancaUsecaseProps } from "../application/CadastrarBanca.usecase"
 import {
     AvaliarEntregaFinalTfgProps,
     AvaliarOrientacaoProps,
     AvaliarEntregaParcialTfgProps,
     BaixarTfgUsecaseProps,
-    CadastrarBancaProps,
     CadastrarTccProps,
     EnviarTfgUsecaseProps,
     TfgHttpGateway,
@@ -76,9 +76,9 @@ export class TfgHttpGatewayImpl implements TfgHttpGateway {
         )
     }
 
-    async cadastrarBanca(props: CadastrarBancaProps): Promise<void> {
-        await this.httpService.post(
-            `${process.env.REACT_APP_BACKEND_URL}/tfg/banca`,
+    async cadastrarBanca(props: CadastrarBancaUsecaseProps): Promise<void> {
+        await this.httpService.put(
+            `${process.env.REACT_APP_BACKEND_URL}/tfg/${props.tfgId}/banca`,
             props,
             true,
         )

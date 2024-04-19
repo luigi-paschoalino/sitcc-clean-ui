@@ -34,7 +34,7 @@ interface InputValues {
 
 // TODO: ajeitar style pra aumentar o tamanho dos campos de texto e seleção
 export default function MatriculaTfg() {
-    const [orientador, setOrientadores] = useState<Usuario[]>([])
+    const [orientadores, setOrientadores] = useState<Usuario[]>([])
     const [orientadorAtivo, setOrientadorAtivo] = useState<{
         id: string
         nome: string
@@ -93,11 +93,11 @@ export default function MatriculaTfg() {
     }
 
     useEffect(() => {
-        const professoresFiltrados = orientador.filter(
+        const professoresFiltrados = orientadores.filter(
             (professor) => professor.getId() !== orientadorAtivo.id,
         )
         setCoorientadores(professoresFiltrados)
-    }, [orientador, orientadorAtivo])
+    }, [orientadores, orientadorAtivo])
 
     async function onSubmit() {
         try {
@@ -129,7 +129,7 @@ export default function MatriculaTfg() {
                             className="mt-3"
                             placeholder="Professor Orientador"
                         >
-                            {orientador.map((professor) => (
+                            {orientadores.map((professor) => (
                                 <MenuItem
                                     value={professor.getNome()}
                                     onClick={() =>

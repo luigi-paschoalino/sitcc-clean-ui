@@ -4,7 +4,6 @@ import { AuthRotaUsecase } from "./@auth/application/AuthRota.usecase"
 import { AuthHttpGatewayImpl } from "./@auth/infra/Auth.gateway"
 import "./index.css"
 import { HttpServiceImpl } from "./infra/httpService"
-import CriarAtividade from "./views/atividades/criarAtividade"
 import CriarBanca from "./views/bancas/criarBancas"
 import Inicio from "./views/inicio/inicio"
 import Login from "./views/login/login"
@@ -80,14 +79,6 @@ const AppRouter: React.FC = () => (
         />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
-        <Route
-            path="/criarAtividade"
-            element={
-                <PrivateRoute>
-                    <CriarAtividade />
-                </PrivateRoute>
-            }
-        />
         <Route path="/cadastro" element={<CriarUsuario />} />
         <Route
             path="/matricula-tfg"

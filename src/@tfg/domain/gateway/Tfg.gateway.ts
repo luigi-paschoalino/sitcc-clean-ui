@@ -1,3 +1,5 @@
+import { CadastrarBancaUsecaseProps } from "../../application/CadastrarBanca.usecase"
+
 export interface CadastrarTccProps {
     orientador: string
     coorientador?: string
@@ -10,15 +12,6 @@ export interface CadastrarTccProps {
     tecnicaPesquisa: string
     descricaoMetodologia: string
     resultadosEsperados: string
-}
-
-export interface CadastrarBancaProps {
-    id: string
-    id_professor: string
-    dia_hora: string
-    nota_final: number
-    nota_apresentacao: number
-    nota_trabalho: number
 }
 
 export interface AvaliarEntregaParcialTfgProps {
@@ -59,7 +52,7 @@ export interface TfgHttpGateway {
         props: AvaliarEntregaParcialTfgProps | AvaliarEntregaFinalTfgProps,
     ): Promise<void>
     avaliarOrientacao(props: AvaliarOrientacaoProps): Promise<void>
-    cadastrarBanca(props: CadastrarBancaProps): Promise<void>
+    cadastrarBanca(props: CadastrarBancaUsecaseProps): Promise<void>
     baixarTfg(props: BaixarTfgUsecaseProps): Promise<any>
     enviarTfg(props: EnviarTfgUsecaseProps): Promise<any>
     listarBancas(): Promise<any[]>

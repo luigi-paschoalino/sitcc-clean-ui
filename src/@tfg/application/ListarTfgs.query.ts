@@ -23,6 +23,7 @@ export class ListarTfgsQuery {
                     tfg.resultadosEsperados,
                     tfg.status,
                     tfg.coorientador,
+                    tfg.banca,
                 ),
         )
     }
