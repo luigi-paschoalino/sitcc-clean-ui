@@ -1,66 +1,46 @@
-import React, { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
 import Container from "@mui/material/Container"
-import axios from "axios"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { HttpServiceImpl } from "../../../infra/httpService"
+import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
+import { ListarProfessoresQuery } from "../../../@usuario/application/ListarProfessores.query"
+import { Usuario } from "../../../@usuario/domain/entities/Usuario"
+import OrientadorTable from "./orientadorBar"
 
-interface PerfilProfessor {
-    id: number
-    usuario: {
-        nome: string
-    }
-}
+// HTTP Services
+const httpService = new HttpServiceImpl()
+const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
+const listarProfessoresQuery = new ListarProfessoresQuery(usuarioGateway)
 
-function Orientadores() {
+export default function Orientadores() {
+    const [orientadores, setOrientadores] = useState<Usuario[]>([])
+
     const navigate = useNavigate()
-    const [orientadores, setOrientadores] = useState<PerfilProfessor[]>([])
 
     useEffect(() => {
-        axios
-            .get(`${process.env.REACT_APP_API_URL}/professors`, {
-                headers: {
-                    Authorization: localStorage.getItem("authToken"),
-                },
-            })
-            .then((res) => {
-                if (res.data.status === 200) {
-                    setOrientadores(res.data.perfilProfessor)
-                }
-            })
+        async function getOrientadores() {
+            const orientadores = await listarProfessoresQuery.execute()
+            setOrientadores(orientadores)
+        }
+        getOrientadores()
     }, [])
-
-    function handleMouseOver(event: React.MouseEvent<HTMLDivElement>) {
-        event.currentTarget.style.cursor = "pointer"
-    }
 
     return (
         <div>
-            <Container component="main">
-                <div className="row p-2">
-                    {orientadores.map((orientador) => (
-                        <div
-                            className="p-1 col-4"
-                            onMouseOver={handleMouseOver}
-                            onClick={() =>
-                                navigate(`/perfil-professor/${orientador.id}`)
-                            }
-                            key={orientador.id}
-                        >
-                            <div
-                                className="card boxItens"
-                                style={{ borderRadius: "10px" }}
-                            >
-                                <div className="card-body text-center">
-                                    <h5 className="card-title">
-                                        {orientador.usuario.nome}
-                                    </h5>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+            <Container component="main" maxWidth="md">
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                    }}
+                >
+                    <OrientadorTable
+                        orientadores={orientadores}
+                        navigate={navigate}
+                    />
                 </div>
             </Container>
         </div>
     )
 }
-
-export default Orientadores

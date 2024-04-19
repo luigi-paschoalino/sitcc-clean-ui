@@ -1,4 +1,3 @@
-import { TIPO_USUARIO } from "../domain/entities/Usuario"
 import {
     AutenticarProps,
     UsuarioHttpGateway,

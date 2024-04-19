@@ -1,344 +1,146 @@
-import React, { useState, useEffect } from "react"
 import Container from "@mui/material/Container"
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline"
-import AddIcon from "@mui/icons-material/Add"
-import InputLabel from "@mui/material/InputLabel"
-import { Select, MenuItem } from "@mui/material"
-import Typography from "@mui/material/Typography"
-import Accordion from "@mui/material/Accordion"
-import { AccordionDetails, AccordionSummary } from "@mui/material"
-import ArticleIcon from "@mui/icons-material/Article"
+import { HttpServiceImpl } from "../../../infra/httpService"
+import { CursoHttpGatewayImpl } from "../../../@curso/infra/gateways/Curso.gateway"
+import { BuscarCronogramaVigenteQuery } from "../../../@curso/application/BuscarCronogramaVigente.query"
+import { Cronograma } from "../../../@curso/domain/entities/Cronograma"
+import { useEffect, useState } from "react"
+import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
+import { BuscarUsuarioQuery } from "../../../@usuario/application/BuscarUsuario.query"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
-import "bootstrap/dist/css/bootstrap.min.css"
+import CronogramaBar from "./cronogramaBar"
+import ModalEditarCronograma from "./modalEditarCronograma"
+import MessageSnackbar from "../../../components/MessageSnackbar"
+import { TIPO_ATIVIDADE } from "../../../@curso/domain/entities/Atividade"
+import { AdicionarAtividadeCronogramaUsecase } from "../../../@curso/application/AdicionarAtividadeCronograma.usecase"
+import { AtualizarAtividadeCronogramaUsecase } from "../../../@curso/application/AtualizarAtividadeCronograma.usecase"
 
-interface Universidade {
-    id: string
-    nome: string
-}
-
-interface Instituto {
-    id: string
-    nome: string
-}
-
-interface Curso {
-    id: string
-    nome: string
-}
-
-interface Cronograma {
-    id: string
-    ano: string
-    semestre: string
-}
+// HTTP Service
+const httpService = new HttpServiceImpl()
+const cursoGateway = new CursoHttpGatewayImpl(httpService)
+const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
+const buscarCronogramaVigenteQuery = new BuscarCronogramaVigenteQuery(
+    cursoGateway,
+)
+const adicionarAtividadeCronogramaUsecase =
+    new AdicionarAtividadeCronogramaUsecase(cursoGateway)
+const atualizarAtividadeCronogramaUsecase =
+    new AtualizarAtividadeCronogramaUsecase(cursoGateway)
+const buscarUsuarioQuery = new BuscarUsuarioQuery(usuarioGateway)
 
 export default function Cronogramas() {
-    const [institutos, setInstitutos] = useState<Instituto[]>([])
-    const [universidades, setUniversidades] = useState<Universidade[]>([])
-    const [cursos, setCursos] = useState<Curso[]>([])
-    const [cronogramas, setCronogramas] = useState<Cronograma[]>([])
-    const [requisitionInstituto, setRequisitionInstituto] = useState<
-        boolean | null
-    >(null)
-    const [requisitionCurso, setRequisitionCurso] = useState<boolean | null>(
-        null,
-    )
-    const [requisitionCronograma, setRequisitionCronograma] = useState<
-        boolean | null
-    >(null)
-    const userType = localStorage.getItem("usertype")
+    const [cronograma, setCronograma] = useState<Cronograma>()
+    const [cursoId, setCursoId] = useState<string>("")
+
+    // Modal
+    const [show, setShow] = useState(false)
+
+    // Snackbar
+    const [showSnackbar, setShowSnackbar] = useState(false)
+    const [snackbarMessage, setSnackbarMessage] = useState("")
+    const [snackbarSeverity, setSnackbarSeverity] = useState<
+        "success" | "error" | "warning" | "info"
+    >("success")
+
     const navigate = useNavigate()
 
+    async function salvar(
+        tipo: TIPO_ATIVIDADE,
+        descricao: string,
+        data: Date,
+        atividadeId?: string,
+    ) {
+        try {
+            if (!cronograma) throw new Error("Cronograma não encontrado!")
+            atividadeId
+                ? await atualizarAtividadeCronogramaUsecase.execute({
+                      cursoId,
+                      cronogramaId: cronograma?.getId(),
+                      titulo: tipo,
+                      descricao,
+                      data,
+                      atividadeId,
+                  })
+                : await adicionarAtividadeCronogramaUsecase.execute({
+                      cursoId,
+                      cronogramaId: cronograma?.getId(),
+                      titulo: tipo,
+                      descricao,
+                      data,
+                  })
+            setSnackbarMessage(
+                `Atividade ${
+                    atividadeId ? "atualizada" : "adicionada"
+                } com sucesso!`,
+            )
+            setSnackbarSeverity("success")
+            setShowSnackbar(true)
+            setShow(false)
+            setTimeout(() => {
+                window.location.reload()
+            }, 2000)
+        } catch (error) {
+            setSnackbarMessage(
+                `Erro ao ${atividadeId ? "atualizar" : "adicionar"} atividade!`,
+            )
+            setSnackbarSeverity("error")
+            setShowSnackbar(true)
+        }
+    }
+
     useEffect(() => {
-        axios
-            .get(`${process.env.REACT_APP_API_URL}/universities`, {
-                headers: {
-                    Authorization: localStorage.getItem("authToken")!,
-                },
+        const id = localStorage.getItem("id")
+        async function buscarCronogramaVigente() {
+            if (!id) {
+                navigate("/login")
+                return
+            }
+            const usuario = await buscarUsuarioQuery.execute(id)
+            setCursoId(usuario.getCurso().id)
+            const cronograma = await buscarCronogramaVigenteQuery.execute({
+                cursoId: usuario.getCurso().id,
             })
-            .then((unis) => {
-                const arrayUniversidades: Universidade[] =
-                    unis.data.universidades.map((uni: any) => ({
-                        id: uni.id,
-                        nome: uni.nome,
-                    }))
-                setUniversidades(arrayUniversidades)
-            })
-    }, [])
+            setCronograma(cronograma)
+        }
 
-    const handleChangeUniversidade = (event: any) => {
-        searchInstitutes(event.value)
-    }
-
-    const handleChangeInstituto = (event: any) => {
-        searchCourses(event.value)
-    }
-
-    const handleChangeCurso = (event: any) => {
-        searchCronogramas(event.value)
-    }
-
-    function searchInstitutes(valueUniversidade: string) {
-        setRequisitionInstituto(false)
-        setRequisitionCurso(false)
-        const arrayInstitutos: Instituto[] = []
-        setInstitutos(arrayInstitutos)
-        const arrayCursos: Curso[] = []
-        setCursos(arrayCursos)
-        axios
-            .get(
-                `${process.env.REACT_APP_API_URL}/universities/${valueUniversidade}/institutes`,
-                {
-                    headers: {
-                        Authorization: localStorage.getItem("authToken")!,
-                    },
-                },
-            )
-            .then((res) => {
-                const institutos: Instituto[] = res.data.institutos.map(
-                    (data: any) => ({
-                        id: data.id,
-                        nome: data.nome,
-                    }),
-                )
-                setInstitutos(institutos)
-                setRequisitionInstituto(true)
-            })
-    }
-
-    function searchCourses(valueInstituto: string) {
-        setRequisitionCurso(false)
-        const arrayCursos: Curso[] = []
-        setCursos(arrayCursos)
-        axios
-            .get(
-                `${process.env.REACT_APP_API_URL}/institute/${valueInstituto}/courses`,
-                {
-                    headers: {
-                        Authorization: localStorage.getItem("authToken")!,
-                    },
-                },
-            )
-            .then((res) => {
-                const cursos: Curso[] = res.data.cursos.map((data: any) => ({
-                    id: data.id,
-                    nome: data.nome,
-                }))
-                setCursos(cursos)
-                setRequisitionCurso(true)
-            })
-    }
-
-    function searchCronogramas(valueCurso: string) {
-        setRequisitionCronograma(false)
-        const arrayCronogramas: Cronograma[] = []
-        setCronogramas(arrayCronogramas)
-        axios
-            .get(
-                `${process.env.REACT_APP_API_URL}/courses/${valueCurso}/timelines`,
-                {
-                    headers: {
-                        Authorization: localStorage.getItem("authToken")!,
-                    },
-                },
-            )
-            .then((res) => {
-                const cronogramas: Cronograma[] = res.data.cronogramas.map(
-                    (data: any) => ({
-                        id: data.id,
-                        ano: data.ano,
-                        semestre: data.semestre,
-                    }),
-                )
-                setCronogramas(cronogramas)
-                setRequisitionCronograma(true)
-            })
-    }
-
-    function handleDelete(id: string) {
-        axios
-            .delete(`${process.env.REACT_APP_API_URL}/timelines/${id}`, {
-                headers: {
-                    Authorization: localStorage.getItem("authToken")!,
-                },
-            })
-            .then((res) => {
-                if (res.data.status === 200) {
-                    return navigate(0)
-                } else {
-                    alert(res.data.error)
-                }
-            })
-    }
+        buscarCronogramaVigente()
+    }, [navigate])
 
     return (
         <div>
-            <Container component="main">
+            <Container component="main" maxWidth="md">
                 <div className="mt-3 mt-md-5">
-                    <Typography
-                        className="pb-5 pt-2 text-center"
-                        component="h1"
-                        variant="h4"
-                    >
-                        Cronogramas
-                    </Typography>
-                    <div className="d-flex">
-                        <div className="col-4">
-                            <InputLabel
-                                style={{ textAlign: "center" }}
-                                className={"mt-2"}
-                                id="label-universidade"
-                            >
-                                Selecione a universidade
-                            </InputLabel>
-                            <Select
-                                className={"mt-3"}
-                                labelId="label-universidade"
-                                variant="outlined"
-                                defaultValue=""
-                                fullWidth
-                                placeholder="Universidade"
-                                onChange={handleChangeUniversidade}
-                            >
-                                {universidades.map((universidade) => (
-                                    <MenuItem value={universidade.id}>
-                                        {universidade.nome}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </div>
-
-                        {requisitionInstituto ? (
-                            <div className="col-4">
-                                <InputLabel
-                                    style={{ textAlign: "center" }}
-                                    className={"mt-2"}
-                                    id="label-instituto"
-                                >
-                                    Selecione o instituto
-                                </InputLabel>
-                                <Select
-                                    className={"mt-3"}
-                                    labelId="label-instituto"
-                                    variant="outlined"
-                                    defaultValue=""
-                                    fullWidth
-                                    placeholder="Instituto"
-                                    onChange={handleChangeInstituto}
-                                >
-                                    {institutos.map((instituto) => (
-                                        <MenuItem value={instituto.id}>
-                                            {instituto.nome}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </div>
-                        ) : (
-                            ""
-                        )}
-
-                        {cursos.length !== 0 ? (
-                            <div className="col-4">
-                                <InputLabel
-                                    style={{ textAlign: "center" }}
-                                    className={"mt-2"}
-                                    id="label-curso"
-                                >
-                                    Selecione o curso
-                                </InputLabel>
-                                <Select
-                                    className={"mt-3"}
-                                    labelId="label-curso"
-                                    variant="outlined"
-                                    defaultValue=""
-                                    fullWidth
-                                    placeholder="Curso"
-                                    onChange={handleChangeCurso}
-                                >
-                                    {cursos.map((curso) => (
-                                        <MenuItem value={curso.id}>
-                                            {curso.nome}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </div>
-                        ) : (
-                            ""
-                        )}
-                    </div>
-                    {requisitionCronograma ? (
-                        <>
-                            <Typography
-                                className="pb-5 pt-2 text-center mt-5"
-                                component="h1"
-                                variant="h4"
-                            >
-                                Cronogramas
-                            </Typography>
-
-                            {cronogramas.map((cronograma) => (
-                                <Accordion>
-                                    <AccordionSummary>
-                                        {cronograma.ano}
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        <div className="accordion-div">
-                                            <div>
-                                                <p>
-                                                    <strong>Ano:</strong>{" "}
-                                                    {cronograma.ano} <br />
-                                                </p>
-                                                <p>
-                                                    <strong>Semestre:</strong>{" "}
-                                                    {cronograma.semestre} <br />
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <button
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `/atividades/${cronograma.id}`,
-                                                        )
-                                                    }
-                                                >
-                                                    <ArticleIcon />
-                                                </button>
-                                                {userType === "3" ? (
-                                                    <div>
-                                                        <button
-                                                            onClick={() =>
-                                                                navigate(
-                                                                    `/criar-atividade/${cronograma.id}`,
-                                                                )
-                                                            }
-                                                        >
-                                                            <AddIcon />
-                                                        </button>
-                                                        <button
-                                                            onClick={() =>
-                                                                handleDelete(
-                                                                    cronograma.id,
-                                                                )
-                                                            }
-                                                        >
-                                                            <DeleteOutlineIcon />
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <></>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </AccordionDetails>
-                                </Accordion>
-                            ))}
-                        </>
-                    ) : (
-                        ""
-                    )}
+                    <h2 className="text-center pt-3 pb-5">Cronogramas</h2>
                 </div>
+                {cronograma ? (
+                    <div className="row justify-content-center">
+                        <CronogramaBar
+                            displayAtivo={true}
+                            cronograma={cronograma}
+                            openModal={() => setShow(true)}
+                        />
+                    </div>
+                ) : (
+                    <h3 className="text-center py-5">
+                        Não há cronogramas cadastrados!
+                    </h3>
+                )}
             </Container>
+
+            <MessageSnackbar
+                severity={snackbarSeverity}
+                message={snackbarMessage}
+                open={showSnackbar}
+                handleClose={() => setShowSnackbar(false)}
+            />
+
+            {cronograma && (
+                <ModalEditarCronograma
+                    show={show}
+                    cronograma={cronograma}
+                    handleClose={() => setShow(false)}
+                    salvar={salvar}
+                />
+            )}
         </div>
     )
 }

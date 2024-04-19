@@ -1,276 +1,183 @@
-import React, { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import Typography from "@mui/material/Typography"
-import Container from "@mui/material/Container"
-import DatePicker from "@mui/lab/DatePicker"
-import "date-fns"
-import DateFnsUtils from "@date-io/date-fns"
-import Alert from "@mui/material/Alert"
-import Button from "@mui/material/Button"
-import InputLabel from "@mui/material/InputLabel"
 import { MenuItem, Select } from "@mui/material"
-import axios from "axios"
+import Button from "@mui/material/Button"
+import Container from "@mui/material/Container"
+import InputLabel from "@mui/material/InputLabel"
+import "date-fns"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { CadastrarBancaUseCase } from "../../../@tfg/application/CadastrarBanca.usecase"
+import { ListarTfgsQuery } from "../../../@tfg/application/ListarTfgs.query"
+import { Tfg } from "../../../@tfg/domain/entities/Tfg"
+import { TfgHttpGatewayImpl } from "../../../@tfg/infra/Tfg.gateway"
+import { ListarProfessoresQuery } from "../../../@usuario/application/ListarProfessores.query"
+import { Usuario } from "../../../@usuario/domain/entities/Usuario"
+import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
+import DateTimePickerComponent from "../../../components/DateTimePicker"
+import MessageSnackbar from "../../../components/MessageSnackbar"
+import { HttpServiceImpl } from "../../../infra/httpService"
 
-interface Professor {
-    id: string
-    nome: string
-}
-
-interface InputValues {
-    dia_horario: Date
-}
+//HTTP Service
+const httpService = new HttpServiceImpl()
+const tfgGateway = new TfgHttpGatewayImpl(httpService)
+const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
+const listarTfgsQuery = new ListarTfgsQuery(tfgGateway)
+const listarProfessoresQuery = new ListarProfessoresQuery(usuarioGateway)
+const cadastrarBancaUsecase = new CadastrarBancaUseCase(tfgGateway)
 
 export default function CriarBanca() {
-    const [professores, setProfessores] = useState<Professor[]>([])
-    const [professores1, setProfessores1] = useState<Professor[]>([])
-    const [professores2, setProfessores2] = useState<Professor[]>([])
-    const [idOrientador, setIdOrientador] = useState<number | null>(null)
-    const idTcc = localStorage.getItem("userTccId")
-    const [orientadorSelected, setOrientadorSelected] = useState<number | null>(
-        null,
+    const [professorList, setProfessorList] = useState<Usuario[]>([])
+    const [professorBanca, setProfessorBanca] = useState<Usuario | null>(null)
+
+    const [segundoProfessorList, setSegundoProfessorList] = useState<Usuario[]>(
+        [],
     )
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date())
-    const [coorientadorSelected, setCoorientadorSelected] = useState<
-        number | null
-    >(null)
-    const [status, setStatus] = useState<boolean | string>(true)
+    const [segundoProfessorBanca, setSegundoProfessorBanca] =
+        useState<Usuario | null>(null)
+    const [dataDefesa, setDataDefesa] = useState<Date>(new Date())
+    const [tfgs, setTfgs] = useState<Tfg[]>([])
+    const [tfg, setTfg] = useState<Tfg | null>(null)
+
+    // Snackbar
+    const [open, setOpen] = useState(false)
+    const [message, setMessage] = useState("")
+    const [severity, setSeverity] = useState<
+        "error" | "warning" | "info" | "success"
+    >("success")
+
     const navigate = useNavigate()
-    const [inputValues, setInputValues] = useState<InputValues>({
-        dia_horario: new Date(),
-    })
+
+    async function cadastrarBanca() {
+        try {
+            if (!professorBanca || !segundoProfessorBanca || !dataDefesa)
+                throw new Error()
+
+            await cadastrarBancaUsecase.execute({
+                usuarioId: localStorage.getItem("id") || "",
+                tfgId: tfg?.getId() || "",
+                data: dataDefesa,
+                professorId: professorBanca.getId(),
+                segundoProfessorId: segundoProfessorBanca.getId(),
+            })
+            setMessage("Banca cadastrada com sucesso")
+            setSeverity("success")
+            setOpen(true)
+            setTimeout(() => {
+                navigate("/bancas")
+            }, 2000)
+        } catch (e) {
+            setMessage("Erro ao cadastrar banca")
+            setSeverity("error")
+            setOpen(true)
+        }
+    }
+
+    function onSelectProfessor(professor: Usuario) {
+        setProfessorBanca(professor)
+        setSegundoProfessorList(
+            professorList.filter((p) => p.getId() !== professor.getId()),
+        )
+    }
 
     useEffect(() => {
-        axios
-            .post(
-                `${process.env.REACT_APP_API_URL}/users/type`,
-                { perfil_usuario: 2 },
-                {
-                    headers: {
-                        Authorization: localStorage.getItem("authToken") || "",
-                    },
-                },
-            )
-            .then((profs) => {
-                let arrayProfessores: Professor[] = []
-                let arrayProfessores2: Professor[] = []
-                profs.data.forEach((prof: Professor) => {
-                    arrayProfessores.push({
-                        id: prof.id,
-                        nome: prof.nome,
-                    })
-                    arrayProfessores2.push({
-                        id: prof.id,
-                        nome: prof.nome,
-                    })
-                })
-                setProfessores(arrayProfessores)
-                setProfessores1(arrayProfessores)
-                setProfessores2(arrayProfessores2)
-            })
+        async function getTfgs() {
+            const tfgs = await listarTfgsQuery.execute()
+            setTfgs(tfgs.filter((tfg) => !tfg.getBanca()))
+        }
+        getTfgs()
     }, [])
 
     useEffect(() => {
-        axios
-            .get(
-                `${process.env.REACT_APP_API_URL}/tfg/search-orientador-id/${idTcc}`,
-                {
-                    headers: {
-                        Authorization: localStorage.getItem("authToken") || "",
-                    },
-                },
-            )
-            .then((res) => {
-                setIdOrientador(res.data.resultsTfg[0].id)
-            })
-    }, [])
-
-    const handleDateChange = (date: Date) => {
-        setSelectedDate(date)
-        setInputValues({ ...inputValues, dia_horario: date })
-    }
-
-    const handleChangeOrientador = (event: any) => {
-        const filtered = professores.filter((prof) => {
-            return prof.id !== event.value
-        })
-        setProfessores2(filtered)
-        setOrientadorSelected(event.value)
-    }
-
-    const handleChangeCoorientador = (event: any) => {
-        const filtered = professores.filter((prof) => {
-            return prof.id !== event.value
-        })
-        setProfessores1(filtered)
-        setCoorientadorSelected(event.value)
-    }
-
-    function onSubmit() {
-        axios
-            .get(
-                `${process.env.REACT_APP_API_URL}/tfg/search-orientador-id/${idTcc}`,
-                {
-                    headers: {
-                        Authorization: localStorage.getItem("authToken") || "",
-                    },
-                },
-            )
-            .then((res) => {
-                if (res.data.status === 200) {
-                    if (
-                        orientadorSelected !== null &&
-                        coorientadorSelected !== null
-                    ) {
-                        axios
-                            .post(
-                                `${process.env.REACT_APP_API_URL}/board`,
-                                {
-                                    id_usuario: idOrientador,
-                                    id_tfg: idTcc,
-                                    dia_horario: inputValues.dia_horario,
-                                    nota_final: "",
-                                    nota_apresentacao: "",
-                                    nota_trabalho: "",
-                                },
-                                {
-                                    headers: {
-                                        Authorization:
-                                            localStorage.getItem("authToken") ||
-                                            "",
-                                    },
-                                },
-                            )
-                            .then((response) => {
-                                if (response.data.status === 200) {
-                                    let idProfessor1 = orientadorSelected
-                                    axios
-                                        .post(
-                                            `${process.env.REACT_APP_API_URL}/board`,
-                                            {
-                                                id_usuario: idProfessor1,
-                                                id_tfg: idTcc,
-                                                dia_horario:
-                                                    inputValues.dia_horario,
-                                                nota_final: "",
-                                                nota_apresentacao: "",
-                                                nota_trabalho: "",
-                                            },
-                                            {
-                                                headers: {
-                                                    Authorization:
-                                                        localStorage.getItem(
-                                                            "authToken",
-                                                        ) || "",
-                                                },
-                                            },
-                                        )
-                                        .then((response) => {})
-                                    let idProfessor2 = coorientadorSelected
-                                    axios
-                                        .post(
-                                            `${process.env.REACT_APP_API_URL}/board`,
-                                            {
-                                                id_usuario: idProfessor2,
-                                                id_tfg: idTcc,
-                                                dia_horario:
-                                                    inputValues.dia_horario,
-                                                nota_final: "",
-                                                nota_apresentacao: "",
-                                                nota_trabalho: "",
-                                            },
-                                            {
-                                                headers: {
-                                                    Authorization:
-                                                        localStorage.getItem(
-                                                            "authToken",
-                                                        ) || "",
-                                                },
-                                            },
-                                        )
-                                        .then((response) => {
-                                            axios
-                                                .put(
-                                                    `${process.env.REACT_APP_API_URL}/tfg/${idTcc}/status`,
-                                                    {
-                                                        status_tfg:
-                                                            "banca_marcada",
-                                                    },
-                                                    {
-                                                        headers: {
-                                                            Authorization:
-                                                                localStorage.getItem(
-                                                                    "authToken",
-                                                                ) || "",
-                                                        },
-                                                    },
-                                                )
-                                                .then((response) => {
-                                                    localStorage.setItem(
-                                                        "userTccStatus",
-                                                        "banca_marcada",
-                                                    )
-                                                    return navigate("/")
-                                                })
-                                        })
-                                } else {
-                                    setStatus(response.data.error)
-                                }
-                            })
-                    } else {
-                        setStatus("Professores precisam ser selecionados")
-                    }
-                } else {
-                    return
-                }
-            })
-    }
+        async function getProfessores() {
+            if (tfg) {
+                const professores = await listarProfessoresQuery.execute()
+                setProfessorList(
+                    professores.filter(
+                        (professor) =>
+                            !tfg.getBanca()?.includes(professor.getId()) &&
+                            !(tfg.getOrientador() === professor.getNome()) &&
+                            !tfg
+                                .getCoorientador()
+                                ?.includes(professor.getNome()),
+                    ),
+                )
+            }
+        }
+        getProfessores()
+    }, [tfg])
 
     return (
         <Container component="main" maxWidth="xs">
             <div className="mt-3 mt-md-5">
                 <div className="text-center">
-                    <Typography
-                        className="pb-5 pt-2"
-                        component="h1"
-                        variant="h4"
+                    <h2 className="text-center pt-3 pb-5">Registro de banca</h2>
+                    <div
+                        className="imc_div"
+                        style={{
+                            marginBottom: "2rem",
+                        }}
                     >
-                        Registrar Banca
-                    </Typography>
-                    {status !== true ? (
-                        <Alert
-                            className="mt-2 mb-4"
-                            variant="filled"
-                            severity="error"
-                        >
-                            {status}
-                        </Alert>
-                    ) : (
-                        ""
-                    )}
-                    <div className="imc_div">
-                        <InputLabel>
-                            Selecione os Professores que farão parte da banca
-                        </InputLabel>
+                        <InputLabel>Selecione o TFG</InputLabel>
                         <Select
+                            size="small"
                             className={"mt-3"}
                             labelId="label-tipo-usuario"
-                            placeholder="Professor Orientador"
-                            onChange={handleChangeOrientador}
+                            placeholder="Selecione o TFG"
+                            onChange={(e) => {
+                                const tfg = tfgs.find(
+                                    (tfg) => tfg.getId() === e.target.value,
+                                )
+                                if (tfg) setTfg(tfg)
+                            }}
                         >
-                            {professores1.map((professor) => (
-                                <MenuItem value={professor.id} />
+                            {tfgs.map((tfg) => (
+                                <MenuItem value={tfg.getId()}>
+                                    {tfg.getTitulo()}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </div>
+                    <div className="imc_div">
+                        <InputLabel>
+                            Selecione os professores que farão parte da banca
+                        </InputLabel>
+                        <Select
+                            size="small"
+                            className={"mt-3"}
+                            labelId="label-tipo-usuario"
+                            placeholder="Primeiro professor"
+                            onChange={(e) => {
+                                const professor = professorList.find(
+                                    (professor) =>
+                                        professor.getId() === e.target.value,
+                                )
+                                if (professor) onSelectProfessor(professor)
+                            }}
+                        >
+                            {professorList.map((professor) => (
+                                <MenuItem value={professor.getId()}>
+                                    {professor.getNome()}
+                                </MenuItem>
                             ))}
                         </Select>
                     </div>
                     <div className="imc_div">
                         <Select
+                            size="small"
                             className={"mt-3"}
                             labelId="label-tipo-usuario"
-                            placeholder="Professor Coorientador"
-                            onChange={handleChangeCoorientador}
+                            placeholder="Segundo professor"
+                            onChange={(e) => {
+                                const professor = professorList.find(
+                                    (professor) =>
+                                        professor.getId() === e.target.value,
+                                )
+                                setSegundoProfessorBanca(professor || null)
+                            }}
                         >
-                            {professores2.map((professor) => (
-                                <MenuItem value={professor.id} />
+                            {segundoProfessorList.map((professor) => (
+                                <MenuItem value={professor.getId()}>
+                                    {professor.getNome()}
+                                </MenuItem>
                             ))}
                         </Select>
                     </div>
@@ -282,17 +189,17 @@ export default function CriarBanca() {
                             alignItems: "center",
                         }}
                     >
-                        <DatePicker
-                            className="mt-2"
-                            autoOk
-                            required
-                            fullWidth
-                            variant="inline"
-                            inputVariant="outlined"
-                            label="Data"
-                            value={selectedDate}
-                            onChange={handleDateChange}
-                        />
+                        <div
+                            className="imc_div"
+                            style={{ width: "100%", marginTop: "2rem" }}
+                        >
+                            <DateTimePickerComponent
+                                selectedDate={dataDefesa}
+                                handleDateChange={(e) => {
+                                    if (e instanceof Date) setDataDefesa(e)
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
                 <Button
@@ -302,11 +209,24 @@ export default function CriarBanca() {
                     color="primary"
                     size="large"
                     className="mb-3 mb-md-4 mt-4 backgroundcolor2"
-                    onClick={() => onSubmit()}
+                    onClick={cadastrarBanca}
+                    disabled={
+                        !professorBanca ||
+                        !segundoProfessorBanca ||
+                        !tfg ||
+                        !dataDefesa
+                    }
                 >
-                    Marcar
+                    Registrar
                 </Button>
             </div>
+
+            <MessageSnackbar
+                handleClose={() => setOpen(false)}
+                message={message}
+                severity={severity}
+                open={open}
+            />
         </Container>
     )
 }

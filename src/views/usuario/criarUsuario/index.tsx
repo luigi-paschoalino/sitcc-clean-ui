@@ -1,37 +1,18 @@
-import React, { useState, useCallback, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import Container from "@mui/material/Container"
-import "date-fns"
+import { MenuItem, Select } from "@mui/material"
 import Button from "@mui/material/Button"
-import TextField from "@mui/material/TextField"
-import Typography from "@mui/material/Typography"
-import { Select, MenuItem } from "@mui/material"
+import Container from "@mui/material/Container"
 import InputLabel from "@mui/material/InputLabel"
-import Alert from "@mui/material/Alert"
 import Link from "@mui/material/Link"
-import { HttpServiceImpl } from "../../../infra/httpService"
-import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
+import TextField from "@mui/material/TextField"
+import "date-fns"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { ListarCursosQuery } from "../../../@curso/application/ListarCursos.query"
+import { Curso } from "../../../@curso/domain/entities/Curso"
+import { CursoHttpGatewayImpl } from "../../../@curso/infra/gateways/Curso.gateway"
 import { CadastrarUsuarioUsecase } from "../../../@usuario/application/CadastrarUsuario.usecase"
-import { UniversidadeHttpGatewayImpl } from "../../../@universidade/infra/gateways/Universidade.gateway"
-import { ListarUniversidadesQuery } from "../../../@universidade/application/ListarUniversidades.query"
-
-export interface UniversidadeProps {
-    id: string
-    nome: string
-    institutos: InstitutoProps[]
-}
-
-export interface InstitutoProps {
-    id: string
-    nome: string
-    cursos: CursoProps[]
-}
-
-export interface CursoProps {
-    id: string
-    nome: string
-    codigo: string
-}
+import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
+import { HttpServiceImpl } from "../../../infra/httpService"
 
 enum TIPO_USUARIO {
     ALUNO = "ALUNO",
@@ -46,76 +27,28 @@ export default function CriarUsuario() {
         senha: "",
         codigo: "",
         numero: "",
+        matricula: "",
     })
 
     /* HTTP Service */
     const httpService = new HttpServiceImpl()
-
+    const cursoGateway = new CursoHttpGatewayImpl(httpService)
     const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
     const cadastrarUsuarioUsecase = new CadastrarUsuarioUsecase(usuarioGateway)
-
-    const universidadeGateway = new UniversidadeHttpGatewayImpl(httpService)
-    const listarUniversidadesQuery = new ListarUniversidadesQuery(
-        universidadeGateway,
-    )
+    const listarCursosQuery = new ListarCursosQuery(cursoGateway)
 
     /* States */
 
     const [tipoUsuario, setTipoUsuario] = useState<string>("")
-    const [universidades, setUniversidades] = useState<UniversidadeProps[]>([])
-    const [universidadeAtiva, setUniversidadeAtiva] =
-        useState<UniversidadeProps>({
-            id: "",
-            nome: "",
-            institutos: [],
-        })
-    const [institutos, setInstitutos] = useState<InstitutoProps[]>([])
-    const [institutoAtivo, setInstitutoAtivo] = useState<InstitutoProps>({
-        id: "",
-        nome: "",
-        cursos: [],
-    })
-    const [cursos, setCursos] = useState<CursoProps[]>([])
+    const [cursos, setCursos] = useState<Curso[]>([])
     const [cursoAtivo, setCursoAtivo] = useState<string>("")
-    const [status, setStatus] = useState<boolean | string>(true)
-    const [exibirInstituto, setExibirInstituto] = useState(false)
-    const [exibirCurso, setExibirCurso] = useState(false)
+
     const navigate = useNavigate()
-
-    /* Functions */
-    useEffect(() => {
-        async function getUniversidades(): Promise<void> {
-            const universidadesData = await listarUniversidadesQuery.execute()
-            setUniversidades(universidadesData)
-        }
-        getUniversidades()
-        console.log(universidades)
-    }, [])
-
-    useEffect(() => {
-        if (universidadeAtiva.id !== "") {
-            setInstitutos(universidadeAtiva.institutos)
-            setExibirInstituto(true)
-        }
-    }, [universidadeAtiva])
-
-    useEffect(() => {
-        if (institutoAtivo.id !== "") {
-            setCursos(institutoAtivo.cursos)
-            setExibirCurso(true)
-        }
-    }, [institutoAtivo])
-
-    useEffect(() => {
-        if (cursoAtivo !== "") {
-            console.log(cursoAtivo)
-        }
-    }, [cursoAtivo])
 
     async function handleCadastro(): Promise<void> {
         try {
             if (tipoUsuario) {
-                const response = await cadastrarUsuarioUsecase.execute({
+                await cadastrarUsuarioUsecase.execute({
                     nome: inputValues.nome,
                     curso: cursoAtivo,
                     email: inputValues.email,
@@ -124,35 +57,21 @@ export default function CriarUsuario() {
                     tipo: tipoUsuario,
                     codigo: inputValues.codigo,
                 })
-                setStatus(response.message)
                 setTimeout(() => {
-                    window.location.href = "/"
-                }, 1000)
+                    navigate("/")
+                }, 2000)
             } else {
-                setStatus("Tipo não informado")
             }
-        } catch (error) {
-            setStatus((error as any).response.data.message)
-        }
+        } catch (error) {}
     }
-
-    const handleOnChange = useCallback((event) => {
-        const { name, value } = event.target
-        setInputValues((prevInputValues) => ({
-            ...prevInputValues,
-            [name]: value,
-        }))
-    }, [])
 
     const handleSelectUserType = (userType: string) => {
         switch (userType) {
-            case "ALUNO":
-                document.getElementById("aluno_div")!.style.display = ""
+            case TIPO_USUARIO.ALUNO:
                 document.getElementById("professor_div")!.style.display = "none"
                 break
-            case "PROFESSOR":
+            case TIPO_USUARIO.PROFESSOR:
                 document.getElementById("professor_div")!.style.display = ""
-                document.getElementById("aluno_div")!.style.display = "none"
                 break
             default:
                 break
@@ -160,34 +79,32 @@ export default function CriarUsuario() {
         setTipoUsuario(userType)
     }
 
-    const handleSelectUniversity = (universidade: UniversidadeProps) => {
-        setUniversidadeAtiva(universidade)
-        setExibirInstituto(true)
-        setExibirCurso(false)
-    }
-
-    const handleSelectInstitute = (instituto: InstitutoProps) => {
-        setInstitutoAtivo(instituto)
-        setExibirCurso(true)
-    }
-
     const handleSelectCurso = (curso: string) => {
         setCursoAtivo(curso)
     }
+
+    useEffect(() => {
+        async function listarCursos() {
+            const cursos = await listarCursosQuery.execute()
+            setCursos(
+                // organizar em ordem alfabética
+                cursos.sort((a, b) => a.getNome().localeCompare(b.getNome())),
+            )
+        }
+
+        listarCursos()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <div>
             <Container component="main" maxWidth="xs">
                 <div className="mt-3 mt-md-5">
                     <div className="text-center">
-                        <Typography
-                            className="pb-5 pt-2"
-                            component="h1"
-                            variant="h4"
-                        >
-                            Criar usuário
-                        </Typography>
-                        {status !== true ? (
+                        <h2 className="mb-3">Criar usuário</h2>
+                        {
+                            // TODO: mudar para SnackbarMessage dos components
+                            /* {status !== true ? (
                             <Alert
                                 className="my-2"
                                 variant="filled"
@@ -197,7 +114,8 @@ export default function CriarUsuario() {
                             </Alert>
                         ) : (
                             ""
-                        )}
+                        )} */
+                        }
                         <InputLabel
                             style={{ textAlign: "left" }}
                             className={"mt-3"}
@@ -234,30 +152,44 @@ export default function CriarUsuario() {
                             name="nome"
                             autoComplete="nome"
                             autoFocus
-                            onChange={handleOnChange}
+                            onChange={(e) => {
+                                setInputValues({
+                                    ...inputValues,
+                                    nome: e.target.value,
+                                })
+                            }}
                         />
                         <TextField
                             variant="outlined"
                             margin="normal"
                             required
                             fullWidth
-                            id="telefone"
-                            label="Telefone"
-                            name="telefone"
-                            autoComplete="telefone"
-                            onChange={handleOnChange}
+                            id="matricula"
+                            label="Matrícula"
+                            name="matricula"
+                            onChange={(e) => {
+                                setInputValues({
+                                    ...inputValues,
+                                    matricula: e.target.value,
+                                })
+                            }}
                         />
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="numero"
+                            label="Número de telefone"
+                            name="numero"
+                            onChange={(e) => {
+                                setInputValues({
+                                    ...inputValues,
+                                    numero: e.target.value,
+                                })
+                            }}
+                        ></TextField>
                         <div style={{ display: "none" }} id="professor_div">
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="numeroprofessor"
-                                label="Número"
-                                name="numero"
-                                onChange={handleOnChange}
-                            ></TextField>
                             <TextField
                                 variant="outlined"
                                 margin="normal"
@@ -266,19 +198,12 @@ export default function CriarUsuario() {
                                 id="codigo"
                                 label="Código"
                                 name="codigo"
-                                onChange={handleOnChange}
-                            ></TextField>
-                        </div>
-                        <div style={{ display: "none" }} id="aluno_div">
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="numeromatricula"
-                                label="Número de matrícula"
-                                name="numero"
-                                onChange={handleOnChange}
+                                onChange={(e) => {
+                                    setInputValues({
+                                        ...inputValues,
+                                        codigo: e.target.value,
+                                    })
+                                }}
                             ></TextField>
                         </div>
                         <TextField
@@ -290,7 +215,12 @@ export default function CriarUsuario() {
                             label="E-mail"
                             name="email"
                             autoComplete="email"
-                            onChange={handleOnChange}
+                            onChange={(e) => {
+                                setInputValues({
+                                    ...inputValues,
+                                    email: e.target.value,
+                                })
+                            }}
                         />
                         <TextField
                             variant="outlined"
@@ -302,61 +232,14 @@ export default function CriarUsuario() {
                             type="password"
                             id="senha"
                             autoComplete="current-password"
-                            onChange={handleOnChange}
+                            onChange={(e) => {
+                                setInputValues({
+                                    ...inputValues,
+                                    senha: e.target.value,
+                                })
+                            }}
                         />
-                        <InputLabel
-                            style={{ textAlign: "left" }}
-                            className={"mt-3"}
-                            id="label-universidade"
-                        >
-                            Universidade
-                        </InputLabel>
-                        <Select
-                            id="select_universidade"
-                            labelId="label-universidade"
-                            placeholder="Selecione"
-                        >
-                            {universidades.map((universidade, key) => (
-                                <MenuItem
-                                    key={key}
-                                    value={universidade.id}
-                                    onClick={() =>
-                                        handleSelectUniversity(universidade)
-                                    }
-                                >
-                                    {universidade.nome}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                        {exibirInstituto && (
-                            <>
-                                <InputLabel
-                                    style={{ textAlign: "left" }}
-                                    className={"mt-3"}
-                                    id="label-instituto"
-                                >
-                                    Instituto
-                                </InputLabel>
-                                <Select
-                                    id="select_instituto"
-                                    labelId="label-instituto"
-                                    placeholder="Selecione"
-                                >
-                                    {institutos.map((instituto, key) => (
-                                        <MenuItem
-                                            key={key}
-                                            value={instituto.id}
-                                            onClick={() =>
-                                                handleSelectInstitute(instituto)
-                                            }
-                                        >
-                                            {instituto.nome}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </>
-                        )}
-                        {exibirCurso && (
+                        {cursos.length && (
                             <>
                                 <InputLabel
                                     style={{ textAlign: "left" }}
@@ -372,13 +255,13 @@ export default function CriarUsuario() {
                                 >
                                     {cursos.map((curso) => (
                                         <MenuItem
-                                            key={curso.id}
-                                            value={curso.id}
+                                            key={curso.getId()}
+                                            value={curso.getId()}
                                             onClick={() =>
-                                                handleSelectCurso(curso.id)
+                                                handleSelectCurso(curso.getId())
                                             }
                                         >
-                                            {curso.nome}
+                                            {curso.getNome()}
                                         </MenuItem>
                                     ))}
                                 </Select>

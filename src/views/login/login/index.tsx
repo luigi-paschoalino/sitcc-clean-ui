@@ -1,15 +1,21 @@
 import React, { useState, useCallback, ChangeEvent, KeyboardEvent } from "react"
-import { useNavigate } from "react-router-dom"
 import Container from "@mui/material/Container"
 import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
 import Alert from "@mui/material/Alert"
 import Link from "@mui/material/Link"
-import axios from "axios"
 import { HttpServiceImpl } from "../../../infra/httpService"
 import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
 import { AutenticarUsecase } from "../../../@usuario/application/Autenticar.usecase"
+import ModalRecuperarSenha from "./modalRecuperarSenha"
+import { RecuperarSenhaUsecase } from "../../../@usuario/application/RecuperarSenha.usecase"
+import MessageSnackbar from "../../../components/MessageSnackbar"
+
+// HTTP Service
+const httpService = new HttpServiceImpl()
+const usuarioGateway = new UsuarioHttpGatewayImpl(httpService)
+const recuperarSenhaUsecase = new RecuperarSenhaUsecase(usuarioGateway)
 
 interface InputValues {
     email: string
@@ -26,7 +32,16 @@ function Login() {
         email: "",
         password: "",
     })
-    const navigate = useNavigate()
+
+    // Modal
+    const [open, setOpen] = useState<boolean>(false)
+
+    // Snackbar
+    const [openSnackbar, setOpenSnackbar] = useState(false)
+    const [message, setMessage] = useState<string>("")
+    const [severity, setSeverity] = useState<
+        "success" | "error" | "info" | "warning"
+    >("success")
 
     const handleOnChange = useCallback(
         (event: ChangeEvent<HTMLInputElement>) => {
@@ -51,6 +66,7 @@ function Login() {
             localStorage.setItem("authToken", result.data.token)
             localStorage.setItem("nome", result.data.nome)
             localStorage.setItem("tipo", result.data.tipo)
+            localStorage.setItem("id", result.data.id)
 
             setAuthStatus(true)
             setTimeout(() => {
@@ -63,12 +79,24 @@ function Login() {
 
     const handleKeyPress = useCallback(
         (event: KeyboardEvent<HTMLInputElement>) => {
-            if (event.key === "Enter") {
-                onSubmit()
-            }
+            if (event.key === "Enter") onSubmit()
         },
-        [],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [inputValues.email, inputValues.password],
     )
+
+    async function recuperar(email: string) {
+        try {
+            await recuperarSenhaUsecase.execute(email)
+            setMessage("Email enviado com sucesso")
+            setSeverity("success")
+            setOpenSnackbar(true)
+        } catch (error) {
+            setMessage("Erro ao enviar email")
+            setSeverity("error")
+            setOpenSnackbar(true)
+        }
+    }
 
     return (
         <div>
@@ -166,6 +194,18 @@ function Login() {
                                 </Button>
                             </Link>
 
+                            <Button
+                                style={{ backgroundColor: "#00B0CC" }}
+                                type="button"
+                                variant="contained"
+                                fullWidth
+                                color="secondary"
+                                size="large"
+                                onClick={() => setOpen(true)}
+                            >
+                                Recuperar senha
+                            </Button>
+
                             <Link href="/">
                                 <Button
                                     type="button"
@@ -180,6 +220,18 @@ function Login() {
                             </Link>
                         </div>
                     </div>
+                    <ModalRecuperarSenha
+                        open={open}
+                        handleClose={() => setOpen(false)}
+                        recuperar={recuperar}
+                    />
+
+                    <MessageSnackbar
+                        message={message}
+                        open={openSnackbar}
+                        severity={severity}
+                        handleClose={() => setOpenSnackbar(false)}
+                    />
                 </Container>
             </div>
         </div>
