@@ -1,29 +1,24 @@
 import React from "react"
-import "./index.css"
-import App from "./App"
-import reportWebVitals from "./reportWebVitals"
-import {
-    BrowserRouter,
-    Route,
-    Routes,
-    Router,
-    Navigate,
-} from "react-router-dom"
-import CriarAtividade from "./views/atividades/criarAtividade"
-import CriarUsuario from "./views/usuario/criarUsuario"
-import Inicio from "./views/inicio/inicio"
-import CriarUniversidade from "./views/universidades/criarUniversidade"
-import MatriculaTfg from "./views/tfg/matriculaTfg"
-import CriarBanca from "./views/bancas/criarBancas"
-import CriarInstituto from "./views/institutos/criarInstituto"
-import Login from "./views/login/login"
-import CriarCurso from "./views/cursos/criarCurso"
-import { AuthHttpGatewayImpl } from "./@auth/infra/Auth.gateway"
+import { Route, Routes, useNavigate } from "react-router-dom"
 import { AuthRotaUsecase } from "./@auth/application/AuthRota.usecase"
+import { AuthHttpGatewayImpl } from "./@auth/infra/Auth.gateway"
+import "./index.css"
 import { HttpServiceImpl } from "./infra/httpService"
-import { useNavigate } from "react-router-dom"
+import CriarBanca from "./views/bancas/criarBancas"
+import Inicio from "./views/inicio/inicio"
+import Login from "./views/login/login"
 import Logout from "./views/login/logout"
-import EnviarTccParcial from "./views/tfg/enviarTccParcial"
+import DetalhesTfg from "./views/tfg/detalhesTfg"
+import ListagemTfgs from "./views/tfg/listarOrientacoes"
+import MatriculaTfg from "./views/tfg/matriculaTfg"
+import CriarUsuario from "./views/usuario/criarUsuario"
+import ListagemBancas from "./views/bancas/minhasBancas"
+import CriarCronograma from "./views/cronogramas/criarCronograma"
+import Cronogramas from "./views/cronogramas/cronogramas"
+import Orientadores from "./views/professor/orientadores"
+import PerfilProfessor from "./views/professor/perfilProfessor"
+import CodigoProfessor from "./views/codigoProfesssor"
+import AlteracaoSenha from "./views/login/alteracaoSenha"
 
 const httpService = new HttpServiceImpl()
 const authGateway = new AuthHttpGatewayImpl(httpService)
@@ -84,33 +79,35 @@ const AppRouter: React.FC = () => (
         />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
-        <Route
-            path="/criarAtividade"
-            element={
-                <PrivateRoute>
-                    <CriarAtividade />
-                </PrivateRoute>
-            }
-        />
         <Route path="/cadastro" element={<CriarUsuario />} />
         <Route
-            path="/criarUniversidade"
-            element={
-                <PrivateRoute>
-                    <CriarUniversidade />
-                </PrivateRoute>
-            }
-        />
-        <Route
-            path="/tcc"
+            path="/matricula-tfg"
             element={
                 <PrivateRoute>
                     <MatriculaTfg />
                 </PrivateRoute>
             }
         />
+        <Route path="/tfgs">
+            <Route
+                index
+                element={
+                    <PrivateRoute>
+                        <ListagemTfgs />
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path=":id"
+                element={
+                    <PrivateRoute>
+                        <DetalhesTfg />
+                    </PrivateRoute>
+                }
+            />
+        </Route>
         <Route
-            path="/banca"
+            path="/cadastrar-banca"
             element={
                 <PrivateRoute>
                     <CriarBanca />
@@ -118,22 +115,60 @@ const AppRouter: React.FC = () => (
             }
         />
         <Route
-            path="/criarInstituto"
+            path="/bancas"
             element={
                 <PrivateRoute>
-                    <CriarInstituto />
+                    <ListagemBancas />
                 </PrivateRoute>
             }
         />
+        <Route path="/cronogramas">
+            <Route
+                index
+                element={
+                    <PrivateRoute>
+                        <Cronogramas />
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path="criar"
+                element={
+                    <PrivateRoute>
+                        <CriarCronograma />
+                    </PrivateRoute>
+                }
+            />
+        </Route>
+        <Route path="/orientadores">
+            <Route
+                index
+                element={
+                    <PrivateRoute>
+                        <Orientadores />
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path=":id"
+                element={
+                    <PrivateRoute>
+                        <PerfilProfessor />
+                    </PrivateRoute>
+                }
+            />
+        </Route>
         <Route
-            path="/criarCurso"
+            path="/codigo-professor"
             element={
                 <PrivateRoute>
-                    <CriarCurso />
+                    <CodigoProfessor />
                 </PrivateRoute>
             }
         />
-        <Route path="/envioParcial" element={<EnviarTccParcial />} />
+        <Route path="/senha">
+            <Route path=":hash" element={<AlteracaoSenha />} />
+        </Route>
     </Routes>
 )
 

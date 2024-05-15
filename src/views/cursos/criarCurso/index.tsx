@@ -8,9 +8,6 @@ import Typography from "@mui/material/Typography"
 import InputLabel from "@mui/material/InputLabel"
 import axios from "axios"
 import { HttpServiceImpl } from "../../../infra/httpService"
-import { UniversidadeHttpGatewayImpl } from "../../../@universidade/infra/gateways/Universidade.gateway"
-import { CadastrarCursoUsecase } from "../../../@universidade/application/CadastrarCurso.usecase"
-import { ListarUniversidadesQuery } from "../../../@universidade/application/ListarUniversidades.query"
 import { useNavigate } from "react-router-dom"
 
 interface UniversidadeProps {
@@ -38,13 +35,6 @@ export default function CriarCurso() {
 
     const httpService = new HttpServiceImpl()
 
-    const universidadeGateway = new UniversidadeHttpGatewayImpl(httpService)
-    const cadastrarCursoUsecase = new CadastrarCursoUsecase(universidadeGateway)
-
-    const listarUniversidadesQuery = new ListarUniversidadesQuery(
-        universidadeGateway,
-    )
-
     //States
     const [universidades, setUniversidades] = useState<UniversidadeProps[]>([])
     const [universidadeAtiva, setUniversidadeAtiva] =
@@ -63,30 +53,6 @@ export default function CriarCurso() {
     const navigate = useNavigate()
 
     //Funcions
-    useEffect(() => {
-        async function getUniversidades(): Promise<void> {
-            const universidadesData = await listarUniversidadesQuery.execute()
-            setUniversidades(universidadesData)
-        }
-        getUniversidades()
-        console.log(universidades)
-    }, [])
-
-    useEffect(() => {
-        if (universidadeAtiva.id !== "") {
-            setInstitutos(universidadeAtiva.institutos)
-            setExibirInstituto(true)
-        }
-    }, [universidadeAtiva])
-
-    function onSubmit() {
-        cadastrarCursoUsecase.execute({
-            nome: inputValues.nome,
-            codigo: inputValues.codigo,
-            institutoId: institutoAtivo.id,
-        })
-    }
-
     const handleOnChange = useCallback((event) => {
         const { name, value } = event.target
         setInputValues((prevInputValues) => ({
@@ -208,7 +174,6 @@ export default function CriarCurso() {
                                     color="primary"
                                     size="large"
                                     className="mb-3 mb-md-4 mt-4 backgroundcolor2"
-                                    onClick={() => onSubmit()}
                                 >
                                     Cadastrar
                                 </Button>
