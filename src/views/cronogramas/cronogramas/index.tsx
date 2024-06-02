@@ -13,6 +13,7 @@ import MessageSnackbar from "../../../components/MessageSnackbar"
 import { TIPO_ATIVIDADE } from "../../../@curso/domain/entities/Atividade"
 import { AdicionarAtividadeCronogramaUsecase } from "../../../@curso/application/AdicionarAtividadeCronograma.usecase"
 import { AtualizarAtividadeCronogramaUsecase } from "../../../@curso/application/AtualizarAtividadeCronograma.usecase"
+import { AxiosError } from "axios"
 
 // HTTP Service
 const httpService = new HttpServiceImpl()
@@ -89,17 +90,28 @@ export default function Cronogramas() {
 
     useEffect(() => {
         const id = localStorage.getItem("id")
+
         async function buscarCronogramaVigente() {
-            if (!id) {
-                navigate("/login")
-                return
+            try {
+                if (!id) {
+                    navigate("/login")
+                    return
+                }
+                const usuario = await buscarUsuarioQuery.execute(id)
+                setCursoId(usuario.getCurso().id)
+                const cronograma = await buscarCronogramaVigenteQuery.execute({
+                    cursoId: usuario.getCurso().id,
+                })
+                setCronograma(cronograma)
+            } catch (error) {
+                setSnackbarMessage(
+                    error instanceof AxiosError
+                        ? error.response?.data.message
+                        : "Erro ao buscar cronograma!",
+                )
+                setSnackbarSeverity("error")
+                setShowSnackbar(true)
             }
-            const usuario = await buscarUsuarioQuery.execute(id)
-            setCursoId(usuario.getCurso().id)
-            const cronograma = await buscarCronogramaVigenteQuery.execute({
-                cursoId: usuario.getCurso().id,
-            })
-            setCronograma(cronograma)
         }
 
         buscarCronogramaVigente()
