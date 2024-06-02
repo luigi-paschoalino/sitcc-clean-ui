@@ -13,6 +13,8 @@ import { CursoHttpGatewayImpl } from "../../../@curso/infra/gateways/Curso.gatew
 import { CadastrarUsuarioUsecase } from "../../../@usuario/application/CadastrarUsuario.usecase"
 import { UsuarioHttpGatewayImpl } from "../../../@usuario/infra/gateways/Usuario.gateway"
 import { HttpServiceImpl } from "../../../infra/httpService"
+import MessageSnackbar from "../../../components/MessageSnackbar"
+import { AxiosError } from "axios"
 
 enum TIPO_USUARIO {
     ALUNO = "ALUNO",
@@ -43,6 +45,12 @@ export default function CriarUsuario() {
     const [cursos, setCursos] = useState<Curso[]>([])
     const [cursoAtivo, setCursoAtivo] = useState<string>("")
 
+    const [showSnackbar, setShowSnackbar] = useState(false)
+    const [snackbarMessage, setSnackbarMessage] = useState("")
+    const [snackbarSeverity, setSnackbarSeverity] = useState<
+        "success" | "error" | "info" | "warning"
+    >("success")
+
     const navigate = useNavigate()
 
     async function handleCadastro(): Promise<void> {
@@ -57,12 +65,25 @@ export default function CriarUsuario() {
                     tipo: tipoUsuario,
                     codigo: inputValues.codigo,
                 })
+                setSnackbarSeverity("success")
+                setSnackbarMessage("Usuário cadastrado com sucesso!")
+                setShowSnackbar(true)
                 setTimeout(() => {
                     navigate("/")
                 }, 2000)
-            } else {
             }
-        } catch (error) {}
+        } catch (error) {
+            console.log(error)
+            setSnackbarSeverity("error")
+            setSnackbarMessage(
+                `Erro ao cadastrar usuário${
+                    error instanceof AxiosError
+                        ? `: ${error.response?.data.message}`
+                        : "!"
+                }`,
+            )
+            setShowSnackbar(true)
+        }
     }
 
     const handleSelectUserType = (userType: string) => {
@@ -102,20 +123,6 @@ export default function CriarUsuario() {
                 <div className="mt-3 mt-md-5">
                     <div className="text-center">
                         <h2 className="mb-3">Criar usuário</h2>
-                        {
-                            // TODO: mudar para SnackbarMessage dos components
-                            /* {status !== true ? (
-                            <Alert
-                                className="my-2"
-                                variant="filled"
-                                severity="error"
-                            >
-                                {status}
-                            </Alert>
-                        ) : (
-                            ""
-                        )} */
-                        }
                         <InputLabel
                             style={{ textAlign: "left" }}
                             className={"mt-3"}
@@ -297,6 +304,13 @@ export default function CriarUsuario() {
                     </div>
                 </div>
             </Container>
+
+            <MessageSnackbar
+                handleClose={() => setShowSnackbar(false)}
+                message={snackbarMessage}
+                open={showSnackbar}
+                severity={snackbarSeverity}
+            />
         </div>
     )
 }
